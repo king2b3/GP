@@ -9,70 +9,71 @@ class dTree:
         self.ins = ['in1','in2']
         self.outs = ['ou1']
 
+#   Test file not to be pushed
+from mutations import *
 class Node:
     def __init__(self,val):
         self.value = val
         self.children = []
-'''    
-def print_node_value(value):
-    print(value)
 
-def visit(node, handle_node):
-    handle_node(node.value)
-    for child in node.children:
-        visit(child, handle_node)
 
-def addNode(tree,node):
-    tree.children.append(Node(node))
-'''
-def thing(val,counter = True):
-    if counter:
-        print(val.value)
-        counter = False
+def printTree(val,counter = True):    
     func = getattr(val, "children", None)
+    print(val.value)#,' ',func)
     if func:
-        for node in val.children:
+        for node in func:
             if node.children != []:
-                thing(node)
+                printTree(node)
             else:
                 print(node.value)
 
-def genAST(ASTlist,counter = 0,layer = 0,nodeC = 0):
+
+def genAST(ASTlist,Ins,counter = 0,layer = 0,level=0):
     for A in ASTlist:
-        if layer == 0:                    # init 
+        #print('Val in AST ',A,' in layer ',layer,' with level ',level)
+        
+        if level == 0: # Init Layer
             tree = Node(A)
             layer += 1
-
-        elif layer == 1:  # 2nd layer
-            tab = '\t'
-            tree.children.append(Node(tab+A))
-            tab += '\t'
-            layer += 1
-            counter += 1
+            level += 1
             c = 0
 
-        elif layer == 2:
-            if c > 1:
-                nodeC = 1
-            tree.children[nodeC].children.append(Node(tab+A))
-            if A == 'not':
+        elif level == 1: # Middle layers
+            tree = addNode(tree,A,layer)
+            if A == 'or' or A == 'and':
                 layer += 1
-            c += 1
+                c = 0
+            elif A == 'not':
+                layer += 1
+                level += 1
+                c += 1
+            else:
+                c += 1
+                if c > 1:
+                    layer -= 1
+                    c = 0
 
-        elif layer == 3:
-            tree.children[nodeC].children[1].children.append(Node('\t'+tab+A))
-            layer -= 2
+        elif level == 2: # Bottom Layer
+            tree = addNode(tree,A,layer)
+            layer -= 1
+            level -= 1
 
     return tree
 
+def addNode(var,node,layer):
+    #t = tab(layer)
+    var.children.append(Node(tab(layer)+node))
+    return var
 
-def addLayer(layer,val):
-    print()
+def tab(num):
+    t = '\t'
+    for i in range(num-1):
+        t += '\t'
+    return t
 
-#set way for 3 layers, init, middle, end layer
 
-AST = ['or','and','in1','not','in2','and','in2','not','in1']
-
-tree = genAST(AST)
-
-thing(tree)
+AST =    ['or','and','not','in1','in2','and','not','in2','in1','and','and','in1','in2','in1']
+Ins = ['in2','in2']
+print(AST)
+tree = genAST(AST,Ins)
+printTree(tree)
