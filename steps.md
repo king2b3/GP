@@ -24,3 +24,13 @@
         2. Init two blank children
     2. If node == Not
         1. Child 1 
+
+### Gen Fitness Function
+
+1. For gate in Tree
+   1. if gate is 2 terminal
+      1. Return val of 2 child
+   2. if gate is 1 terminal
+      1. Return val of child
+   3. if gate is input
+      1. pass

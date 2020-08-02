@@ -1,6 +1,6 @@
 import numpy as numpy
 from mutations import *
-
+'''
 class dTree:
 
     def __init__(self):
@@ -10,6 +10,7 @@ class dTree:
         self.outs = ['ou1']
 
 #   Test file not to be pushed
+'''
 from mutations import *
 class Node:
     def __init__(self,val):
@@ -17,9 +18,9 @@ class Node:
         self.children = []
 
 
-def printTree(val,counter = True):    
-    func = getattr(val, "children", None)
-    print(val.value)#,' ',func)
+def printTree(tree,counter = True):    
+    func = getattr(tree, "children", None)
+    print(tree.value)#,' ',func)
     if func:
         for node in func:
             if node.children != []:
@@ -71,9 +72,46 @@ def tab(num):
         t += '\t'
     return t
 
+def printTreeTest(val,ast,counter = True):    
+    func = getattr(val, "children", None)
+    ast.append(val.value)#,' ',func)
+    if func:
+        for node in func:
+            if node.children != []:
+                printTree(node)
+            else:
+                ast.append(node.value)
+    return ast
 
-AST =    ['or','and','not','in1','in2','and','not','in2','in1','and','and','in1','in2','in1']
+
+AST = ['or','and','not','in1','in2','and','not','in2','in1','and','and','in1','in2','in1']
 Ins = ['in2','in2']
-print(AST)
+ast = []
+#print(AST)
 tree = genAST(AST,Ins)
-printTree(tree)
+ast = printTreeTest(tree,ast)
+new_ast = []
+for gate in ast:
+    new_ast.append(gate.strip('\t'))
+print(new_ast)
+new_ast = tuple(new_ast)
+
+
+def genFit(ast):
+    counter = 0
+    for gate in ast:
+        children = addGate(ast,gate,counter)
+        if children:
+            for child in children:
+                if child == 'or' or gate == 'and' or 'not':
+                    sub_children = addGate(ast,gate,counter)
+
+
+
+def addGate(ast,gate,counter):
+    if gate == 'or' or gate == 'and':
+        return(ast[counter+1:counter+2])
+    elif gate == 'not':
+        return(ast[counter+1])
+    else:
+        return False
