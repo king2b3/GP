@@ -1,7 +1,7 @@
-#lex = ['or','and','not','in1','in2','and','not','in2','in1','and','and','in1','in2','in1']
-lex = ['or','and','not',False,False,'and','not',False,False]
-#lex = ['or',False,False,]
-Ins = ['in2','in2']
+#   Fitness Function gen 
+#   Python 3.7
+#   Bayley King
+
 binOps = ['or','and']
 soloOps = ['not']
 
@@ -64,7 +64,8 @@ def main():
 
     import re
     lex = ('or','and','not','in1','in2','and','not','in2','in1','and','and','in1','in2','in1')
-    results = []
+    Ins = ['in2','in2']
+    
     '''
     for l in lex:
         print('operator is',l)
@@ -74,6 +75,7 @@ def main():
     print(results)
     '''
 
+    print(lex)
     for in1 in [True,False]:
         for in2 in [True,False]:
             lext = list(lex)
@@ -86,8 +88,5 @@ def main():
             print(lext)
             print(ast.funcTest(lext[0],ast.counterLoc))
     
-
-
-
 if __name__ == '__main__':
     main()

@@ -4,6 +4,7 @@ Zach-thesis-master/
 .funcs.py.swp
 .vscode/
 test.py
+papers/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
