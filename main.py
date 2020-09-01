@@ -1,117 +1,48 @@
-import numpy as numpy
-from mutations import *
+#   Python 3.7.3
+#   Bayley King
+#   University of Cincinnati MIND Lab
 '''
-class dTree:
-
-    def __init__(self):
-        self.ast = "Or(And(self.ins[0],Not(self.ins[1])),And(self.ins[1],Not(self.ins[0])))"
-        self.gates = ['or','and','in1','not','in2','and','in2','not','in1']
-        self.ins = ['in1','in2']
-        self.outs = ['ou1']
-
-#   Test file not to be pushed
+    General container and "main" file for GP system using here boy algorithm.
+    Takes in from mutations.py, lexer.py, stringComp.py and exhaustiveTest.py.
+    
 '''
-from mutations import *
-class Node:
-    def __init__(self,val):
-        self.value = val
-        self.children = []
+import StringComp
+import HereBoy 
+#from exhaustiveTest import exhaustiveTest
+#from mutations import mutations
+
+### Definitions ###
+maxEpochs = 1000
+#ast,inputs = loadAST()
+inputs = ['in1','in2']
+####################
 
 
-def printTree(tree,counter = True):    
-    func = getattr(tree, "children", None)
-    print(tree.value)#,' ',func)
-    if func:
-        for node in func:
-            if node.children != []:
-                printTree(node)
-            else:
-                print(node.value)
+newTree2 = ['or','in1','and','in1','or','in1','in2']
+#newTree1 = ['or','in1','and','in1','or','in1','in2']
+newTree1 = ['or','in1','in2']
+if len(newTree1) > len(newTree2):
+    tree2 = tuple(newTree1)
+    tree1 = newTree2
+elif len(newTree1) < len(newTree2):
+    tree2 = tuple(newTree2)
+    tree1 = newTree1
+else:
+    tree2 = tuple(newTree1)
+    tree1 = newTree2
 
+test1 = HereBoy.HereBoy(tree1,inputs)
+tree1, tree2 = test1.strCmp.structure(tree1,tree2)
+print(test1.strCmp.diffCount)
+print(tree1,'\n',tree2)
 
-def genAST(ASTlist,Ins,counter = 0,layer = 0,level=0):
-    for A in ASTlist:
-        #print('Val in AST ',A,' in layer ',layer,' with level ',level)
-        
-        if level == 0: # Init Layer
-            tree = Node(A)
-            layer += 1
-            level += 1
-            c = 0
+tree1,tree2 = test1.strCmp.nodes(tree1,tree2)
+print(test1.strCmp.diffCount)
+print(tree1,'\n',tree2)
 
-        elif level == 1: # Middle layers
-            tree = addNode(tree,A,layer)
-            if A == 'or' or A == 'and':
-                layer += 1
-                c = 0
-            elif A == 'not':
-                layer += 1
-                level += 1
-                c += 1
-            else:
-                c += 1
-                if c > 1:
-                    layer -= 1
-                    c = 0
-
-        elif level == 2: # Bottom Layer
-            tree = addNode(tree,A,layer)
-            layer -= 1
-            level -= 1
-
-    return tree
-
-def addNode(var,node,layer):
-    #t = tab(layer)
-    var.children.append(Node(tab(layer)+node))
-    return var
-
-def tab(num):
-    t = '\t'
-    for i in range(num-1):
-        t += '\t'
-    return t
-
-def printTreeTest(val,ast,counter = True):    
-    func = getattr(val, "children", None)
-    ast.append(val.value)#,' ',func)
-    if func:
-        for node in func:
-            if node.children != []:
-                printTree(node)
-            else:
-                ast.append(node.value)
-    return ast
-
-
-AST = ['or','and','not','in1','in2','and','not','in2','in1','and','and','in1','in2','in1']
-Ins = ['in2','in2']
-ast = []
-#print(AST)
-tree = genAST(AST,Ins)
-ast = printTreeTest(tree,ast)
-new_ast = []
-for gate in ast:
-    new_ast.append(gate.strip('\t'))
-print(new_ast)
-new_ast = tuple(new_ast)
-
-
-def genFit(ast):
-    counter = 0
-    for gate in ast:
-        children = addGate(ast,gate,counter)
-        if children:
-            for child in children:
-                if child == 'or' or gate == 'and' or 'not':
-                    sub_children = addGate(ast,gate,counter)
-
-
-
-def addGate(ast,gate,counter):
-    if gate == 'or' or gate == 'and':
-        return(ast[counter+1:counter+2])
-    elif gate == 'not':
-        return(ast[counter+1])
-    else:
-        return False
+'''
+while fit != 0 or epoch != maxEpochs:
+    changeFitness()
+    test1.m.mutate()
+    test1.strCmp.compare()
+'''

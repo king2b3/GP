@@ -4,8 +4,9 @@
 
 binOps = ['or','and']
 soloOps = ['not']
+from bayleyProgram import HereBoy
 
-class AST():
+class ExhaustiveTest(HereBoy):
     def __init__(self,ast,inputs):
         self.origAST = tuple(ast)
         self.counterLoc = 0
@@ -74,6 +75,7 @@ def main():
     results = list(filter(lambda a: a !=None,results))
     print(results)
     '''
+    
 
     print(lex)
     for in1 in [True,False]:
