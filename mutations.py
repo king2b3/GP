@@ -3,50 +3,51 @@
 #   Bayley King
 
 import random
-from bayleyProgram import HereBoy
 
-ops = ['or','and','not']
+ops = ['or','and','not','nand']
 
-class Mutations(HereBoy):
-    def __init__(self,ogAST,inputs):
-        self.originalAST = ogAST
-        self.currentAST = ogAST
-        self.numGens = self.numMutations = 0
-        self.ast = AST(ogAST,inputs)
-        self.inputs = inputs
-        #self.bestFitness = self.currentFitness = self.funcTest(self.currentAST[0],0)
+def mutate(ast,ins):
+    results = []
+    for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]:
+    #for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins)]:
+    #for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins)]:
+        results.append(m)
+    return results
 
-    def mutate(self):
-        results = []
-        for m in [self.randomMutate(),self.crossover(),self.addNode(),self.removeNode()]:
-            results.append([m,str(m)])
-        return results
+def randomMutation(ast,ins):
+    #mutations = [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]
+    mutations = [doNothing(ast,ins),randomMutate(ast,ins),addNode(ast,ins),removeNode(ast,ins)]
+    num = random.randint(0,len(mutations)-1)
+    return mutations[num]
 
-    ######### Mutations #########
+######### Mutations #########
 
-    def randomMutate(self):
-        gate = random.randint(0,len(self.currentAST)-1)
-        tempAST = list(self.currentAST)
-        if self.currentAST[gate] == 'or':
-            tempAST[gate] = 'and'
-        elif self.currentAST[gate] == 'and':
-            tempAST[gate] = 'or'
-        elif self.currentAST[gate] in self.inputs:
-            ranIn = random.randint(0,1)
-            while self.inputs[ranIn] == self.currentAST[gate]:
-                ranIn = random.randint(0,1)
-            tempAST[gate] = self.inputs[ranIn]
-        return tempAST       
+def randomMutate(ast,ins):
+    gate = random.randint(0,len(ast)-1)
+    tempAST = list(ast)
+    binOps = ['or','and','nand']
+    if ast[gate] in binOps:
+        ranIn = random.randint(0,len(binOps)-1)
+        while binOps[ranIn] == ast[gate]:
+            ranIn = random.randint(0,len(binOps)-1)
+        tempAST[gate] = binOps[ranIn]
+    elif ast[gate] in ins:
+        ranIn = random.randint(0,len(ins)-1)
+        while ins[ranIn] == ast[gate]:
+            ranIn = random.randint(0,len(ins)-1)
+        tempAST[gate] = ins[ranIn]
+    return tempAST       
 
 
-    def crossover(self):
-        tempAST = list(self.currentAST)
-        gate = random.randint(0,len(self.currentAST)-1)
-        gateCross = random.randint(0,len(self.currentAST)-1)
-        while self.currentAST[gate] in self.inputs or self.hasChildren(self.currentAST,gate):
-            gate = random.randint(0,len(self.currentAST)-1)
-        while self.currentAST[gateCross] in self.inputs or gateCross == gate or self.hasChildren(self.currentAST,gateCross):
-            gateCross = random.randint(0,len(self.currentAST)-1)
+def crossover(ast,ins):
+    if len(ast) > 5:
+        tempAST = list(ast)
+        gate = random.randint(0,len(ast)-1)
+        gateCross = random.randint(0,len(ast)-1)
+        while ast[gate] in ins or hasChildren(ast,gate,ins):
+            gate = random.randint(0,len(ast)-1)
+        while ast[gateCross] in ins or gateCross == gate or hasChildren(ast,gateCross,ins):
+            gateCross = random.randint(0,len(ast)-1)
         #print('First Gate is:',gateCross,'Second Gate is:',gate)
 
         if gate > gateCross:
@@ -64,79 +65,95 @@ class Mutations(HereBoy):
 
         tree = start+cross2+middle+cross1+end
         return tree
+    else:
+        return ast
 
-    def addNode(self):
-        gate = random.randint(0,len(self.currentAST)-1)
-        while self.currentAST[gate] in ops or self.isLeaf(self.currentAST,gate):
-            gate = random.randint(0,len(self.currentAST)-1)
-        tempAST = list(self.currentAST)
-        tempStart = tempAST[:gate]
-        tempEnd = tempAST[gate+1:]
+def addNode(ast,ins):
+    gate = random.randint(0,len(ast)-1)
+    while ast[gate] in ops or isLeaf(ast,gate,ins):
+        gate = random.randint(0,len(ast)-1)
+    tempAST = list(ast)
+    tempStart = tempAST[:gate]
+    tempEnd = tempAST[gate+1:]
 
-        newNode = []
-        gate = random.randint(0,len(ops)-1)
-        if gate == 0:
-            newNode.append('and')
-        else:
-            newNode.append('or')
-        
-        gate1 = random.randint(0,len(self.inputs)-1)
-        gate2 = random.randint(0,len(self.inputs)-1)
+    newNode = []
+    gate = random.randint(0,len(ops)-1)
+    newNode.append(ops[gate])
+
+    if ops[gate] == 'not':
+        gate1 = random.randint(0,len(ins)-1)
+        newNode.append(ins[gate1]) 
+    else:
+        gate1 = random.randint(0,len(ins)-1)
+        gate2 = random.randint(0,len(ins)-1)
         while gate1 == gate2:
-            gate2 = random.randint(0,len(self.inputs)-1)
-        newNode.append(self.inputs[gate1])
-        newNode.append(self.inputs[gate2])
+            gate2 = random.randint(0,len(ins)-1)
+        newNode.append(ins[gate1])
+        newNode.append(ins[gate2])
 
-        return tempStart+newNode+tempEnd
+    return tempStart+newNode+tempEnd
 
 
-    def removeNode(self):
-        gate = random.randint(0,len(self.currentAST)-1)
-        while self.currentAST[gate] in self.inputs or self.isLeaf(self.currentAST,gate):
-            gate = random.randint(0,len(self.currentAST)-1)
-        
-        tree = list(self.currentAST)
-        start = tree[:gate]
-        middle = tree[gate:gate+3]
-        end = tree[gate+3:]
+def removeNode(ast,ins):
+    if len(ast) > 5:
+        gate = random.randint(0,len(ast)-1)
+        while ast[gate] in ins or isLeaf(ast,gate,ins):
+            gate = random.randint(0,len(ast)-1)
 
-        return start+end
-
-    ######### Functions #########    
-
-    def hasChildren(self,tree,gate):
-        try:
-            children = tree[gate+1:gate+3]
-            if children[0] in ops or children[1] in ops:
-                return True
-            else:
-                return False
-        except:
-            return False
-    
-    def isLeaf(self,tree,gate):
-        if tree[gate-1] in ops and tree[gate+1] in self.inputs:
-            return False
+        if ast[gate] == 'not':
+            tree = list(ast)
+            start = tree[:gate]
+            end = tree[gate+1:]
+            return start+end
         else:
-            return True
-    
-    
-    def error(self):
-        raise Exception('Invalid operator in AST')
+        
+            tree = list(ast)
+            start = tree[:gate]
+            gate1 = random.randint(0,len(ins)-1)
+            middle = [ins[gate1]]
+            end = tree[gate+3:]
 
-    def __str__(self):
-        return self.currentAST
+            return start+middle+end
+    else:
+        return ast
+
+
+def doNothing(ast,ins):
+    return ast
+
+######### Functions #########    
+
+def hasChildren(tree,gate,ins):
+    try:
+        children = tree[gate+1:gate+3]
+        if children[0] in ops or children[1] in ops:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+def isLeaf(tree,gate,ins):
+    if tree[gate-1] in ops and tree[gate+1] in ins:
+        return False
+    else:
+        return True
+
+
 
 
 def main():
     ast = ('or','and','A','B','and','B','A')
-    Ins = ['A','B']
-    test = hereBoy(ast,Ins)
-    results = test.mutate()
-    print(ast)
-    #print(results)
+    test_ast = list(ast)
+    ins = ['A','B']
+    
+    results = mutate(test_ast,ins)
     for r in results:
-        print(r[0])
+        print(r)
+    
+    #print(randomMutation(test_ast,ins))
+
+
 
 if __name__ == '__main__':
     main()
