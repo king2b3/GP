@@ -3,19 +3,109 @@ digraph unix {
 	size="6,6"
 	gate_0 [label=nand]
 	gate_1 [label=nand]
+	gate_2 [label=or]
+	gate_3 [label=or]
 	ins_0 [label=I0]
 	ins_1 [label=Sel]
-	gate_2 [label=nand]
-	ins_2 [label=I1]
-	gate_3 [label=nand]
+	ins_2 [label=I0]
 	ins_3 [label=Sel]
-	ins_4 [label=Sel]
+	gate_4 [label=and]
+	ins_4 [label=I0]
+	gate_5 [label=or]
+	gate_6 [label=and]
+	gate_7 [label=not]
+	gate_8 [label=not]
+	gate_9 [label=or]
+	gate_10 [label=not]
+	gate_11 [label=not]
+	gate_12 [label=not]
+	gate_13 [label=not]
+	gate_14 [label=not]
+	gate_15 [label=not]
+	gate_16 [label=not]
+	gate_17 [label=not]
+	gate_18 [label=not]
+	gate_19 [label=not]
+	gate_20 [label=not]
+	gate_21 [label=not]
+	gate_22 [label=not]
+	gate_23 [label=not]
+	gate_24 [label=not]
+	gate_25 [label=not]
+	gate_26 [label=not]
+	gate_27 [label=not]
+	gate_28 [label=not]
+	gate_29 [label=not]
+	gate_30 [label=not]
+	gate_31 [label=not]
+	gate_32 [label=not]
+	gate_33 [label=not]
+	gate_34 [label=not]
+	gate_35 [label=not]
+	gate_36 [label=not]
+	gate_37 [label=not]
+	gate_38 [label=not]
+	gate_39 [label=not]
+	gate_40 [label=not]
+	gate_41 [label=not]
+	gate_42 [label=not]
+	gate_43 [label=not]
+	gate_44 [label=not]
+	ins_5 [label=I0]
+	ins_6 [label=I1]
+	ins_7 [label=I0]
+	ins_8 [label=I1]
 	gate_0 -> gate_1
-	gate_0 -> gate_2
-	gate_1 -> ins_0
-	gate_1 -> ins_1
-	gate_2 -> ins_2
+	gate_0 -> gate_4
+	gate_1 -> gate_2
+	gate_1 -> ins_3
 	gate_2 -> gate_3
-	gate_3 -> ins_3
-	gate_3 -> ins_4
+	gate_2 -> ins_2
+	gate_3 -> ins_0
+	gate_3 -> ins_1
+	gate_4 -> ins_4
+	gate_4 -> gate_5
+	gate_5 -> gate_6
+	gate_5 -> ins_8
+	gate_6 -> gate_7
+	gate_6 -> ins_7
+	gate_7 -> gate_8
+	gate_8 -> gate_9
+	gate_9 -> gate_10
+	gate_9 -> ins_6
+	gate_10 -> gate_11
+	gate_11 -> gate_12
+	gate_12 -> gate_13
+	gate_13 -> gate_14
+	gate_14 -> gate_15
+	gate_15 -> gate_16
+	gate_16 -> gate_17
+	gate_17 -> gate_18
+	gate_18 -> gate_19
+	gate_19 -> gate_20
+	gate_20 -> gate_21
+	gate_21 -> gate_22
+	gate_22 -> gate_23
+	gate_23 -> gate_24
+	gate_24 -> gate_25
+	gate_25 -> gate_26
+	gate_26 -> gate_27
+	gate_27 -> gate_28
+	gate_28 -> gate_29
+	gate_29 -> gate_30
+	gate_30 -> gate_31
+	gate_31 -> gate_32
+	gate_32 -> gate_33
+	gate_33 -> gate_34
+	gate_34 -> gate_35
+	gate_35 -> gate_36
+	gate_36 -> gate_37
+	gate_37 -> gate_38
+	gate_38 -> gate_39
+	gate_39 -> gate_40
+	gate_40 -> gate_41
+	gate_41 -> gate_42
+	gate_42 -> gate_43
+	gate_43 -> gate_44
+	gate_44 -> ins_5
 }
