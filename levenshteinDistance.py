@@ -30,21 +30,19 @@ def levenshtein(seq1, seq2, scale=True):
                 )
     #print (matrix)
     if scale:
-        return ((matrix[size_x - 1, size_y - 1])/max(size_x-1,size_y-1))
+        return ((matrix[size_x - 1, size_y - 1])/min(size_x-1,size_y-1))
     else:
         return (matrix[size_x - 1, size_y - 1])
 
-#newTree2 = ['or','in1','and','in1','or','in1','in2']
-#newTree1 = ['or','in1','and','in1','or','in1','in2']
-#newTree1 = ['or','in1','in2']
 
-#print(levenshtein(newTree1,newTree2))
-#print(levenshtein('kitten','sitting'))
 
 
 def main():
+    newTree2 = ['nand', 'nand', 'I1', 'nand', 'Sel', 'I1', 'or', 'nand', 'Sel', 'Sel', 'nand', 'or', 'Sel', 'I1', 'and', 'I0', 'I0']
+    newTree1 = ['nand', 'nand', 'I0', 'Sel', 'nand', 'I1', 'nand', 'Sel', 'Sel']
 
-    print(levenshtein('hello mr ninja','howdy mr truck',False))
+    print(levenshtein(newTree1,newTree2))
+
 
 
 if __name__ == "__main__":

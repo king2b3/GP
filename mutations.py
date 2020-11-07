@@ -3,22 +3,41 @@
 #   Bayley King
 
 import random
+from tabulate import tabulate
 
-ops = ['or','and','not','nand']
+#ops = ['or','and','not','nand']
+binOps = ['or','and','nand']
+soloOps = ['not']
+ops = binOps+soloOps
 
 def mutate(ast,ins):
+    '''
     results = []
     for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]:
     #for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins)]:
     #for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins)]:
         results.append(m)
     return results
+    '''
+    return [m for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]]
 
 def randomMutation(ast,ins):
     #mutations = [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]
-    mutations = [doNothing(ast,ins),randomMutate(ast,ins),addNode(ast,ins),removeNode(ast,ins)]
-    num = random.randint(0,len(mutations)-1)
-    return mutations[num]
+    #mutations = [doNothing(ast,ins),randomMutate(ast,ins),addNode(ast,ins)]#,removeNode(ast,ins)]
+    #num = random.randint(0,len(mutations)-1)
+    num = random.randint(0,2)
+
+    if num == 0:
+        return doNothing(ast,ins)
+    elif num == 1:
+        return randomMutate(ast,ins)
+    elif num == 2:
+        return addNode(ast,ins)
+    elif num == 3:
+        return removeNode(ast,ins)
+    elif num == 4:
+        return crossover(ast,ins)
+    #return mutations[num]
 
 ######### Mutations #########
 
@@ -40,14 +59,15 @@ def randomMutate(ast,ins):
 
 
 def crossover(ast,ins):
-    if len(ast) > 5:
-        tempAST = list(ast)
-        gate = random.randint(0,len(ast)-1)
-        gateCross = random.randint(0,len(ast)-1)
-        while ast[gate] in ins or hasChildren(ast,gate,ins):
-            gate = random.randint(0,len(ast)-1)
-        while ast[gateCross] in ins or gateCross == gate or hasChildren(ast,gateCross,ins):
-            gateCross = random.randint(0,len(ast)-1)
+    if (len_ast := len(ast)) > 5:
+        #len_ast = len(ast)-1
+        tempAST = ast.copy()
+        gate = random.randint(0,len_ast-1)
+        gateCross = random.randint(0,len_ast-1)
+        while hasChildren(ast,gate,ins) or ast[gate] in ins:
+            gate = random.randint(0,len_ast-1)
+        while gateCross == gate or hasChildren(ast,gateCross,ins) or ast[gateCross] in ins :
+            gateCross = random.randint(0,len_ast-1)
         #print('First Gate is:',gateCross,'Second Gate is:',gate)
 
         if gate > gateCross:
@@ -69,9 +89,11 @@ def crossover(ast,ins):
         return ast
 
 def addNode(ast,ins):
-    gate = random.randint(0,len(ast)-1)
-    while ast[gate] in ops or isLeaf(ast,gate,ins):
-        gate = random.randint(0,len(ast)-1)
+    len_ins = len(ins)-1
+    len_ast = len(ast)-1
+    gate = random.randint(0,len_ast)
+    while ast[gate] in ops:
+        gate = random.randint(0,len_ast)
     tempAST = list(ast)
     tempStart = tempAST[:gate]
     tempEnd = tempAST[gate+1:]
@@ -81,13 +103,13 @@ def addNode(ast,ins):
     newNode.append(ops[gate])
 
     if ops[gate] == 'not':
-        gate1 = random.randint(0,len(ins)-1)
+        gate1 = random.randint(0,len_ins)
         newNode.append(ins[gate1]) 
     else:
-        gate1 = random.randint(0,len(ins)-1)
-        gate2 = random.randint(0,len(ins)-1)
+        gate1 = random.randint(0,len_ins)
+        gate2 = random.randint(0,len_ins)
         while gate1 == gate2:
-            gate2 = random.randint(0,len(ins)-1)
+            gate2 = random.randint(0,len_ins)
         newNode.append(ins[gate1])
         newNode.append(ins[gate2])
 
@@ -97,23 +119,28 @@ def addNode(ast,ins):
 def removeNode(ast,ins):
     if len(ast) > 5:
         gate = random.randint(0,len(ast)-1)
-        while ast[gate] in ins or isLeaf(ast,gate,ins):
+        print(gate)
+        while hasChildren(ast,gate,ins):
             gate = random.randint(0,len(ast)-1)
+            print(gate)
 
-        if ast[gate] == 'not':
-            tree = list(ast)
+        if ast[gate] in soloOps:
+            tree = ast.copy()
             start = tree[:gate]
             end = tree[gate+1:]
             return start+end
-        else:
         
-            tree = list(ast)
+        elif ast[gate] in binOps:
+            tree = ast.copy()
             start = tree[:gate]
             gate1 = random.randint(0,len(ins)-1)
             middle = [ins[gate1]]
             end = tree[gate+3:]
-
             return start+middle+end
+        
+        else:
+            return ast
+    
     else:
         return ast
 
@@ -126,33 +153,27 @@ def doNothing(ast,ins):
 def hasChildren(tree,gate,ins):
     try:
         children = tree[gate+1:gate+3]
-        if children[0] in ops or children[1] in ops:
+        if tree[gate] in ins:
+            return False
+        elif (children[0] in ops or children[1] in ops) and tree[gate] in binOps:
             return True
+        elif children[0] in ops and tree[gate] in soloOps:
+            return True            
         else:
             return False
     except:
         return False
 
-def isLeaf(tree,gate,ins):
-    if tree[gate-1] in ops and tree[gate+1] in ins:
-        return False
-    else:
-        return True
-
-
-
 
 def main():
-    ast = ('or','and','A','B','and','B','A')
-    test_ast = list(ast)
-    ins = ['A','B']
     
-    results = mutate(test_ast,ins)
-    for r in results:
-        print(r)
-    
-    #print(randomMutation(test_ast,ins))
+    original_ast = ['or', 'and', 'and', 'Sel', 'I0', 'I0', 'and', 'and', 'I1', 'and', 'I1', 'and', 'I0', 'or', 'or', 'I0', 'I1', 'I0', 'and', 'and', 'I0', 'I0', 'I1']
+    current_ast = [original_ast.copy()]
+    ins = ['I0','I1','Sel']    
 
+    for _ in range(10):
+        current_ast.append(removeNode(original_ast,ins))
+    print(tabulate(current_ast))
 
 
 if __name__ == '__main__':

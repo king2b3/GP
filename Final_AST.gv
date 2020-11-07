@@ -3,21 +3,21 @@ digraph unix {
 	size="6,6"
 	gate_0 [label=nand]
 	gate_1 [label=nand]
-	ins_0 [label=I0]
+	ins_0 [label=I1]
 	gate_2 [label=nand]
 	ins_1 [label=Sel]
 	ins_2 [label=I1]
-	gate_3 [label=nand]
-	gate_4 [label=and]
+	gate_3 [label=or]
+	gate_4 [label=nand]
 	ins_3 [label=Sel]
 	ins_4 [label=Sel]
 	gate_5 [label=nand]
-	gate_6 [label=and]
+	gate_6 [label=or]
 	ins_5 [label=Sel]
 	ins_6 [label=I1]
 	gate_7 [label=and]
 	ins_7 [label=I0]
-	ins_8 [label=Sel]
+	ins_8 [label=I0]
 	gate_0 -> gate_1
 	gate_0 -> gate_3
 	gate_1 -> ins_0
