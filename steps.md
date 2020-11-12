@@ -17,4 +17,3 @@
 
 Final AST is:    ['nand', 'nand', 'I1', 'nand', 'Sel', 'I1', 'or', 'nand', 'Sel', 'Sel', 'nand', 'or', 'Sel', 'I1', 'and', 'I0', 'I0']
 Original AST  :  ['nand', 'nand', 'I0', 'Sel', 'nand', 'I1', 'nand', 'Sel', 'Sel']
-

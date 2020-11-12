@@ -76,12 +76,12 @@ class HereBoy:
         raise Exception('Invalid operator in AST')
 
 
-def checkFitness(current_ast,original_ast,ins,epochs):
+def checkFitness(current_ast,original_ast,ins,epochs,orig_log,returnCheck=True):
     struc_fit,log_fit = returnFitness(epochs)
-    with open('outputs/Logical_Fitness.pkl','rb') as f:
-        orig_log = pkl.load(f)
-    #print(current_ast)
     logical_result = exhaustiveTest(current_ast,ins)
+    #print('\nEpoch {}'.format(epochs))
+    #print('Orig logic:    {}'.format(orig_log))
+    #print('Current logic: {}'.format(logical_result))
     score = 0
     for t in range(len(logical_result)):
         if logical_result[t] == orig_log[t]:
@@ -93,9 +93,13 @@ def checkFitness(current_ast,original_ast,ins,epochs):
         structural_fitness = 1
     structural_fitness = struc_fit*structural_fitness
 
-
-    return logical_fitness+structural_fitness
-    #return score/len(logical_result)
+    if returnCheck:
+        if logical_fitness+structural_fitness >= 1 and logical_fitness / log_fit == 1:
+            return False
+        else:
+            return True
+    else:
+        return logical_fitness+structural_fitness
 
 
 def returnFitness(epochs,printBool=False):
@@ -139,29 +143,12 @@ def exhaustiveTest(input_ast,ins):
     return test
 
 
-def checkFinished(ast,ins,epochs):
-    with open('outputs/Logical_Fitness.pkl','rb') as f:
-        orig_log = pkl.load(f)
-    logical_result = exhaustiveTest(ast,ins)
-    score = 0
-    for t in range(len(logical_result)):
-        if logical_result[t] == orig_log[t]:
-            score += 1
-    logical_fitness = (score/len(logical_result))
-    print(logical_fitness)
-    if logical_fitness >= 1 and epochs != 0:
-        print('here')
-        return False
-    else:
-        return True
-
-
 def loadAST(file='verilogInput.v'):
     print('LoadingAST')
     #return ast, inputs
 
 
-def exhaustiveMutationsCheck(ast,ins,original_ast,epochs):
+def exhaustiveMutationsCheck(ast,ins,original_ast,epochs,orig_logic):
     circuit_test = [ast]
     orig_ast = tuple(ast)
     for gate in range(len(ast)):
@@ -195,7 +182,7 @@ def exhaustiveMutationsCheck(ast,ins,original_ast,epochs):
 
     fit_check = []
     for circuit in circuit_test:
-        fit_check.append(checkFitness(circuit,original_ast,ins,epochs))
+        fit_check.append(checkFitness(circuit,original_ast,ins,epochs,orig_logic,False))
     max_fit_loc = fit_check.index(max(fit_check))
     return circuit_test[max_fit_loc]
 
@@ -242,10 +229,10 @@ def returnLogic(tempAST,ins):
     return currentAST
 
 
-def randomExhaustive(current_ast,ins,original_ast,epochs):
+def randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic):
     num_mut = random.randint(0,1000)
     if num_mut < 800: # 80%
-        current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs)
+        current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
     elif num_mut < 900: # 10%
         current_ast = m.randomMutate(current_ast,ins)
     elif num_mut < 910: # 1%
@@ -268,7 +255,11 @@ def bestOfSetMutations(current_ast,ins):
     return results[max_fit_loc]
 '''
 
-def insertRandomOp(depth,ins,gates,ast=[]):
+def createRandomAST(ins,
+                   min_ast_depth=3,
+                   max_ast_depth=6,
+                   ast=None,
+                   gates=bin_ops + solo_ops):
     '''
         Recursive function which adds new gates to AST.
         depth: set number of layers in the AST
@@ -277,27 +268,21 @@ def insertRandomOp(depth,ins,gates,ast=[]):
         ast: list of nodes resembled as strings
         current_loc: current location in the ast
     '''
-    random_gate = gates[random.randint(0,len(gates)-1)]
-    if random_gate in solo_ops:
-        ast.append(random_gate)
-        ast.append(ins[random.randint(0,len(ins)-1)])
-    else:
-        ast.append(random_gate)
-        ast.append(ins[random.randint(0,len(ins)-1)])
-        ast.append(ins[random.randint(0,len(ins)-1)])
+    if ast == None:
+        random_gate = gates[random.randint(0,len(gates)-1)]
+        if random_gate in solo_ops:
+            ast.append(random_gate)
+            ast.append(ins[random.randint(0,len(ins)-1)])
+        else:
+            ast.append(random_gate)
+            ast.append(ins[random.randint(0,len(ins)-1)])
+            ast.append(ins[random.randint(0,len(ins)-1)])
+    
+    depth = random.randint(min_ast_depth,max_ast_depth)
     for _ in range(depth):
         ast = m.addNode(ast,ins)
     return ast
 
-
-def createRandomAST(ins,min_ast_depth=3,max_ast_depth=6):
-    '''
-        calls insertRandomOp function, which will return a randomly generated AST
-        ins: list of inputs
-        min_ast_depth: min number of layers in new AST. default 3
-        max_ast_depth: max number of layers in new AST default 6
-    '''
-    return insertRandomOp(random.randint(min_ast_depth,max_ast_depth),ins,bin_ops + solo_ops)
 
 def addRandomness(ast,ins,num_muts=10):
     '''
@@ -330,74 +315,72 @@ def SoloOps(child,l):
 
 def main():
 
-    '''
-    #original_ast = ('or','and','A','B','and','B','A')
-    original_ast = ('or','A','B')
-    current_ast = list(original_ast)
-    ins = ['A','B']
-    '''
-    
-    # Mux
-    
-    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
-    current_ast = original_ast.copy()
-    ins = ['I0','I1','Sel']
-    
-    logic = exhaustiveTest(original_ast,ins)
-    #print(logic)
-    with open('outputs/Logical_Fitness.pkl','wb') as f:
-        pkl.dump(logic,f)
-    #print('Base logic',logic)
-    
-    #current_ast = createRandomAST(ins)
-    current_ast = addRandomness(current_ast,ins)
-    treePrint(current_ast,binOps,soloOps,'Original_AST.gv')
-    print('original ast',original_ast)
-    print('starting ast',current_ast)
-    fit = 0
-    max_epochs = 100
-    epochs = 0
-    mutations_time = []
-    fitness_time = []
-    start = time.time()
-    while epochs < max_epochs and (fit != 1) and checkFinished(current_ast,ins,epochs):
-        '''
-        if epochs % 50 == 0:
-            print('Epoch:',epochs,' Current Fitness:',fit)
-            print('Current AST is: ',current_ast)
-        '''
-        print('\nEpoch:',epochs,' Current Fitness:',fit)
-        print('Current AST is: ',current_ast)
-        
-        # Exhaustive Mutation checking
-        #for gate in current_ast:
+    total_success = 0
+    num_runs = 0
 
-        mutation_start = time.time()
-        current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs)
-        mutation_end = time.time()
-        print('Mutated AST is: ',current_ast)
+    for rand in range(1,20):
+        lev_total = []
+        for _ in range(100):
+            '''
+            #original_ast = ('or','and','A','B','and','B','A')
+            original_ast = ('or','A','B')
+            current_ast = list(original_ast)
+            ins = ['A','B']
+            '''
+            
+            # Mux
+            
+            original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
+            current_ast = original_ast.copy()
+            ins = ['I0','I1','Sel']
+            
+            orig_logic = exhaustiveTest(original_ast,ins)
+            #with open('outputs/Logical_Fitness.pkl','wb') as f:
+            #    pkl.dump(orig_logic,f)
+            #print('Base logic',logic)
+            
+            #current_ast = createRandomAST(ins)
+            current_ast = addRandomness(current_ast,ins,rand)
+            #treePrint(original_ast,binOps,soloOps,'Original_AST.gv')
+            #treePrint(current_ast,binOps,soloOps,'Starting_AST.gv')
 
-        fitness_start = time.time()
-        fit = checkFitness(current_ast,original_ast,ins,epochs)
-        fitness_end = time.time()
+            max_epochs = 1000
+            epochs = 0
 
-        mutations_time.append(mutation_end - mutation_start)
-        fitness_time.append(fitness_end - fitness_start)
+            #start = time.time()
+            while epochs < max_epochs and checkFitness(current_ast,original_ast,ins,epochs,orig_logic):
+                '''
+                if epochs % 50 == 0:
+                    print('Epoch:',epochs,' Current Fitness:',fit)
+                    print('Current AST is: ',current_ast)
+                '''
+                #print('Epoch: {} Current Fitness: {}'.format(epochs,
+                #    checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
+                #print('Current AST is: ',current_ast)
+                current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
+                #print('Mutated AST is: ',current_ast)
+                epochs +=1
+            #end = time.time()
+            
+            logic2 = exhaustiveTest(current_ast,ins)
+            num_runs = 0
+            if orig_logic == logic2:
+                total_success += 1
 
-        epochs +=1
-    end = time.time()
-    logic2 = exhaustiveTest(current_ast,ins)
-    print('Final AST is: ',current_ast)
-    print('Original AST  : ',original_ast)
-    print('Time for mutations to run: ',end-start)
-    print('Final fitness: ',fit)
-    print(list(zip(logic,logic2)))
-    treePrint(current_ast,binOps,soloOps,'Final_AST.gv')
-    #treePrint(current_ast,binOps,soloOps)
-    with open('outputs/mutations_time.pkl','wb') as f:
-        pkl.dump(mutations_time,f)
-    with open('outputs/fitness_time.pkl','wb') as f:
-        pkl.dump(fitness_time,f)
+            lev_total.append(levenshtein(original_ast,current_ast))
+            '''
+            print('\nOriginal AST: ',original_ast)
+            print('Final AST is: ',current_ast)
+            print('\nNumber of epochs ran {}'.format(epochs))
+            print('Final fitness: {:0.4f}'.format(
+                    checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
+            print('Run time: {:0.4f}\n'.format(end-start))
+            print(list(zip(orig_logic,logic2)))
+            treePrint(current_ast,binOps,soloOps,'Final_AST.gv')
+            '''
+        print('Average lev distance for {} initial randoms muts: {}'.format(
+            sum(lev_total)/len(lev_total),rand))
+    print('Number of hits: {}'.format(total_success/num_runs))
 
 if __name__ == "__main__":
     main()

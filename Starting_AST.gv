@@ -1,11 +1,11 @@
 digraph unix {
 	node [color=lightblue2 style=filled]
 	size="6,6"
-	gate_0 [label=and]
+	gate_0 [label=nand]
 	gate_1 [label=and]
 	gate_2 [label=and]
 	ins_0 [label=I1]
-	ins_1 [label=I1]
+	ins_1 [label=I0]
 	gate_3 [label=and]
 	gate_4 [label=nand]
 	ins_2 [label=I0]
