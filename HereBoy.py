@@ -135,7 +135,7 @@ def exhaustiveTest(input_ast,ins):
 
     args = []
     test = []
-    
+
     args = [[False,True] for i in range(len(ins)) ]
     for comb in itertools.product(*args):
         ast = input_ast.copy()
@@ -227,8 +227,8 @@ def returnLogic(tempAST,ins):
                         tempAST[node] = tempResult                    
                         break
                 except:
-                    print(currentAST)
-                    print(children)
+                    #print(currentAST)
+                    #print(children)
                     sys.exit()
 
             elif currentAST[node] in soloOps:
@@ -246,15 +246,20 @@ def returnLogic(tempAST,ins):
 def randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic):
     num_mut = random.randint(0,1000)
     if num_mut < 800: # 80%
+        #print('\nexhaustive mut check')
         current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
     elif num_mut < 900: # 10%
+        #print('\nRandom Mutation')
         current_ast = m.randomMutate(current_ast,ins)
     elif num_mut < 910: # 1%
+        #print('\nAdd a randoom node')
         current_ast = m.addNode(current_ast,ins)
     elif num_mut < 920: # 1%
+        #print('\nRemove a random node')
         current_ast = m.removeNode(current_ast,ins)
-    elif num_mut < 970: # 5%
-        current_ast = m.crossover(current_ast,ins)
+    #elif num_mut < 970: # 5%
+    #    print('\nCrossover a random node')
+    #    current_ast = m.crossover(current_ast,ins)
     else: # 3%
         pass
     return current_ast
@@ -304,13 +309,11 @@ def addRandomness(ast,ins,num_muts=10):
         add initial randomness to the AST.
     '''
     for _ in range(num_muts):
-        num_mut = random.randint(0,2)
+        num_mut = random.randint(0,1)
         if num_mut == 0:
             ast = m.addNode(ast,ins)
         elif num_mut == 1:
             ast = m.randomMutate(ast,ins)
-        elif num_mut == 2:
-            ast = m.crossover(ast,ins)
     return ast
 
 ############# Data Functions  #############
@@ -327,58 +330,29 @@ def SoloOps(child,l):
         return not child
 ###########################################
 
-def main():
+def params_test(
+    total_success = 0,
+    num_runs = 0,
+    max_epochs = 1000,
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+    ins = ['I0','I1','Sel']):
 
-    total_success = 0
-    num_runs = 0
-
-    for rand in range(10,20):
+    for rand in range(1,20):
         lev_total = []
         average_epochs = []
         total_success = 0
         num_runs = 0
-        for _ in range(5):
-            '''
-            #original_ast = ('or','and','A','B','and','B','A')
-            original_ast = ('or','A','B')
-            current_ast = list(original_ast)
-            ins = ['A','B']
-            '''
+        for _ in range(100):
             
-            # Mux
-            
-            original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
             current_ast = original_ast.copy()
-            ins = ['I0','I1','Sel']
-            
             orig_logic = exhaustiveTest(original_ast,ins)
-            #with open('outputs/Logical_Fitness.pkl','wb') as f:
-            #    pkl.dump(orig_logic,f)
-            #print('Base logic',logic)
-            
-            #current_ast = createRandomAST(ins)
             current_ast = addRandomness(current_ast,ins,rand)
-            #treePrint(original_ast,binOps,soloOps,'Original_AST.gv')
-            #treePrint(current_ast,binOps,soloOps,'Starting_AST.gv')
-
-            max_epochs = 1000
             epochs = 0
 
-            #start = time.time()
             while epochs < max_epochs and checkFitness(current_ast,original_ast,ins,epochs,orig_logic):
-                '''
-                if epochs % 50 == 0:
-                    print('Epoch:',epochs,' Current Fitness:',fit)
-                    print('Current AST is: ',current_ast)
-                '''
-                #print('Epoch: {} Current Fitness: {}'.format(epochs,
-                #    checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
-                #print('Current AST is: ',current_ast)
-                current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
-                #print('Mutated AST is: ',current_ast)
+                current_ast = randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic)
                 epochs +=1
-            #end = time.time()
-            
+
             logic2 = exhaustiveTest(current_ast,ins)
             num_runs += 1
             if orig_logic == logic2:
@@ -386,21 +360,68 @@ def main():
             
             average_epochs.append(epochs)
             lev_total.append(levenshtein(original_ast,current_ast))
-            '''
-            print('\nOriginal AST: ',original_ast)
-            print('Final AST is: ',current_ast)
-            print('\nNumber of epochs ran {}'.format(epochs))
-            print('Final fitness: {:0.4f}'.format(
-                    checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
-            print('Run time: {:0.4f}\n'.format(end-start))
-            print(list(zip(orig_logic,logic2)))
-            treePrint(current_ast,binOps,soloOps,'Final_AST.gv')
-            '''
+
         print('\nAverage lev distance for {} initial randoms muts: {}'.format(
             sum(lev_total)/len(lev_total),rand))
         print('Number of hits: {}'.format(total_success/num_runs))
         print('Average number of epochs needed: {}'.format(
             sum(average_epochs)/len(average_epochs)))
+
+
+def normal_dv(
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+    ins = ['I0','I1','Sel']
+    ):
+    
+    orig_logic = exhaustiveTest(original_ast,ins)
+    current_ast = original_ast.copy()
+    
+    #current_ast = createRandomAST(ins)
+    current_ast = addRandomness(current_ast,ins)
+    print(original_ast)
+    print(current_ast)
+    treePrint(original_ast,binOps,soloOps,'Original_AST.gv')
+    treePrint(current_ast,binOps,soloOps,'Starting_AST.gv')
+
+    max_epochs = 1000
+    epochs = 0
+
+    start = time.time()
+    while epochs < max_epochs and checkFitness(current_ast,original_ast,ins,epochs,orig_logic):
+        '''
+        if epochs % 50 == 0:
+            print('Epoch:',epochs,' Current Fitness:',fit)
+            print('Current AST is: ',current_ast)
+        '''
+        print('Epoch: {} Current Fitness: {}'.format(epochs,
+            checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
+        print('Current AST is: ',current_ast)
+        
+        current_ast = randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic)  #exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
+        
+        print('Mutated AST is: ',current_ast)
+        epochs +=1
+    end = time.time()
+    
+    logic2 = exhaustiveTest(current_ast,ins)
+    
+
+    print('\nOriginal AST: ',original_ast)
+    print('Final AST is: ',current_ast)
+    print('\nNumber of epochs ran {}'.format(epochs))
+    print('Final fitness: {:0.4f}'.format(
+            checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
+    print('Run time: {:0.4f}\n'.format(end-start))
+    print(list(zip(orig_logic,logic2)))
+    treePrint(current_ast,binOps,soloOps,'Final_AST.gv')
+
+
+
+def main():
+    params_test()
+
+
+
 
 if __name__ == "__main__":
     main()

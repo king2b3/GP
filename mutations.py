@@ -119,10 +119,10 @@ def addNode(ast,ins):
 def removeNode(ast,ins):
     if len(ast) > 5:
         gate = random.randint(0,len(ast)-1)
-        print(gate)
+        #print(gate)
         while hasChildren(ast,gate,ins):
             gate = random.randint(0,len(ast)-1)
-            print(gate)
+            #print(gate)
 
         if ast[gate] in soloOps:
             tree = ast.copy()
