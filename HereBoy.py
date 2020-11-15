@@ -19,6 +19,12 @@ from params import *
 import time
 import random
 import itertools
+import sys
+from os import system
+
+def clear():
+    _ = system("clear")
+
 
 class HereBoy:
     def __init__(self,ast,inputs):
@@ -126,7 +132,8 @@ def returnFitness(epochs,printBool=False):
 
 
 def exhaustiveTest(input_ast,ins):
-
+    #clear()
+    #print(input_ast)
     args = []
     test = []
     args = [[False,True] for i in range(len(ins)) ]
@@ -204,19 +211,26 @@ def exhaustiveCheck(ast,ins,original_ast,epochs):
 
 def returnLogic(tempAST,ins):
     currentAST = tempAST
+    #print(tempAST)
     while len(currentAST) > 1:
         currentAST = tempAST
         temp_len = len(currentAST)
         for node in range(temp_len):
             if currentAST[node] in binOps:
                 children = currentAST[node+1:node+3]
-                if type(children[0]) == bool and type(children[1]) == bool:
-                    tempStart = currentAST[:node+1]
-                    tempEnd = currentAST[node+3:]
-                    tempResult = BinOps(children,currentAST[node])
-                    tempAST = tempStart  + tempEnd
-                    tempAST[node] = tempResult                    
-                    break
+                try:
+                    if type(children[0]) == bool and type(children[1]) == bool:
+                        tempStart = currentAST[:node+1]
+                        tempEnd = currentAST[node+3:]
+                        tempResult = BinOps(children,currentAST[node])
+                        tempAST = tempStart  + tempEnd
+                        tempAST[node] = tempResult                    
+                        break
+                except:
+                    print(currentAST)
+                    print(children)
+                    sys.exit()
+
             elif currentAST[node] in soloOps:
                 child = currentAST[node+1]
                 if type(child) == bool:
@@ -318,9 +332,12 @@ def main():
     total_success = 0
     num_runs = 0
 
-    for rand in range(1,20):
+    for rand in range(10,20):
         lev_total = []
-        for _ in range(100):
+        average_epochs = []
+        total_success = 0
+        num_runs = 0
+        for _ in range(5):
             '''
             #original_ast = ('or','and','A','B','and','B','A')
             original_ast = ('or','A','B')
@@ -363,10 +380,11 @@ def main():
             #end = time.time()
             
             logic2 = exhaustiveTest(current_ast,ins)
-            num_runs = 0
+            num_runs += 1
             if orig_logic == logic2:
                 total_success += 1
-
+            
+            average_epochs.append(epochs)
             lev_total.append(levenshtein(original_ast,current_ast))
             '''
             print('\nOriginal AST: ',original_ast)
@@ -378,9 +396,11 @@ def main():
             print(list(zip(orig_logic,logic2)))
             treePrint(current_ast,binOps,soloOps,'Final_AST.gv')
             '''
-        print('Average lev distance for {} initial randoms muts: {}'.format(
+        print('\nAverage lev distance for {} initial randoms muts: {}'.format(
             sum(lev_total)/len(lev_total),rand))
-    print('Number of hits: {}'.format(total_success/num_runs))
+        print('Number of hits: {}'.format(total_success/num_runs))
+        print('Average number of epochs needed: {}'.format(
+            sum(average_epochs)/len(average_epochs)))
 
 if __name__ == "__main__":
     main()
