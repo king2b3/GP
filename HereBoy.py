@@ -132,8 +132,7 @@ def returnFitness(epochs,printBool=False):
 
 
 def exhaustiveTest(input_ast,ins):
-    #clear()
-    #print(input_ast)
+
     args = []
     test = []
     args = [[False,True] for i in range(len(ins)) ]
