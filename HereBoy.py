@@ -135,6 +135,7 @@ def exhaustiveTest(input_ast,ins):
 
     args = []
     test = []
+    
     args = [[False,True] for i in range(len(ins)) ]
     for comb in itertools.product(*args):
         ast = input_ast.copy()
