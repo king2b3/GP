@@ -26,18 +26,16 @@ def randomMutation(ast,ins):
     #mutations = [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]
     #mutations = [doNothing(ast,ins),randomMutate(ast,ins),addNode(ast,ins)]#,removeNode(ast,ins)]
     #num = random.randint(0,len(mutations)-1)
-    num = random.randint(0,2)
+    num = random.randint(1,3)
 
-    if num == 0:
-        return doNothing(ast,ins)
-    elif num == 1:
+    if num == 1:
         return randomMutate(ast,ins)
     elif num == 2:
         return addNode(ast,ins)
     elif num == 3:
         return removeNode(ast,ins)
-    elif num == 4:
-        return crossover(ast,ins)
+    #elif num == 4:
+    #    return crossover(ast,ins)
     #return mutations[num]
 
 ######### Mutations #########
@@ -173,7 +171,7 @@ def removeNode(ast,ins):
     if len(ast) > 5:
         gate = random.randint(0,len(ast)-1)
         #print(gate)
-        while hasChildren(ast,gate,ins):
+        while not hasChildren(ast,gate,ins):
             gate = random.randint(0,len(ast)-1)
             #print(gate)
 
@@ -226,8 +224,10 @@ def main():
     #ins = ['I0','I1']    
 
     print(original_ast)
-    print(tabulate(check_every_remove_node(current_ast,ins)))
-    print(tabulate(check_every_add_node(current_ast,ins)))
+    for gate in range(len(original_ast)):
+        print(hasChildren(original_ast,gate,ins))
+    #print(tabulate(check_every_remove_node(current_ast,ins)))
+    #print(tabulate(check_every_add_node(current_ast,ins)))
 
 
 

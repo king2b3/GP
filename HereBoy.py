@@ -82,37 +82,49 @@ class HereBoy:
         raise Exception('Invalid operator in AST')
 
 
-def checkFitness(current_ast,original_ast,ins,epochs,orig_log,returnCheck=True):
+def checkFitness(current_ast,original_ast,
+                ins,epochs,
+                orig_log,returnCheck=True,
+                print_bool=False):
+    ''' Can either return if exit conditions are met or current numerical fitness
+
+    This function first gets the current weights for each fitness function
+      (structural and logical) before calculating the overall fitness.
+    '''                
     struc_fit,log_fit = returnFitness(epochs)
     logical_result = exhaustiveTest(current_ast,ins)
-    #print('\nEpoch {}'.format(epochs))
-    #print('Orig logic:    {}'.format(orig_log))
-    #print('Current logic: {}'.format(logical_result))
+    if print_bool:
+        print('\nEpoch {}'.format(epochs))
+        print('Orig logic:    {}'.format(orig_log))
+        print('Current logic: {}'.format(logical_result))
     score = 0
+    # logical fitness check
     for t in range(len(logical_result)):
         if logical_result[t] == orig_log[t]:
             score += 1
     logical_fitness = log_fit*(score/len(logical_result)) 
-
+    #structural fitness check
     structural_fitness = levenshtein(current_ast,original_ast)
     if structural_fitness > 1:
         structural_fitness = 1
     structural_fitness = struc_fit*structural_fitness
 
     if returnCheck:
+        # By default True. Returns if exit conditions are met or not
         if logical_fitness+structural_fitness >= 1 and logical_fitness / log_fit == 1:
             return False
         else:
             return True
     else:
+        # Returns the actual numerical fitness value of the circuit
         return logical_fitness+structural_fitness
 
 
 def returnFitness(epochs,printBool=False):
     '''
         Returns the new weights for each part of the fitness function
-        Need to set up better system for inputting set values.
-          Use second file? I like using that at least.
+        
+    See issue #8
     '''
     startSim = .7
     minSim = .3
@@ -125,17 +137,36 @@ def returnFitness(epochs,printBool=False):
     else:
         strucFit = temp
         logFit = 1-temp
-    #print('Changing Fitness')
     if printBool:
         print('Structural Fitness:',strucFit,' and logical fitness:',logFit)
     return strucFit,logFit
 
 
 def exhaustiveTest(input_ast,ins):
+    ''' Returns the exhaustive tested of the AST
+
+    Dynamically tests the AST on its full range of input values
+    Returns list of boolean results.
+    For a set of inputs like
+        ['in1','in2',.....]
+      the dynamic testing works like this
+        for [False,True] in input_1:
+            for [False,True] in input_2:
+                ......
+      itertools offers a dynamic approach instead of hardcoding like above.
+    The input list will change from left to right with all inputs starting
+      at False. EX.
+        [False,False,....,False]
+        [True,False,.....,False]
+        [False,True,.....,False]
+        [True,True,......,False]
+        .....
+        [True,True,........True]
+    '''
 
     args = []
     test = []
-
+    # creates list of [False,True] the length of number of inputs
     args = [[False,True] for i in range(len(ins)) ]
     for comb in itertools.product(*args):
         ast = input_ast.copy()
@@ -143,6 +174,7 @@ def exhaustiveTest(input_ast,ins):
         for inputs in ins:
             for gate in range(len(ast)):
                 if inputs == ast[gate]:
+                    # Inserts either True or False into proper input
                     ast[gate] = comb[ins_counter]
             ins_counter += 1
         test.append(returnLogic(ast,ins)) 
@@ -155,38 +187,58 @@ def loadAST(file='verilogInput.v'):
     #return ast, inputs
 
 
-def exhaustiveMutationsCheck(ast,ins,original_ast,epochs,orig_logic):
+def exhaustiveMutationsCheck(ast,ins,
+                            original_ast,epochs,
+                            orig_logic):
+    ''' Function that checks all possible mutations to a single node
+
+    The highest performing mutation is returned 
+    See issue #9
+
+    goes through full AST
+      Checks if current node is an input, or binary gate or a solo gate
+      Append the full possibility of new node values
+    '''
     circuit_test = [ast]
-    orig_ast = tuple(ast)
+    orig_ast = ast.copy()
     for gate in range(len(ast)):
-        ast = list(orig_ast)
+        ast = orig_ast.copy() # is this line needed?
         if ast[gate] in ins:
             for new_gate in ins:
-                ast = list(orig_ast)
+                # step through all inputs
+                ast = orig_ast.copy()
                 if new_gate == ast[gate]:
+                    # current AST (no change) already appended to the list
                     pass
                 else:
+                    # append AST with input mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
         elif ast[gate] in bin_ops:
             for new_gate in bin_ops:
-                ast = list(orig_ast)
+                # step through all binary operators
+                ast = orig_ast.copy()
                 if new_gate == ast[gate]:
+                    # current AST (no change) already appended to the list
                     pass
                 else:
+                    # append AST with gate mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
         elif ast[gate] in solo_ops:
             for new_gate in solo_ops:
-                ast = list(orig_ast)
+                # step through all solo operators
+                ast = orig_ast.copy()
                 if new_gate == ast[gate]:
+                    # current AST (no change) already appended to the list
                     pass
                 else:
+                    # append AST with gate mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
         else:
             raise Exception
-
+    # checks for best mutated AST. See issue #9
     fit_check = []
     for circuit in circuit_test:
         fit_check.append(checkFitness(circuit,original_ast,ins,epochs,orig_logic,False))
@@ -194,10 +246,23 @@ def exhaustiveMutationsCheck(ast,ins,original_ast,epochs,orig_logic):
     return circuit_test[max_fit_loc]
 
 
-def exhaustiveCheck(current_ast,ins,original_ast,epochs,orig_logic,circuit_test=[]):
+def exhaustiveCheck(current_ast,ins,
+                    original_ast,epochs,
+                    orig_logic,circuit_test=[]):
+    ''' HereBOY exhaustive mutation check
+    
+    This function will check for EVERY possbile:
+        Mutation on every node
+        Every possbile added node
+        Every possbile removed node
+      and will return which mutation gives the highest overall fitness
+
+      Returns best mutated AST
+    '''
     circuit_test.append(exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic))
     circuit_test += m.check_every_add_node(current_ast,ins)
     circuit_test += m.check_every_remove_node(current_ast,ins)
+    # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
     fit_check = []
     for circuit in circuit_test:
         fit_check.append(checkFitness(circuit,original_ast,ins,epochs,orig_logic,False))
@@ -205,68 +270,89 @@ def exhaustiveCheck(current_ast,ins,original_ast,epochs,orig_logic,circuit_test=
     return circuit_test[max_fit_loc]
 
 
-
 def returnLogic(tempAST,ins):
+    ''' Returns the logical function of an AST
+
+    Requires that boolean values are substituted into the AST in place of inputs
+
+    Will search for first two node tree, and will simplify down to single value
+    IE, for the following AST
+        ['or','and',True,False,False]
+              'and',True,False
+      will be selected and simplified into False. The AST will now read
+        ['or',False,False]
+      which can be simplified into a single value. This value is then returned.
+    '''
     currentAST = tempAST
-    #print(tempAST)
     while len(currentAST) > 1:
         currentAST = tempAST
         temp_len = len(currentAST)
         for node in range(temp_len):
             if currentAST[node] in binOps:
+                # guesses that the next two nodes in the AST list are the node's children
                 children = currentAST[node+1:node+3]
                 try:
+                    # if children are not gates
                     if type(children[0]) == bool and type(children[1]) == bool:
+                        # splits small tree from AST
                         tempStart = currentAST[:node+1]
                         tempEnd = currentAST[node+3:]
+                        # preforms logical operation on children
                         tempResult = BinOps(children,currentAST[node])
+                        # combines logical result of the tree with old AST
                         tempAST = tempStart  + tempEnd
                         tempAST[node] = tempResult                    
                         break
                 except:
-                    #print(currentAST)
-                    #print(children)
+                    # error check
                     sys.exit()
 
             elif currentAST[node] in soloOps:
                 child = currentAST[node+1]
+                # if child is not a gate
                 if type(child) == bool:
                     tempStart = currentAST[:node+1]
                     tempEnd = currentAST[node+2:]
+                    # preforms logical operation
                     tempResult = SoloOps(child,currentAST[node])
+                    # combines logical result with AST
                     tempAST = tempStart  + tempEnd
                     tempAST[node] = tempResult
                     break
     return currentAST
 
 
-def randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic):
+def randomExhaustive(current_ast,ins,
+                    original_ast,epochs,
+                    orig_logic,print_bool=False):
+    ''' Returns a stochastically selected mutated AST
+
+    See issue #6
+    '''
     num_mut = random.randint(0,1000)
     if num_mut < 800: # 80%
-        #print('\nexhaustive mut check')
+        if print_bool: print('\nexhaustive mut check')
         current_ast = exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
     elif num_mut < 900: # 10%
-        #print('\nRandom Mutation')
+        if print_bool: print('\nRandom Mutation')
         current_ast = m.randomMutate(current_ast,ins)
     elif num_mut < 910: # 1%
-        #print('\nAdd a randoom node')
+        if print_bool: print('\nAdd a randoom node')
         current_ast = m.addNode(current_ast,ins)
     elif num_mut < 920: # 1%
-        #print('\nRemove a random node')
+        if print_bool: print('\nRemove a random node')
         current_ast = m.removeNode(current_ast,ins)
     #elif num_mut < 970: # 5%
-    #    print('\nCrossover a random node')
+    #    if print_bool: print('\nCrossover a random node')
     #    current_ast = m.crossover(current_ast,ins)
     else: # 3%
         pass
     return current_ast
 
 
-def createRandomAST(ins,
-                   min_ast_depth=3,
-                   max_ast_depth=6,
-                   ast=None,
-                   gates=bin_ops + solo_ops):
+def createRandomAST(ins, min_ast_depth=3,
+                    max_ast_depth=6, ast=None,
+                    gates=bin_ops + solo_ops):
     '''
         Recursive function which adds new gates to AST.
         depth: set number of layers in the AST
@@ -276,6 +362,7 @@ def createRandomAST(ins,
         current_loc: current location in the ast
     '''
     if ast == None:
+        # creates a randomly ast od depth 1
         random_gate = gates[random.randint(0,len(gates)-1)]
         if random_gate in solo_ops:
             ast.append(random_gate)
@@ -284,7 +371,7 @@ def createRandomAST(ins,
             ast.append(random_gate)
             ast.append(ins[random.randint(0,len(ins)-1)])
             ast.append(ins[random.randint(0,len(ins)-1)])
-    
+    # adds depth to the tree
     depth = random.randint(min_ast_depth,max_ast_depth)
     for _ in range(depth):
         ast = m.addNode(ast,ins)
@@ -292,11 +379,15 @@ def createRandomAST(ins,
 
 
 def addRandomness(ast,ins,num_muts=10):
-    '''
-        Takes an AST and preforms num_muts number of mutations, to try and 
+    ''' Takes an AST and preforms num_muts number of mutations, to try and 
         add initial randomness to the AST.
+
+    See issue #11
+    
+    Returns AST with random mutation 
     '''
     for _ in range(num_muts):
+        # 50/50 chance it adds nodes or mutates nodes
         num_mut = random.randint(0,1)
         if num_mut == 0:
             ast = m.addNode(ast,ins)
@@ -373,6 +464,8 @@ def normal_dv(
 
     max_epochs = 1000
     epochs = 0
+    same_count = 0
+    same_count_max = 3
 
     start = time.time()
     while epochs < max_epochs and checkFitness(current_ast,original_ast,ins,epochs,orig_logic):
@@ -384,9 +477,19 @@ def normal_dv(
         print('Epoch: {} Current Fitness: {}'.format(epochs,
             checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
         print('Current AST is: ',current_ast)
-        
+        past_ast = current_ast.copy()
         current_ast = exhaustiveCheck(current_ast,ins,original_ast,epochs,orig_logic)  #exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
         
+        if past_ast == current_ast:
+            same_count += 1
+        else:
+            same_count = 0
+        
+        if same_count > same_count_max:
+            current_ast = m.randomMutation(current_ast,ins)
+            same_count = 0
+        
+
         print('Mutated AST is: ',current_ast)
         epochs +=1
     end = time.time()
