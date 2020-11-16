@@ -4,6 +4,7 @@
 
 import random
 from tabulate import tabulate
+import itertools
 
 #ops = ['or','and','not','nand']
 binOps = ['or','and','nand']
@@ -88,13 +89,40 @@ def crossover(ast,ins):
     else:
         return ast
 
+
+def check_every_add_node(ast,ins,muts_list=[]):
+    for comb in itertools.product(*[list(range(len(ast))),list(range(len(ops))),ins,ins]):
+
+        temp_ast = ast.copy()
+        if ast[comb[0]] in ops:
+            continue
+        else:
+            temp_gate = comb[0]
+            gate = comb[1]
+            temp_ast = ast.copy()
+            tempStart = temp_ast[:temp_gate]
+            tempEnd = temp_ast[temp_gate+1:]
+            newNode = []
+            newNode.append(ops[gate])
+
+            if ops[gate] == 'not':
+                newNode.append(comb[2]) 
+            else:
+                newNode.append(comb[2])
+                newNode.append(comb[3])
+
+            temp = tempStart+newNode+tempEnd
+            muts_list.append(temp)
+    return muts_list
+
+
 def addNode(ast,ins):
     len_ins = len(ins)-1
     len_ast = len(ast)-1
     gate = random.randint(0,len_ast)
     while ast[gate] in ops:
         gate = random.randint(0,len_ast)
-    tempAST = list(ast)
+    tempAST = ast.copy()
     tempStart = tempAST[:gate]
     tempEnd = tempAST[gate+1:]
 
@@ -114,6 +142,31 @@ def addNode(ast,ins):
         newNode.append(ins[gate2])
 
     return tempStart+newNode+tempEnd
+
+def check_every_remove_node(ast,ins,muts_list=[]):
+    for comb in itertools.product(*[list(range(len(ast))),ins]):
+        if len(ast) > 3 and hasChildren(ast,comb[0],ins):
+            gate = comb[0]
+            if ast[gate] in soloOps:
+                tree = ast.copy()
+                start = tree[:gate]
+                end = tree[gate+1:]
+                temp = start+end
+                muts_list.append(temp)
+                
+            
+            elif ast[gate] in binOps:
+                tree = ast.copy()
+                start = tree[:gate]
+                middle = [comb[1]]
+                end = tree[gate+3:]
+                temp = start+middle+end
+                muts_list.append(temp)
+            
+            else:
+                pass
+        
+    return muts_list
 
 
 def removeNode(ast,ins):
@@ -155,9 +208,9 @@ def hasChildren(tree,gate,ins):
         children = tree[gate+1:gate+3]
         if tree[gate] in ins:
             return False
-        elif (children[0] in ops or children[1] in ops) and tree[gate] in binOps:
+        elif children[0] not in ops and children[1] not in ops and tree[gate] in binOps:
             return True
-        elif children[0] in ops and tree[gate] in soloOps:
+        elif children[0] not in ops and tree[gate] in soloOps:
             return True            
         else:
             return False
@@ -167,13 +220,15 @@ def hasChildren(tree,gate,ins):
 
 def main():
     
-    original_ast = ['or', 'and', 'and', 'Sel', 'I0', 'I0', 'and', 'and', 'I1', 'and', 'I1', 'and', 'I0', 'or', 'or', 'I0', 'I1', 'I0', 'and', 'and', 'I0', 'I0', 'I1']
-    current_ast = [original_ast.copy()]
-    ins = ['I0','I1','Sel']    
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
+    ins = ['I0','I1','Sel']
+    current_ast = original_ast.copy()
+    #ins = ['I0','I1']    
 
-    for _ in range(10):
-        current_ast.append(removeNode(original_ast,ins))
-    print(tabulate(current_ast))
+    print(original_ast)
+    print(tabulate(check_every_remove_node(current_ast,ins)))
+    print(tabulate(check_every_add_node(current_ast,ins)))
+
 
 
 if __name__ == '__main__':

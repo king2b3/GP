@@ -193,20 +193,17 @@ def exhaustiveMutationsCheck(ast,ins,original_ast,epochs,orig_logic):
     max_fit_loc = fit_check.index(max(fit_check))
     return circuit_test[max_fit_loc]
 
-'''
-def exhaustiveCheck(ast,ins,original_ast,epochs):
-    circuit_test.append(exhaustiveMutationsCheck(ast,ins,original_ast,epochs))
-    for node in range(len(ast)):
-        try:
-            circuit_test.append(m.addNode(ast,ins))
-        except:
-            
+
+def exhaustiveCheck(current_ast,ins,original_ast,epochs,orig_logic,circuit_test=[]):
+    circuit_test.append(exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic))
+    circuit_test += m.check_every_add_node(current_ast,ins)
+    circuit_test += m.check_every_remove_node(current_ast,ins)
     fit_check = []
     for circuit in circuit_test:
-        fit_check.append(checkFitness(circuit,original_ast,ins,epochs))
+        fit_check.append(checkFitness(circuit,original_ast,ins,epochs,orig_logic,False))
     max_fit_loc = fit_check.index(max(fit_check))
     return circuit_test[max_fit_loc]
-'''
+
 
 
 def returnLogic(tempAST,ins):
@@ -264,15 +261,6 @@ def randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic):
         pass
     return current_ast
 
-'''
-def bestOfSetMutations(current_ast,ins):
-    results = m.mutate(current_ast,ins)
-    fit_check = []
-    for current_ast in results:
-        fit_check.append(checkFitness(current_ast,original_ast,ins,epochs))
-    max_fit_loc = fit_check.index(max(fit_check))
-    return results[max_fit_loc]
-'''
 
 def createRandomAST(ins,
                    min_ast_depth=3,
@@ -331,11 +319,11 @@ def SoloOps(child,l):
 ###########################################
 
 def params_test(
-    total_success = 0,
-    num_runs = 0,
-    max_epochs = 1000,
-    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-    ins = ['I0','I1','Sel']):
+        total_success = 0,
+        num_runs = 0,
+        max_epochs = 1000,
+        original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+        ins = ['I0','I1','Sel']):
 
     for rand in range(1,20):
         lev_total = []
@@ -397,7 +385,7 @@ def normal_dv(
             checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
         print('Current AST is: ',current_ast)
         
-        current_ast = randomExhaustive(current_ast,ins,original_ast,epochs,orig_logic)  #exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
+        current_ast = exhaustiveCheck(current_ast,ins,original_ast,epochs,orig_logic)  #exhaustiveMutationsCheck(current_ast,ins,original_ast,epochs,orig_logic)
         
         print('Mutated AST is: ',current_ast)
         epochs +=1
@@ -418,9 +406,7 @@ def normal_dv(
 
 
 def main():
-    params_test()
-
-
+    normal_dv()
 
 
 if __name__ == "__main__":
