@@ -459,8 +459,8 @@ def normal_dv(
     current_ast = addRandomness(current_ast,ins)
     print(original_ast)
     print(current_ast)
-    treePrint(original_ast,binOps,soloOps,'Original_AST.gv')
-    treePrint(current_ast,binOps,soloOps,'Starting_AST.gv')
+    treePrint(original_ast,binOps,soloOps,'temp/Original_AST.gv')
+    treePrint(current_ast,binOps,soloOps,'temp/Starting_AST.gv')
 
     max_epochs = 1000
     epochs = 0
@@ -504,7 +504,7 @@ def normal_dv(
             checkFitness(current_ast,original_ast,ins,epochs,orig_logic,False)))
     print('Run time: {:0.4f}\n'.format(end-start))
     print(list(zip(orig_logic,logic2)))
-    treePrint(current_ast,binOps,soloOps,'Final_AST.gv')
+    treePrint(current_ast,binOps,soloOps,'temp/Final_AST.gv')
 
 
 
