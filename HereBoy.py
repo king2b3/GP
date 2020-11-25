@@ -28,7 +28,8 @@ def clear():
 
 class HereBoy:
     def __init__(self,ast,inputs):
-        self.origAST = self.currentAST = ast
+        self.original_ast = ast.copy()
+        self.current_ast = ast.copy()
         self.inputs = inputs
         
         #self.m = mutations.mutations()
@@ -43,40 +44,6 @@ class HereBoy:
     def outputResults(self):
         print('saving results')
 
-
-    def returnLogic(self,l,loc):
-        if l in binOps:
-            children = self.currentAST[loc+1:loc+3]
-            #print('\tBin Op:',l,'with children:',children)
-            for c in range(len(children)):
-                if children[c] in binOps or children[c] in soloOps:
-                    #print('CHILD CHANGED, ORIGINAL',children)
-                    #print(self.currentAST,loc+3,self.currentAST[loc+3],len(children),c)
-                    children[c] = self.returnLogic(children[c],loc+1)
-                    try:
-                        children[c+1] = self.currentAST[loc+3]
-                    except:
-                        pass
-                    #print('CHILD CHANGED, NEW',children)
-                loc += 1
-            #print('\t\tBinops results',children,BinOps(children,l))
-            return BinOps(children,l)
-                
-        elif l in soloOps:
-            child = self.currentAST[loc+1]
-            #print('\tSolo Op:',l,'with child:',child)
-            if child in binOps or child in soloOps:
-                self.returnLogic(child,loc+1)
-            else:
-                #print('\t\tSolo Results',SoloOps(child,l))
-                return SoloOps(child,l)
-
-        elif type(l) == bool:
-            pass
-        
-        else:
-            self.error()
-        
 
     def error(self):
         raise Exception('Invalid operator in AST')
@@ -140,46 +107,6 @@ def returnFitness(epochs,printBool=False):
     if printBool:
         print('Structural Fitness:',strucFit,' and logical fitness:',logFit)
     return strucFit,logFit
-
-
-def exhaustiveTest(input_ast,ins):
-    ''' Returns the exhaustive tested of the AST
-
-    Dynamically tests the AST on its full range of input values
-    Returns list of boolean results.
-    For a set of inputs like
-        ['in1','in2',.....]
-      the dynamic testing works like this
-        for [False,True] in input_1:
-            for [False,True] in input_2:
-                ......
-      itertools offers a dynamic approach instead of hardcoding like above.
-    The input list will change from left to right with all inputs starting
-      at False. EX.
-        [False,False,....,False]
-        [True,False,.....,False]
-        [False,True,.....,False]
-        [True,True,......,False]
-        .....
-        [True,True,........True]
-    '''
-
-    args = []
-    test = []
-    # creates list of [False,True] the length of number of inputs
-    args = [[False,True] for i in range(len(ins)) ]
-    for comb in itertools.product(*args):
-        ast = input_ast.copy()
-        ins_counter = 0
-        for inputs in ins:
-            for gate in range(len(ast)):
-                if inputs == ast[gate]:
-                    # Inserts either True or False into proper input
-                    ast[gate] = comb[ins_counter]
-            ins_counter += 1
-        test.append(returnLogic(ast,ins)) 
-
-    return test
 
 
 def loadAST(file='verilogInput.v'):

@@ -1,31 +1,26 @@
 #   Genetic Programming Framework
-#   Python 3.7
+#   Python 3.8.6
 #   Bayley King
 
 import random
-from tabulate import tabulate
+from tabulate import tabulate      # used just for testing, remove upon completion
 import itertools
+import operations as op
+
 
 #ops = ['or','and','not','nand']
-binOps = ['or','and','nand']
-soloOps = ['not']
-ops = binOps+soloOps
+#binOps = ['or','and','nand']
+#soloOps = ['not']
+#ops = binOps+soloOps
 
 def mutate(ast,ins):
-    '''
-    results = []
-    for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]:
-    #for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins)]:
-    #for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins)]:
-        results.append(m)
-    return results
+    ''' Returns one of each of the mutations
     '''
     return [m for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]]
 
 def randomMutation(ast,ins):
-    #mutations = [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]
-    #mutations = [doNothing(ast,ins),randomMutate(ast,ins),addNode(ast,ins)]#,removeNode(ast,ins)]
-    #num = random.randint(0,len(mutations)-1)
+    ''' Basic random mutation on random node returned
+    '''
     num = random.randint(1,3)
 
     if num == 1:
@@ -34,30 +29,38 @@ def randomMutation(ast,ins):
         return addNode(ast,ins)
     elif num == 3:
         return removeNode(ast,ins)
-    #elif num == 4:
-    #    return crossover(ast,ins)
-    #return mutations[num]
+
 
 ######### Mutations #########
 
 def randomMutate(ast,ins):
+    ''' Randomly mutates the AST by changing a single node value
+    '''
+    #selects a node in the AST
     gate = random.randint(0,len(ast)-1)
-    tempAST = list(ast)
-    binOps = ['or','and','nand']
-    if ast[gate] in binOps:
-        ranIn = random.randint(0,len(binOps)-1)
-        while binOps[ranIn] == ast[gate]:
-            ranIn = random.randint(0,len(binOps)-1)
-        tempAST[gate] = binOps[ranIn]
+    tempAST = ast.copy()
+    if op.checkBinaryGate(ast[gate]):
+        ranIn = op.randomGate()
+        while ranIn == ast[gate] or not op.checkBinaryGate(ranIn):
+            ranIn = op.randomGate()
+        tempAST[gate] = ranIn
     elif ast[gate] in ins:
         ranIn = random.randint(0,len(ins)-1)
         while ins[ranIn] == ast[gate]:
             ranIn = random.randint(0,len(ins)-1)
         tempAST[gate] = ins[ranIn]
+    elif op.checkSoloGate(ast[gate]):
+        ''' This will eventually change the Solo gates, but since the only
+            one the network currently uses is NOT, there isn't a point in
+            doing anything with it yet. 
+        '''
+        pass
     return tempAST       
 
 
 def crossover(ast,ins):
+    ''' The bane of my existence, this needs fixing BIG time
+    '''
     if (len_ast := len(ast)) > 5:
         #len_ast = len(ast)-1
         tempAST = ast.copy()
@@ -89,10 +92,19 @@ def crossover(ast,ins):
 
 
 def check_every_add_node(ast,ins,muts_list=[]):
-    for comb in itertools.product(*[list(range(len(ast))),list(range(len(ops))),ins,ins]):
+    ''' 
+    '''
+    for comb in itertools.product(
+            *[
+                list(range(len(ast))),
+                list(op.operators.keys()),
+                ins,
+                ins
+                ]
+        ):
 
         temp_ast = ast.copy()
-        if ast[comb[0]] in ops:
+        if ast[comb[0]] in op.operators:
             continue
         else:
             temp_gate = comb[0]
@@ -101,9 +113,9 @@ def check_every_add_node(ast,ins,muts_list=[]):
             tempStart = temp_ast[:temp_gate]
             tempEnd = temp_ast[temp_gate+1:]
             newNode = []
-            newNode.append(ops[gate])
+            newNode.append(gate)
 
-            if ops[gate] == 'not':
+            if op.checkSoloGate(gate):
                 newNode.append(comb[2]) 
             else:
                 newNode.append(comb[2])
