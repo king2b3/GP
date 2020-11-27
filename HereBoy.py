@@ -6,8 +6,6 @@
     Takes in from mutations.py, lexer.py, stringComp.py and exhaustiveTest.py.
     
 '''
-binOps = ['or','and','nand']
-soloOps = ['not']
 
 import math
 #import StringComp 
@@ -21,19 +19,21 @@ import random
 import itertools
 import sys
 from os import system
+from GP import GP
+import operations as op
 
 def clear():
     _ = system("clear")
 
 
-class HereBoy:
+class HereBoy(GP):
+    ''' Child class of GP class
+    '''
     def __init__(self,ast,inputs):
-        self.original_ast = ast.copy()
-        self.current_ast = ast.copy()
-        self.inputs = inputs
-        
-        #self.m = mutations.mutations()
-        #self.strCmp = StringComp.StringComp() # outdated, see levenshteinDistance.py 
+        #self.original_ast = ast.copy()
+        #self.current_ast = ast.copy()
+        #self.inputs = inputs
+        # maybe init struct and log fitness values here
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -42,6 +42,7 @@ class HereBoy:
             be the data handeling classes.
         '''
     def outputResults(self):
+        # move to GP.py
         print('saving results')
 
 
@@ -141,8 +142,8 @@ def exhaustiveMutationsCheck(ast,ins,
                     # append AST with input mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
-        elif ast[gate] in bin_ops:
-            for new_gate in bin_ops:
+        elif ast[gate] in op.binary_operators:
+            for new_gate in op.binary_operators.keys():
                 # step through all binary operators
                 ast = orig_ast.copy()
                 if new_gate == ast[gate]:
@@ -152,8 +153,8 @@ def exhaustiveMutationsCheck(ast,ins,
                     # append AST with gate mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
-        elif ast[gate] in solo_ops:
-            for new_gate in solo_ops:
+        elif ast[gate] in op.solo_operators:
+            for new_gate in op.solo_operators.keys():
                 # step through all solo operators
                 ast = orig_ast.copy()
                 if new_gate == ast[gate]:
@@ -197,58 +198,6 @@ def exhaustiveCheck(current_ast,ins,
     return circuit_test[max_fit_loc]
 
 
-def returnLogic(tempAST,ins):
-    ''' Returns the logical function of an AST
-
-    Requires that boolean values are substituted into the AST in place of inputs
-
-    Will search for first two node tree, and will simplify down to single value
-    IE, for the following AST
-        ['or','and',True,False,False]
-              'and',True,False
-      will be selected and simplified into False. The AST will now read
-        ['or',False,False]
-      which can be simplified into a single value. This value is then returned.
-    '''
-    currentAST = tempAST
-    while len(currentAST) > 1:
-        currentAST = tempAST
-        temp_len = len(currentAST)
-        for node in range(temp_len):
-            if currentAST[node] in binOps:
-                # guesses that the next two nodes in the AST list are the node's children
-                children = currentAST[node+1:node+3]
-                try:
-                    # if children are not gates
-                    if type(children[0]) == bool and type(children[1]) == bool:
-                        # splits small tree from AST
-                        tempStart = currentAST[:node+1]
-                        tempEnd = currentAST[node+3:]
-                        # preforms logical operation on children
-                        tempResult = BinOps(children,currentAST[node])
-                        # combines logical result of the tree with old AST
-                        tempAST = tempStart  + tempEnd
-                        tempAST[node] = tempResult                    
-                        break
-                except:
-                    # error check
-                    sys.exit()
-
-            elif currentAST[node] in soloOps:
-                child = currentAST[node+1]
-                # if child is not a gate
-                if type(child) == bool:
-                    tempStart = currentAST[:node+1]
-                    tempEnd = currentAST[node+2:]
-                    # preforms logical operation
-                    tempResult = SoloOps(child,currentAST[node])
-                    # combines logical result with AST
-                    tempAST = tempStart  + tempEnd
-                    tempAST[node] = tempResult
-                    break
-    return currentAST
-
-
 def randomExhaustive(current_ast,ins,
                     original_ast,epochs,
                     orig_logic,print_bool=False):
@@ -278,8 +227,7 @@ def randomExhaustive(current_ast,ins,
 
 
 def createRandomAST(ins, min_ast_depth=3,
-                    max_ast_depth=6, ast=None,
-                    gates=bin_ops + solo_ops):
+                    max_ast_depth=6, ast=None):
     '''
         Recursive function which adds new gates to AST.
         depth: set number of layers in the AST
@@ -289,9 +237,10 @@ def createRandomAST(ins, min_ast_depth=3,
         current_loc: current location in the ast
     '''
     if ast == None:
-        # creates a randomly ast od depth 1
-        random_gate = gates[random.randint(0,len(gates)-1)]
-        if random_gate in solo_ops:
+        # creates a randomly ast of depth 1
+        random_gate = op.randomGate()
+        ast= []
+        if random_gate in op.solo_operators:
             ast.append(random_gate)
             ast.append(ins[random.randint(0,len(ins)-1)])
         else:
@@ -322,19 +271,7 @@ def addRandomness(ast,ins,num_muts=10):
             ast = m.randomMutate(ast,ins)
     return ast
 
-############# Data Functions  #############
-def BinOps(children,l):
-    if l == 'or':
-        return children[0] or children[1]
-    elif l == 'and':
-        return children[0] and children[1]
-    elif l == 'nand':
-        return not (children[0] and children[1])
-
-def SoloOps(child,l):
-    if l == 'not':
-        return not child
-###########################################
+############# Test Functions  #############
 
 def params_test(
         total_success = 0,
@@ -386,8 +323,8 @@ def normal_dv(
     current_ast = addRandomness(current_ast,ins)
     print(original_ast)
     print(current_ast)
-    treePrint(original_ast,binOps,soloOps,'temp/Original_AST.gv')
-    treePrint(current_ast,binOps,soloOps,'temp/Starting_AST.gv')
+    treePrint(original_ast,'temp/Original_AST.gv')
+    treePrint(current_ast,'temp/Starting_AST.gv')
 
     max_epochs = 1000
     epochs = 0
