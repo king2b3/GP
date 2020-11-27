@@ -3,7 +3,7 @@
 #   Bayley King
 
 import random
-from tabulate import tabulate      # used just for testing, remove upon completion
+#from tabulate import tabulate      # used just for testing, remove upon completion
 import itertools
 import operations as op
 
@@ -92,82 +92,108 @@ def crossover(ast,ins):
 
 
 def check_every_add_node(ast,ins,muts_list=[]):
-    ''' 
+    ''' Returns every possible variation of the current ast from adding new nodes
+            every possbile node, each possible node value and possible child configuration
     '''
     for comb in itertools.product(
             *[
-                list(range(len(ast))),
-                list(op.operators.keys()),
-                ins,
-                ins
+                list(range(len(ast))), # nodes in ast
+                list(op.operators.keys()), # node value
+                ins, # first child in tree
+                ins # second child in tree
                 ]
         ):
 
         temp_ast = ast.copy()
+        # if current node in AST is an operator
         if ast[comb[0]] in op.operators:
             continue
         else:
-            temp_gate = comb[0]
-            gate = comb[1]
+            temp_gate = comb[0] # node value in current AST
+            gate = comb[1] # new node value 
             temp_ast = ast.copy()
+            # split AST at the current node value in current AST
             tempStart = temp_ast[:temp_gate]
             tempEnd = temp_ast[temp_gate+1:]
+            # create new subtree of new node value
             newNode = []
             newNode.append(gate)
 
+            # add children to new subtree
             if op.checkSoloGate(gate):
                 newNode.append(comb[2]) 
             else:
                 newNode.append(comb[2])
                 newNode.append(comb[3])
 
+            # insert new subtree in middle of split tree
             temp = tempStart+newNode+tempEnd
+            # append the new variant ast to return list
             muts_list.append(temp)
     return muts_list
 
 
 def addNode(ast,ins):
+    ''' Returns AST with randomly inserted gate
+
+        ** Needs to be checked to work for standard GA **
+    '''
     len_ins = len(ins)-1
     len_ast = len(ast)-1
+    # select a random node in the tree
     gate = random.randint(0,len_ast)
-    while ast[gate] in ops:
+    # make sure the node in an input, not an operator
+    while ast[gate] in op.operators:
         gate = random.randint(0,len_ast)
     tempAST = ast.copy()
     tempStart = tempAST[:gate]
     tempEnd = tempAST[gate+1:]
 
     newNode = []
-    gate = random.randint(0,len(ops)-1)
-    newNode.append(ops[gate])
+    gate = op.randomGate()
+    newNode.append(gate)
 
-    if ops[gate] == 'not':
-        gate1 = random.randint(0,len_ins)
-        newNode.append(ins[gate1]) 
+    if op.checkSoloGate(gate):
+        # create one random child 
+        child = random.randint(0,len_ins)
+        newNode.append(ins[child]) 
     else:
-        gate1 = random.randint(0,len_ins)
-        gate2 = random.randint(0,len_ins)
-        while gate1 == gate2:
-            gate2 = random.randint(0,len_ins)
-        newNode.append(ins[gate1])
-        newNode.append(ins[gate2])
+        # create two random children
+        child1 = random.randint(0,len_ins)
+        child2 = random.randint(0,len_ins)
+        newNode.append(ins[child1])
+        newNode.append(ins[child2])
 
+    # recombine AST and return it
     return tempStart+newNode+tempEnd
 
+
 def check_every_remove_node(ast,ins,muts_list=[]):
-    for comb in itertools.product(*[list(range(len(ast))),ins]):
+    ''' Returns a list with every possible variant of the current AST by
+          removing nodes
+    '''
+    for comb in itertools.product(
+            *[
+                list(range(len(ast))), # nodes in the AST
+                ins # list of inputs to be inserted in place of removed node
+            ]):
+        
+        # if the AST is larger than 3, and the current node is removable 
         if len(ast) > 3 and hasChildren(ast,comb[0],ins):
             gate = comb[0]
-            if ast[gate] in soloOps:
+            if op.checkSoloGate(gate):
                 tree = ast.copy()
+                # splits the AST removing the gate
                 start = tree[:gate]
                 end = tree[gate+1:]
                 temp = start+end
                 muts_list.append(temp)
                 
-            
-            elif ast[gate] in binOps:
+            elif op.checkBinaryGate(gate):
                 tree = ast.copy()
+                # splits the ast by removing the subtree
                 start = tree[:gate]
+                # every possible input in place of the tree
                 middle = [comb[1]]
                 end = tree[gate+3:]
                 temp = start+middle+end
@@ -180,25 +206,32 @@ def check_every_remove_node(ast,ins,muts_list=[]):
 
 
 def removeNode(ast,ins):
+    ''' Returns a variant with a randomly removed node
+
+        ** Need to check before use in standard GA **
+    '''
     if len(ast) > 5:
+        # selects random node in the current ast
         gate = random.randint(0,len(ast)-1)
-        #print(gate)
+        # makes sure the node is a removable node
         while not hasChildren(ast,gate,ins):
             gate = random.randint(0,len(ast)-1)
-            #print(gate)
 
-        if ast[gate] in soloOps:
+        if op.checkSoloGate(ast[gate]):
             tree = ast.copy()
             start = tree[:gate]
             end = tree[gate+1:]
+            # leaves child of the op, maybe insert a random input in the future?
             return start+end
         
-        elif ast[gate] in binOps:
+        elif checkBinaryGate(ast[gate]):
             tree = ast.copy()
             start = tree[:gate]
-            gate1 = random.randint(0,len(ins)-1)
-            middle = [ins[gate1]]
+            # make this into a function?
+            new_input = random.randint(0,len(ins)-1)
+            middle = [ins[new_input]]
             end = tree[gate+3:]
+            # returns reconstructed variant
             return start+middle+end
         
         else:
@@ -209,27 +242,44 @@ def removeNode(ast,ins):
 
 
 def doNothing(ast,ins):
+    ''' Returns nothing, needed for chance that nothing happens.
+          Can probably replace with pass in other code
+    '''
     return ast
 
 ######### Functions #########    
 
 def hasChildren(tree,gate,ins):
+    ''' Checks if node has children
+        Returns Boolean. True if the next node(s) are children of the node
+            tree: the current AST : list
+            gate: location of node in AST : int
+            ins: list of inputs
+    '''
     try:
+        # pulls next nodes in the tree
         children = tree[gate+1:gate+3]
         if tree[gate] in ins:
+            # Node is an input 
             return False
-        elif children[0] not in ops and children[1] not in ops and tree[gate] in binOps:
+        elif children[0] not in op.operators and 
+             children[1] not in op.operators and 
+             op.checkBinaryGate(tree[gate]):
+            # Node is an end leaf, it could be removed
             return True
-        elif children[0] not in ops and tree[gate] in soloOps:
+        elif children[0] not in op.operators and 
+             op.checkSoloGate(tree[gate]):
+            # Node is an end leaf, it could be removed
             return True            
         else:
             return False
     except:
+        # might be able to remove this, broken case was when it was the end nodes in the AST
         return False
 
 
 def main():
-    
+    # assuming the code works after OOP and operators changes. Might need to check with main again 
     original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
     ins = ['I0','I1','Sel']
     current_ast = original_ast.copy()
@@ -240,7 +290,6 @@ def main():
         print(hasChildren(original_ast,gate,ins))
     #print(tabulate(check_every_remove_node(current_ast,ins)))
     #print(tabulate(check_every_add_node(current_ast,ins)))
-
 
 
 if __name__ == '__main__':
