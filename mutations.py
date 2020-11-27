@@ -30,7 +30,6 @@ def randomMutation(ast,ins):
     elif num == 3:
         return removeNode(ast,ins)
 
-
 ######### Mutations #########
 
 def randomMutate(ast,ins):
@@ -39,9 +38,9 @@ def randomMutate(ast,ins):
     #selects a node in the AST
     gate = random.randint(0,len(ast)-1)
     tempAST = ast.copy()
-    if op.checkBinaryGate(ast[gate]):
+    if ast[gate] in op.binary_operators :
         ranIn = op.randomGate()
-        while ranIn == ast[gate] or not op.checkBinaryGate(ranIn):
+        while ranIn == ast[gate] or ranIn not in op.binary_operators:
             ranIn = op.randomGate()
         tempAST[gate] = ranIn
     elif ast[gate] in ins:
@@ -49,7 +48,7 @@ def randomMutate(ast,ins):
         while ins[ranIn] == ast[gate]:
             ranIn = random.randint(0,len(ins)-1)
         tempAST[gate] = ins[ranIn]
-    elif op.checkSoloGate(ast[gate]):
+    elif ast[gate] in op.solo_operators:
         ''' This will eventually change the Solo gates, but since the only
             one the network currently uses is NOT, there isn't a point in
             doing anything with it yet. 
@@ -120,7 +119,7 @@ def check_every_add_node(ast,ins,muts_list=[]):
             newNode.append(gate)
 
             # add children to new subtree
-            if op.checkSoloGate(gate):
+            if gate in op.solo_operators:
                 newNode.append(comb[2]) 
             else:
                 newNode.append(comb[2])
@@ -153,7 +152,7 @@ def addNode(ast,ins):
     gate = op.randomGate()
     newNode.append(gate)
 
-    if op.checkSoloGate(gate):
+    if gate in op.solo_operators:
         # create one random child 
         child = random.randint(0,len_ins)
         newNode.append(ins[child]) 
@@ -181,7 +180,7 @@ def check_every_remove_node(ast,ins,muts_list=[]):
         # if the AST is larger than 3, and the current node is removable 
         if len(ast) > 3 and hasChildren(ast,comb[0],ins):
             gate = comb[0]
-            if op.checkSoloGate(gate):
+            if gate in op.solo_operators:
                 tree = ast.copy()
                 # splits the AST removing the gate
                 start = tree[:gate]
@@ -189,7 +188,7 @@ def check_every_remove_node(ast,ins,muts_list=[]):
                 temp = start+end
                 muts_list.append(temp)
                 
-            elif op.checkBinaryGate(gate):
+            elif gate in op.binary_operators:
                 tree = ast.copy()
                 # splits the ast by removing the subtree
                 start = tree[:gate]
@@ -217,14 +216,14 @@ def removeNode(ast,ins):
         while not hasChildren(ast,gate,ins):
             gate = random.randint(0,len(ast)-1)
 
-        if op.checkSoloGate(ast[gate]):
+        if ast[gate] in op.solo_operators:
             tree = ast.copy()
             start = tree[:gate]
             end = tree[gate+1:]
             # leaves child of the op, maybe insert a random input in the future?
             return start+end
         
-        elif checkBinaryGate(ast[gate]):
+        elif ast[gate] in op.binary_operators:
             tree = ast.copy()
             start = tree[:gate]
             # make this into a function?
@@ -264,11 +263,11 @@ def hasChildren(tree,gate,ins):
             return False
         elif children[0] not in op.operators and 
              children[1] not in op.operators and 
-             op.checkBinaryGate(tree[gate]):
+             tree[gate] in op.binary_operators:
             # Node is an end leaf, it could be removed
             return True
         elif children[0] not in op.operators and 
-             op.checkSoloGate(tree[gate]):
+             tree[gate] in op.solo_operators:
             # Node is an end leaf, it could be removed
             return True            
         else:

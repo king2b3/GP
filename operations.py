@@ -26,42 +26,21 @@ def not_op(args):
 
 ######  Functions  ######
 
-operators = {
+binary_operators = {
     'and': and_op,
     'or': or_op,
     'nand': nand_op,
-    'nor': nor_op,
+    'nor': nor_op
+    }
+
+solo_operators = {
     'not': not_op
 }
 
+operators = {**binary_operators,**solo_operators}
 
 def randomGate():
-    return random.choice(list(operators.keys()))
-
-
-def checkBinaryGate(gate):
-    '''Returns true if gate is a binary operator
-    '''
-    if gate in [
-        'or',
-        'and',
-        'nand',
-        'nor'
-        ]:
-        return True
-    else:
-        return False
-
-
-def checkSoloGate(gate):
-    '''Returns true if gate is a solo operator
-    '''
-    if gate in [
-        'not'
-        ]:
-        return True
-    else:
-        return False        
+    return random.choice(list(operators.keys()))      
 
 
 def returnGate(op,args):
