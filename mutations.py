@@ -57,6 +57,63 @@ def randomMutate(ast,ins):
     return tempAST       
 
 
+def exhaustiveMutationsCheck(ast,ins):
+    ''' Function that checks all possible mutations to a single node
+
+    goes through full AST
+      Checks if current node is an input, or binary gate or a solo gate
+      Append the full possibility of new node values
+    '''
+    circuit_test = [ast]
+    orig_ast = ast.copy()
+    for gate in range(len(ast)):
+        ast = orig_ast.copy() # is this line needed?
+        if ast[gate] in ins:
+            for new_gate in ins:
+                # step through all inputs
+                ast = orig_ast.copy()
+                if new_gate == ast[gate]:
+                    # current AST (no change) already appended to the list
+                    pass
+                else:
+                    # append AST with input mutation
+                    ast[gate] = new_gate
+                    circuit_test.append(ast)
+        elif ast[gate] in op.binary_operators:
+            for new_gate in op.binary_operators.keys():
+                # step through all binary operators
+                ast = orig_ast.copy()
+                if new_gate == ast[gate]:
+                    # current AST (no change) already appended to the list
+                    pass
+                else:
+                    # append AST with gate mutation
+                    ast[gate] = new_gate
+                    circuit_test.append(ast)
+        elif ast[gate] in op.solo_operators:
+            for new_gate in op.solo_operators.keys():
+                # step through all solo operators
+                ast = orig_ast.copy()
+                if new_gate == ast[gate]:
+                    # current AST (no change) already appended to the list
+                    pass
+                else:
+                    # append AST with gate mutation
+                    ast[gate] = new_gate
+                    circuit_test.append(ast)
+        else:
+            raise Exception
+    # checks for best mutated AST. See issue #9
+    return circuit_test
+    '''
+    fit_check = []
+    for circuit in circuit_test:
+        fit_check.append(checkFitness(circuit,original_ast,ins,epochs,orig_logic,False))
+    max_fit_loc = fit_check.index(max(fit_check))
+    return circuit_test[max_fit_loc]
+    '''
+
+
 def crossover(ast,ins):
     ''' The bane of my existence, this needs fixing BIG time
     '''
