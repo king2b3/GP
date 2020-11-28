@@ -9,10 +9,11 @@
 
 import operations as op
 
-def checkDuoGate(new_l,ast,
-                 bin_ops=op.binary_operators.keys(),
-                 solo_ops=op.solo_operators.keys()
-                ):
+def checkDuoGate(
+    new_l, ast,
+    bin_ops=op.binary_operators.keys(),
+    solo_ops=op.solo_operators.keys()
+):
     ''' Checks if the current node is a duo gate or not
     '''
     # checks what the current node is
@@ -34,10 +35,11 @@ def checkDuoGate(new_l,ast,
     
     return temp_l
 
-def checkSoloGate(temp_l,ast,
-                  bin_ops=op.binary_operators.keys(),
-                  solo_ops=op.solo_operators.keys()
-                 ):
+def checkSoloGate(
+    temp_l, ast,
+    bin_ops=op.binary_operators.keys(),
+    solo_ops=op.solo_operators.keys()
+):
     ''' Checks if the current node is a solo gate
     '''
     if ast[new_l] in bin_ops:
@@ -48,13 +50,14 @@ def checkSoloGate(temp_l,ast,
         temp_l += 1
     return temp_l
 
-def treePrint(ast,
-              file_name='test-output.gv',
-              bin_ops=op.binary_operators.keys(),
-              solo_ops=op.solo_operators.keys()
-             ):
-             ''' Prints ast to a pdf file
-             '''
+def treePrint(
+    ast,
+    file_name='test-output.gv',
+    bin_ops=op.binary_operators.keys(),
+    solo_ops=op.solo_operators.keys()
+):
+    ''' Prints ast to a pdf file
+    '''
     from graphviz import Digraph
 
     u = Digraph('unix',filename=file_name,
