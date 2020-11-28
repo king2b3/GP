@@ -5,7 +5,18 @@
 
 import numpy as np
 
-def levenshtein(seq1, seq2, scale=True):
+def levenshtein(
+    seq1, seq2, 
+    scale=True
+):
+    ''' Levenshtein Distance Calculation
+
+        Creates a matrix sized to the two sequences
+        Returns: (based off of scale bool)
+            Distance in nums of changes needed
+                or
+            nums of changes needed / min of length of sequence 1 and 2 
+    '''
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
     matrix = np.zeros ((size_x, size_y))
@@ -28,7 +39,6 @@ def levenshtein(seq1, seq2, scale=True):
                     matrix[x-1,y-1] + 1,
                     matrix[x,y-1] + 1
                 )
-    #print (matrix)
     if scale:
         return ((matrix[size_x - 1, size_y - 1])/min(size_x-1,size_y-1))
     else:
