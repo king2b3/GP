@@ -2,14 +2,30 @@
 #   Bayley King
 #   20 November 2020
 #   Python 3.8
+'''
+    General container for this genetic framework. There are multiple child classes
+      all explained below. 
+
+        HereBoy: 
+            A single individual based population where one mutation (add node, remove 
+              node, mutate node) which will either increase of keep the overall fitness
+              the same is completed in a single epoch
+        StandardGA:
+
+        PSO:
+
+    Static and Class methods are included to check the parsed inputs from the lexers
+'''
 
 from itertools import product
 from operations import returnLogic
 import sys
 
 class GP:
-    def __init__(self,ast,inputs,
-                 max_epochs):
+    def __init__(
+        self,ast,inputs,
+        max_epochs
+    ):
 
         self.original_ast = ast.copy()
         self.current_ast = ast.copy()
@@ -17,8 +33,11 @@ class GP:
         self.max_epochs = max_epochs
         # preform original logic in init
         self.orig_log = self.exhaustiveTest(ast)
+        self.check_ast(self.current_ast,self.ins)
         
-    def exhaustiveTest(self,current_ast):
+    def exhaustiveTest(
+        self,current_ast
+    ):
         ''' Returns the exhaustive tested of the AST
 
         Dynamically tests the AST on its full range of input values
@@ -105,3 +124,41 @@ class GP:
                 self.current_ast = m.addNode(self.current_ast,self.ins)
             elif num_mut == 1:
                 self.current_ast = m.randomMutate(self.current_ast,self.ins)
+
+    
+    '''
+    # Future implementation. See issue #16
+
+    @classmethod
+    def from_pickle(cls, filename)
+        return cls()
+
+    @classmethod
+    def from_json(cls, filename)
+        return cls
+
+    @classmethod
+    def from_text(cls, filename)
+        return cls   
+
+    @classmethod
+    def from_verilog(cls, filename)
+        return cls
+
+    @classmethod
+    def from_vhdl(cls, filename)
+        return cls    
+
+    '''
+
+    @staticmethod
+    def check_ast(
+        ast,ins
+    ):
+        for node in ast:
+            if node in op.operations:
+                pass
+            elif node in ins:
+                pass
+            else:
+                raise Exception("Invalid node in ast. Node {}".format(node))
