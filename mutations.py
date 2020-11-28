@@ -13,12 +13,16 @@ import operations as op
 #soloOps = ['not']
 #ops = binOps+soloOps
 
-def mutate(ast,ins):
+def mutate(
+    ast,ins
+):
     ''' Returns one of each of the mutations
     '''
     return [m for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]]
 
-def randomMutation(ast,ins):
+def randomMutation(
+    ast,ins
+):
     ''' Basic random mutation on random node returned
     '''
     num = random.randint(1,3)
@@ -32,7 +36,9 @@ def randomMutation(ast,ins):
 
 ######### Mutations #########
 
-def randomMutate(ast,ins):
+def randomMutate(
+    ast,ins
+):
     ''' Randomly mutates the AST by changing a single node value
     '''
     #selects a node in the AST
@@ -57,7 +63,9 @@ def randomMutate(ast,ins):
     return tempAST       
 
 
-def exhaustiveMutationsCheck(ast,ins):
+def exhaustiveMutationsCheck(
+    ast, ins
+):
     ''' Function that checks all possible mutations to a single node
 
     goes through full AST
@@ -114,7 +122,9 @@ def exhaustiveMutationsCheck(ast,ins):
     '''
 
 
-def crossover(ast,ins):
+def crossover(
+    ast, ins
+):
     ''' The bane of my existence, this needs fixing BIG time
     '''
     if (len_ast := len(ast)) > 5:
@@ -147,7 +157,10 @@ def crossover(ast,ins):
         return ast
 
 
-def check_every_add_node(ast,ins,muts_list=[]):
+def check_every_add_node(
+    ast, ins,
+    muts_list=[]
+):
     ''' Returns every possible variation of the current ast from adding new nodes
             every possbile node, each possible node value and possible child configuration
     '''
@@ -189,7 +202,9 @@ def check_every_add_node(ast,ins,muts_list=[]):
     return muts_list
 
 
-def addNode(ast,ins):
+def addNode(
+    ast, ins
+):
     ''' Returns AST with randomly inserted gate
 
         ** Needs to be checked to work for standard GA **
@@ -224,7 +239,10 @@ def addNode(ast,ins):
     return tempStart+newNode+tempEnd
 
 
-def check_every_remove_node(ast,ins,muts_list=[]):
+def check_every_remove_node(
+    ast, ins,
+    muts_list=[]
+):
     ''' Returns a list with every possible variant of the current AST by
           removing nodes
     '''
@@ -261,7 +279,9 @@ def check_every_remove_node(ast,ins,muts_list=[]):
     return muts_list
 
 
-def removeNode(ast,ins):
+def removeNode(
+    ast, ins
+):
     ''' Returns a variant with a randomly removed node
 
         ** Need to check before use in standard GA **
@@ -297,7 +317,9 @@ def removeNode(ast,ins):
         return ast
 
 
-def doNothing(ast,ins):
+def doNothing(
+    ast, ins
+):
     ''' Returns nothing, needed for chance that nothing happens.
           Can probably replace with pass in other code
     '''
@@ -305,7 +327,9 @@ def doNothing(ast,ins):
 
 ######### Functions #########    
 
-def hasChildren(tree,gate,ins):
+def hasChildren(
+    tree, gate, ins
+):
     ''' Checks if node has children
         Returns Boolean. True if the next node(s) are children of the node
             tree: the current AST : list
