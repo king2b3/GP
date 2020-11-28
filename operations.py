@@ -1,7 +1,8 @@
 #   Python 3.8.6
 #   Bayley King
-'''
-    All possible operations from parsing
+''' All possible operations from parsing along with some functions
+      that utilize their logic. Functions also here to return the logic
+      of AST, along with returning gates
 '''
 
 import random
@@ -31,7 +32,7 @@ binary_operators = {
     'or': or_op,
     'nand': nand_op,
     'nor': nor_op
-    }
+}
 
 solo_operators = {
     'not': not_op
@@ -43,13 +44,17 @@ def randomGate():
     return random.choice(list(operators.keys()))      
 
 
-def returnGate(op,args):
+def returnGate(
+    op, args
+):
     '''Returns the results of the operation
     '''
     return(operators[op](args))
 
 
-def returnLogic(tempAST,ins):
+def returnLogic(
+    tempAST, ins
+):
     ''' Returns the logical function of an AST
 
     Requires that boolean values are substituted into the AST in place of inputs
