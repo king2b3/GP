@@ -2,9 +2,19 @@
 #   Bayley King
 #   University of Cincinnati MIND Lab
 '''
-    General container file for GP system using here boy algorithm.
-    Takes in from mutations.py, lexer.py, stringComp.py and exhaustiveTest.py.
+    Child class of GP, the HereBoy algorithm is a form of a genetic algorithm (GA)
+      where instead of having a population of individual circuits, one circuit
+      in evolved by optimizing a similar fitness function.
     
+    In a true HereBoy implementation, a mutation is selected by looking at all 
+      possible mutations to the circuit, and performing which one will create the
+      highest overall fitness. Although this takes much longer than doing a random
+      mutation on a random node, less mutations are usually needed compared
+      to a standard GA.
+
+    In this code, we consider that use case where the user would want to evolve a
+      piece of code into a variant of itself. 
+
 '''
 
 import math
@@ -260,7 +270,6 @@ def normal_dv(
     print('Run time: {:0.4f}\n'.format(end-start))
     print(list(zip(variant.orig_logic,logic2)))
     treePrint(variant.current_ast,'temp/Final_AST.gv')
-
 
 
 def main():
