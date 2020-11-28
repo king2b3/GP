@@ -45,8 +45,6 @@ def levenshtein(
         return (matrix[size_x - 1, size_y - 1])
 
 
-
-
 def main():
     newTree2 = ['nand', 'nand', 'I1', 'nand', 'Sel', 'I1', 'or', 'nand', 'Sel', 'Sel', 'nand', 'or', 'Sel', 'I1', 'and', 'I0', 'I0']
     newTree1 = ['nand', 'nand', 'I0', 'Sel', 'nand', 'I1', 'nand', 'Sel', 'Sel']
