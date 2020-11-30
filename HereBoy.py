@@ -148,7 +148,8 @@ class HereBoy(GP):
 
 
     def randomExhaustive(
-        self, print_bool=False
+        self, 
+        print_bool=False
     ):
         ''' Returns a stochastically selected mutated AST
 
