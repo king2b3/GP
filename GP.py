@@ -18,8 +18,10 @@
 '''
 
 from itertools import product
-from operations import returnLogic
+import operations as op
 import sys
+import random
+import mutations as  m
 
 class GP:
     def __init__(
@@ -30,13 +32,20 @@ class GP:
         self.original_ast = ast.copy()
         self.current_ast = ast.copy()
         self.ins = inputs
+        self.len_ins = len(inputs)
         self.max_epochs = max_epochs
         # preform original logic in init
         self.orig_log = self.exhaustiveTest(ast)
         self.check_ast(self.current_ast,self.ins)
         
+    
+    def checkIns(
+        self, node
+    ):
+        return node in self.ins
+    
     def exhaustiveTest(
-        self,current_ast
+        self, current_ast
     ):
         ''' Returns the exhaustive tested of the AST
 
@@ -62,7 +71,7 @@ class GP:
         args = []
         test = []
         # creates list of [False,True] the length of number of inputs
-        args = [[False,True] for i in range(len(self.ins)) ]
+        args = [[False,True] for i in range(self.len_ins) ]
         for comb in product(*args):
             ast = current_ast.copy()
             ins_counter = 0
@@ -72,7 +81,7 @@ class GP:
                         # Inserts either True or False into proper input
                         ast[gate] = comb[ins_counter]
                 ins_counter += 1
-            test.append(returnLogic(ast,self.ins)) 
+            test.append(op.returnLogic(ast,self.ins)) 
 
         return test
 
@@ -95,15 +104,15 @@ class GP:
         ast= []
         if random_gate in op.solo_operators:
             ast.append(random_gate)
-            ast.append(ins[random.randint(0,len(ins)-1)])
+            ast.append(self.ins[random.randint(0,self.len_ins-1)])
         else:
             ast.append(random_gate)
-            ast.append(ins[random.randint(0,len(ins)-1)])
-            ast.append(ins[random.randint(0,len(ins)-1)])
+            ast.append(self.ins[random.randint(0,self.len_ins-1)])
+            ast.append(self.ins[random.randint(0,self.len_ins-1)])
         # adds depth to the tree
         depth = random.randint(min_ast_depth,max_ast_depth)
         for _ in range(depth):
-            ast = m.addNode(ast,ins)
+            ast = m.addNode(ast,self.ins)
         self.current_ast = ast
 
 
@@ -156,7 +165,7 @@ class GP:
         ast,ins
     ):
         for node in ast:
-            if node in op.operations:
+            if node in op.operators:
                 pass
             elif node in ins:
                 pass

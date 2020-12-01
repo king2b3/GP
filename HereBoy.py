@@ -23,7 +23,7 @@ from levenshteinDistance import levenshtein
 import mutations as m
 import pickle as pkl
 from treePrint import treePrint
-from params import *
+#from params import *
 import time
 import random
 import itertools
@@ -43,7 +43,7 @@ class HereBoy(GP):
         self, ast, inputs, 
         max_epochs, struc_fit
     ):
-        super().__init__(self,ast,inputs,max_epochs)
+        super().__init__(ast,inputs,max_epochs)
         self.start_struc_fit, self.strucFit = struc_fit
         self.start_log_fit, self.logFit = 1 - struc_fit
         #self.strucFit = struc_fit
@@ -58,7 +58,7 @@ class HereBoy(GP):
 
     def checkFitness(
         self, epochs,
-        ast = self.current_ast,
+        ast = None,
         returnCheck=True,
         print_bool=False
     ):
@@ -67,7 +67,9 @@ class HereBoy(GP):
         This function first gets the current weights for each fitness function
         (structural and logical) before calculating the overall fitness.
         '''                
-        logical_result = exhaustiveTest(ast)
+        if ast == None:
+            ast = self.current_ast
+        logical_result = self.exhaustiveTest(ast)
         if print_bool:
             print('\nEpoch {}'.format(epochs))
             print('Orig logic:    {}'.format(self.orig_log))
@@ -86,7 +88,7 @@ class HereBoy(GP):
 
         if returnCheck:
             # By default True. Returns if exit conditions are met or not
-            if logical_fitness+structural_fitness >= 1 and logical_fitness / log_fit == 1:
+            if logical_fitness+structural_fitness >= 1 and logical_fitness / self.logFit == 1:
                 return False
             else:
                 return True
@@ -104,11 +106,11 @@ class HereBoy(GP):
             
         See issue #8
         '''
-        startSim = .7
-        minSim = .3
-        maxEpochs = 1000
+        #startSim = .7
+        #minSim = .3
+        #maxEpochs = 1000
 
-        temp = self.start_struc_fit*math.exp(-epochs/self.maxEpochs)
+        temp = self.start_struc_fit*math.exp(-epochs/self.max_epochs)
         if temp <= self.start_struc_fit:
             self.strucFit = self.start_struc_fit
             self.logFit = 1-self.start_struc_fit
@@ -142,7 +144,7 @@ class HereBoy(GP):
         # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
         fit_check = []
         for circuit in circuit_test:
-            fit_check.append(checkFitness(epochs,circuit,False))
+            fit_check.append(self.checkFitness(epochs,circuit,False))
         max_fit_loc = fit_check.index(max(fit_check))
         return circuit_test[max_fit_loc]
 
@@ -158,7 +160,7 @@ class HereBoy(GP):
         num_mut = random.randint(0,1000)
         if num_mut < 800: # 80%
             if print_bool: print('\nexhaustive mut check')
-            self.current_ast = exhaustiveMutationsCheck(self.current_ast,self.ins)
+            self.current_ast = m.exhaustiveMutationsCheck(self.current_ast,self.ins)
         elif num_mut < 900: # 10%
             if print_bool: print('\nRandom Mutation')
             self.current_ast = m.randomMutate(self.current_ast,self.ins)
@@ -193,7 +195,7 @@ def params_test(
         for _ in range(100):
             
             variant = HereBoy(original_ast,ins,max_epochs,.7)
-            variant.addRandomness(current_ast,ins,rand)
+            variant.addRandomness()
 
             epochs = 0
 
@@ -201,9 +203,9 @@ def params_test(
                 variant.randomExhaustive()
                 epochs +=1
 
-            logic2 = exhaustiveTest(variant.current_ast)
+            logic2 = variant.exhaustiveTest(variant.current_ast)
             num_runs += 1
-            if orig_logic == logic2:
+            if variant.orig_log == logic2:
                 total_success += 1
             
             average_epochs.append(epochs)
@@ -241,7 +243,7 @@ def normal_dv(
             print('Current AST is: ',current_ast)
         '''
         print('Epoch: {} Current Fitness: {}'.format(epochs,
-            checkFitness(epochs,variant.current_ast,False)))
+            variant.checkFitness(epochs,variant.current_ast,False)))
         print('Current AST is: ',variant.current_ast)
         past_ast = variant.current_ast.copy()
         variant.exhaustiveCheck(epochs) 
@@ -269,7 +271,7 @@ def normal_dv(
     print('Final fitness: {:0.4f}'.format(
             variant.checkFitness(epochs,variant.current_ast,False)))
     print('Run time: {:0.4f}\n'.format(end-start))
-    print(list(zip(variant.orig_logic,logic2)))
+    print(list(zip(variant.orig_log,logic2)))
     treePrint(variant.current_ast,'temp/Final_AST.gv')
 
 

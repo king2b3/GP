@@ -43,18 +43,19 @@ def randomMutate(
     '''
     #selects a node in the AST
     gate = random.randint(0,len(ast)-1)
+    len_ins = len(ins)
     tempAST = ast.copy()
-    if ast[gate] in op.binary_operators :
-        ranIn = op.randomGate()
-        while ranIn == ast[gate] or ranIn not in op.binary_operators:
-            ranIn = op.randomGate()
-        tempAST[gate] = ranIn
+    if op.checkBinaryGate(ast[gate]) :
+        ranGate = op.randomGate()
+        while ranGate == ast[gate] or not op.checkBinaryGate(ranGate):
+            ranGate = op.randomGate()
+        tempAST[gate] = ranGate
     elif ast[gate] in ins:
-        ranIn = random.randint(0,len(ins)-1)
+        ranIn = random.randint(0,len_ins-1)
         while ins[ranIn] == ast[gate]:
-            ranIn = random.randint(0,len(ins)-1)
+            ranIn = random.randint(0,len_ins-1)
         tempAST[gate] = ins[ranIn]
-    elif ast[gate] in op.solo_operators:
+    elif op.checkSoloGate(ast[gate]):
         ''' This will eventually change the Solo gates, but since the only
             one the network currently uses is NOT, there isn't a point in
             doing anything with it yet. 
@@ -87,7 +88,7 @@ def exhaustiveMutationsCheck(
                     # append AST with input mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
-        elif ast[gate] in op.binary_operators:
+        elif op.checkBinaryGate(ast[gate]):
             for new_gate in op.binary_operators.keys():
                 # step through all binary operators
                 ast = orig_ast.copy()
@@ -98,7 +99,7 @@ def exhaustiveMutationsCheck(
                     # append AST with gate mutation
                     ast[gate] = new_gate
                     circuit_test.append(ast)
-        elif ast[gate] in op.solo_operators:
+        elif op.checkSoloGate(ast[gate]):
             for new_gate in op.solo_operators.keys():
                 # step through all solo operators
                 ast = orig_ast.copy()
@@ -113,13 +114,6 @@ def exhaustiveMutationsCheck(
             raise Exception
     # checks for best mutated AST. See issue #9
     return circuit_test
-    '''
-    fit_check = []
-    for circuit in circuit_test:
-        fit_check.append(checkFitness(circuit,original_ast,ins,epochs,orig_logic,False))
-    max_fit_loc = fit_check.index(max(fit_check))
-    return circuit_test[max_fit_loc]
-    '''
 
 
 def crossover(
@@ -175,7 +169,7 @@ def check_every_add_node(
 
         temp_ast = ast.copy()
         # if current node in AST is an operator
-        if ast[comb[0]] in op.operators:
+        if op.checkGate(ast[comb[0]]):
             continue
         else:
             temp_gate = comb[0] # node value in current AST
@@ -214,7 +208,7 @@ def addNode(
     # select a random node in the tree
     gate = random.randint(0,len_ast)
     # make sure the node in an input, not an operator
-    while ast[gate] in op.operators:
+    while op.checkGate(ast[gate]):
         gate = random.randint(0,len_ast)
     tempAST = ast.copy()
     tempStart = tempAST[:gate]
@@ -224,7 +218,7 @@ def addNode(
     gate = op.randomGate()
     newNode.append(gate)
 
-    if gate in op.solo_operators:
+    if op.checkBinaryGate(gate):
         # create one random child 
         child = random.randint(0,len_ins)
         newNode.append(ins[child]) 
@@ -255,7 +249,7 @@ def check_every_remove_node(
         # if the AST is larger than 3, and the current node is removable 
         if len(ast) > 3 and hasChildren(ast,comb[0],ins):
             gate = comb[0]
-            if gate in op.solo_operators:
+            if op.checkSoloGate(gate):
                 tree = ast.copy()
                 # splits the AST removing the gate
                 start = tree[:gate]
@@ -263,7 +257,7 @@ def check_every_remove_node(
                 temp = start+end
                 muts_list.append(temp)
                 
-            elif gate in op.binary_operators:
+            elif op.checkBinaryGate(gate):
                 tree = ast.copy()
                 # splits the ast by removing the subtree
                 start = tree[:gate]
@@ -286,21 +280,21 @@ def removeNode(
 
         ** Need to check before use in standard GA **
     '''
-    if len(ast) > 5:
+    if (len_ast := len(ast)) > 5:
         # selects random node in the current ast
-        gate = random.randint(0,len(ast)-1)
+        gate = random.randint(0,len_ast-1)
         # makes sure the node is a removable node
         while not hasChildren(ast,gate,ins):
-            gate = random.randint(0,len(ast)-1)
+            gate = random.randint(0,len_ast-1)
 
-        if ast[gate] in op.solo_operators:
+        if op.checkSoloGate(ast[gate]):
             tree = ast.copy()
             start = tree[:gate]
             end = tree[gate+1:]
             # leaves child of the op, maybe insert a random input in the future?
             return start+end
         
-        elif ast[gate] in op.binary_operators:
+        elif op.checkBinaryGate(ast[gate]):
             tree = ast.copy()
             start = tree[:gate]
             # make this into a function?
@@ -342,13 +336,13 @@ def hasChildren(
         if tree[gate] in ins:
             # Node is an input 
             return False
-        elif children[0] not in op.operators and 
-             children[1] not in op.operators and 
-             tree[gate] in op.binary_operators:
+        elif not op.checkGate(children[0]) and \
+             not op.checkGate(children[1]) and \
+             op.checkBinaryGate(tree[gate]):
             # Node is an end leaf, it could be removed
             return True
-        elif children[0] not in op.operators and 
-             tree[gate] in op.solo_operators:
+        elif not op.checkGate(children[0]) and \
+             op.checkSoloGate(tree[gate]):
             # Node is an end leaf, it could be removed
             return True            
         else:
@@ -362,7 +356,7 @@ def main():
     # assuming the code works after OOP and operators changes. Might need to check with main again 
     original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
     ins = ['I0','I1','Sel']
-    current_ast = original_ast.copy()
+    #current_ast = original_ast.copy()
     #ins = ['I0','I1']    
 
     print(original_ast)

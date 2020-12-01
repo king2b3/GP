@@ -38,7 +38,9 @@ solo_operators = {
     'not': not_op
 }
 
-operators = {**binary_operators,**solo_operators}
+operators = {
+    **binary_operators,**solo_operators
+}
 
 def randomGate():
     return random.choice(list(operators.keys()))      
@@ -50,6 +52,30 @@ def returnGate(
     '''Returns the results of the operation
     '''
     return(operators[op](args))
+
+
+def checkBinaryGate(
+    node
+):
+    ''' Checks if the node is a binary operator
+    '''
+    return node in binary_operators
+
+
+def checkSoloGate(
+    node
+):
+    ''' Checks if the node is a solo operator
+    '''
+    return node in solo_operators
+
+
+def checkGate(
+    node
+):
+    ''' Checks if the node is an operator
+    '''
+    return node in operators
 
 
 def returnLogic(
