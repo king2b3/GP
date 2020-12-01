@@ -3,7 +3,7 @@
 #   Bayley King
 
 import random
-#from tabulate import tabulate      # used just for testing, remove upon completion
+from tabulate import tabulate      # used just for testing, remove upon completion
 import itertools
 import operations as op
 
@@ -207,7 +207,7 @@ def addNode(
     len_ast = len(ast)-1
     # select a random node in the tree
     gate = random.randint(0,len_ast)
-    # make sure the node in an input, not an operator
+    # make sure the node is an input, not an operator
     while op.checkGate(ast[gate]):
         gate = random.randint(0,len_ast)
     tempAST = ast.copy()
@@ -218,7 +218,7 @@ def addNode(
     gate = op.randomGate()
     newNode.append(gate)
 
-    if op.checkBinaryGate(gate):
+    if op.checkSoloGate(gate):
         # create one random child 
         child = random.randint(0,len_ins)
         newNode.append(ins[child]) 
@@ -359,11 +359,12 @@ def main():
     #current_ast = original_ast.copy()
     #ins = ['I0','I1']    
 
-    print(original_ast)
-    for gate in range(len(original_ast)):
-        print(hasChildren(original_ast,gate,ins))
+    test = [original_ast]
+    #print(original_ast)
+    for _ in range(len(original_ast)):
+        test.append(addNode(original_ast,ins))
     #print(tabulate(check_every_remove_node(current_ast,ins)))
-    #print(tabulate(check_every_add_node(current_ast,ins)))
+    print(tabulate(test))
 
 
 if __name__ == '__main__':

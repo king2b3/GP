@@ -3,29 +3,35 @@ digraph unix {
 	size="6,6"
 	gate_0 [label=nand]
 	gate_1 [label=nand]
-	gate_2 [label=nand]
+	gate_2 [label=or]
 	ins_0 [label=I1]
+	gate_3 [label=and]
 	ins_1 [label=Sel]
 	ins_2 [label=Sel]
-	gate_3 [label=or]
-	gate_4 [label=not]
-	gate_5 [label=and]
-	ins_3 [label=I1]
-	ins_4 [label=Sel]
-	gate_6 [label=and]
-	ins_5 [label=Sel]
-	ins_6 [label=I1]
+	ins_3 [label=Sel]
+	gate_4 [label=and]
+	gate_5 [label=nand]
+	ins_4 [label=I0]
+	ins_5 [label=I0]
+	gate_6 [label=nand]
+	gate_7 [label=nand]
+	ins_6 [label=Sel]
+	ins_7 [label=I0]
+	ins_8 [label=Sel]
 	gate_0 -> gate_1
-	gate_0 -> gate_3
+	gate_0 -> gate_4
 	gate_1 -> gate_2
-	gate_1 -> ins_2
+	gate_1 -> ins_3
 	gate_2 -> ins_0
-	gate_2 -> ins_1
-	gate_3 -> gate_4
-	gate_3 -> gate_6
+	gate_2 -> gate_3
+	gate_3 -> ins_1
+	gate_3 -> ins_2
 	gate_4 -> gate_5
-	gate_5 -> ins_3
+	gate_4 -> gate_6
 	gate_5 -> ins_4
-	gate_6 -> ins_5
-	gate_6 -> ins_6
+	gate_5 -> ins_5
+	gate_6 -> gate_7
+	gate_6 -> ins_8
+	gate_7 -> ins_6
+	gate_7 -> ins_7
 }

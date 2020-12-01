@@ -93,12 +93,13 @@ def returnLogic(
         ['or',False,False]
       which can be simplified into a single value. This value is then returned.
     '''
-    currentAST = tempAST
+    
+    currentAST = tempAST.copy()
     while len(currentAST) > 1:
         currentAST = tempAST
         temp_len = len(currentAST)
         for node in range(temp_len):
-            if checkBinaryGate(node):
+            if checkBinaryGate(currentAST[node]):
                 # guesses that the next two nodes in the AST list are the node's children
                 children = currentAST[node+1:node+3]
                 try:
@@ -117,7 +118,7 @@ def returnLogic(
                     # error check
                     sys.exit()
 
-            elif checkSoloGate(node):
+            elif checkSoloGate(currentAST[node]):
                 child = currentAST[node+1]
                 # if child is not a gate
                 if type(child) == bool:

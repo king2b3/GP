@@ -28,7 +28,6 @@ class GP:
         self,ast,inputs,
         max_epochs
     ):
-
         self.original_ast = ast.copy()
         self.current_ast = ast.copy()
         self.ins = inputs
@@ -36,16 +35,12 @@ class GP:
         self.max_epochs = max_epochs
         # preform original logic in init
         self.orig_log = self.exhaustiveTest(ast)
-        self.check_ast(self.current_ast,self.ins)
+        self.check_ast()
         
-    
-    def checkIns(
-        self, node
-    ):
-        return node in self.ins
-    
+        
     def exhaustiveTest(
-        self, current_ast
+        self, 
+        current_ast = None
     ):
         ''' Returns the exhaustive tested of the AST
 
@@ -67,7 +62,8 @@ class GP:
             .....
             [True,True,........True]
         '''
-
+        if current_ast == None:
+            current_ast = self.current_ast
         args = []
         test = []
         # creates list of [False,True] the length of number of inputs
@@ -160,14 +156,13 @@ class GP:
 
     '''
 
-    @staticmethod
     def check_ast(
-        ast,ins
+        self
     ):
-        for node in ast:
+        for node in self.current_ast:
             if node in op.operators:
                 pass
-            elif node in ins:
+            elif node in self.ins:
                 pass
             else:
                 raise Exception("Invalid node in ast. Node {}".format(node))

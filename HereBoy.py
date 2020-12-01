@@ -44,10 +44,12 @@ class HereBoy(GP):
         max_epochs, struc_fit
     ):
         super().__init__(ast,inputs,max_epochs)
-        self.start_struc_fit, self.strucFit = struc_fit
-        self.start_log_fit, self.logFit = 1 - struc_fit
-        #self.strucFit = struc_fit
-        #self.logFit = = 1 - struc_fit
+        self.min_struc_fit = struc_fit
+        self.starting_struc_fit = 1 - struc_fit
+       
+        
+        self.strucFit = 1 - struc_fit
+        self.logFit = struc_fit
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -110,15 +112,16 @@ class HereBoy(GP):
         #minSim = .3
         #maxEpochs = 1000
 
-        temp = self.start_struc_fit*math.exp(-epochs/self.max_epochs)
-        if temp <= self.start_struc_fit:
-            self.strucFit = self.start_struc_fit
-            self.logFit = 1-self.start_struc_fit
+        temp = self.starting_struc_fit*math.exp(-epochs/self.max_epochs)
+        if temp <= self.min_struc_fit:
+            self.strucFit = self.min_struc_fit
+            self.logFit = 1-self.min_struc_fit
         else:
             self.strucFit = temp
             self.logFit = 1-temp
         if printBool:
-            print('Structural Fitness:',self.strucFit,' and logical fitness:',self.logFit)
+            print('Structural Fitness: {:0.4f} and logical fitness: {:0.4f}'.format(
+                    self.strucFit,self.logFit))
         #return strucFit,logFit
 
 
@@ -141,12 +144,16 @@ class HereBoy(GP):
         circuit_test += m.exhaustiveMutationsCheck(self.current_ast,self.ins)
         circuit_test += m.check_every_add_node(self.current_ast,self.ins)
         circuit_test += m.check_every_remove_node(self.current_ast,self.ins)
-        # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
+        # shuffles the mutation list, as to not 
+        random.shuffle(circuit_test)
         fit_check = []
+        # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
         for circuit in circuit_test:
             fit_check.append(self.checkFitness(epochs,circuit,False))
+        #print(fit_check)
         max_fit_loc = fit_check.index(max(fit_check))
-        return circuit_test[max_fit_loc]
+        #print(fit_check[max_fit_loc])
+        self.current_ast = circuit_test[max_fit_loc]
 
 
     def randomExhaustive(
@@ -183,8 +190,9 @@ def params_test(
     total_success = 0,
     num_runs = 0,
     max_epochs = 1000,
-    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-    ins = ['I0','I1','Sel']
+    original_ast = ['or','I0','I1'],
+    #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+    ins = ['I0','I1'] #,'Sel']
 ):
 
     for rand in range(1,20):
@@ -220,12 +228,14 @@ def params_test(
 
 def normal_dv(
     original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+    #original_ast = ['or','I0','I1'],
+    #ins = ['I0','I1']
     ins = ['I0','I1','Sel']
 ):
     
-    variant = HereBoy(original_ast,ins,1000,.7)
-    
+    variant = HereBoy(original_ast,ins,100,.3)
     variant.addRandomness()
+
     print(variant.original_ast)
     print(variant.current_ast)
     treePrint(variant.original_ast,'temp/Original_AST.gv')
@@ -242,11 +252,12 @@ def normal_dv(
             print('Epoch:',epochs,' Current Fitness:',fit)
             print('Current AST is: ',current_ast)
         '''
-        print('Epoch: {} Current Fitness: {}'.format(epochs,
+        print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
             variant.checkFitness(epochs,variant.current_ast,False)))
         print('Current AST is: ',variant.current_ast)
         past_ast = variant.current_ast.copy()
         variant.exhaustiveCheck(epochs) 
+        variant.updateFitness(epochs)
         
         if past_ast == variant.current_ast:
             same_count += 1
@@ -254,6 +265,7 @@ def normal_dv(
             same_count = 0
         
         if same_count > same_count_max:
+            print('Adding diversity, circuit been way to stable son')
             variant.current_ast = m.randomMutation(variant.current_ast,variant.ins)
             same_count = 0
         
