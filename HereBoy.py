@@ -189,26 +189,27 @@ class HereBoy(GP):
 def params_test(
     total_success = 0,
     num_runs = 0,
-    max_epochs = 1000,
-    original_ast = ['or','I0','I1'],
-    #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-    ins = ['I0','I1'] #,'Sel']
+    max_epochs = 100,
+    #original_ast = ['or','I0','I1'],
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+    ins = ['I0','I1','Sel']
 ):
 
-    for rand in range(1,20):
+    for rand in range(0,20):
         lev_total = []
         average_epochs = []
         total_success = 0
         num_runs = 0
-        for _ in range(100):
+        for _ in range(5):
             
-            variant = HereBoy(original_ast,ins,max_epochs,.7)
-            variant.addRandomness()
+            variant = HereBoy(original_ast,ins,max_epochs,.3)
+            variant.addRandomness(rand)
 
             epochs = 0
 
-            while epochs < max_epochs and variant.checkFitness(epochs):
-                variant.randomExhaustive()
+            while epochs < variant.max_epochs and variant.checkFitness(epochs):
+                variant.exhaustiveCheck(epochs) 
+                variant.updateFitness(epochs)
                 epochs +=1
 
             logic2 = variant.exhaustiveTest(variant.current_ast)
@@ -236,8 +237,6 @@ def normal_dv(
     variant = HereBoy(original_ast,ins,100,.3)
     variant.addRandomness()
 
-    print(variant.original_ast)
-    print(variant.current_ast)
     treePrint(variant.original_ast,'temp/Original_AST.gv')
     treePrint(variant.current_ast,'temp/Starting_AST.gv')
 
@@ -247,11 +246,6 @@ def normal_dv(
 
     start = time.time()
     while epochs < variant.max_epochs and variant.checkFitness(epochs):
-        '''
-        if epochs % 50 == 0:
-            print('Epoch:',epochs,' Current Fitness:',fit)
-            print('Current AST is: ',current_ast)
-        '''
         print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
             variant.checkFitness(epochs,variant.current_ast,False)))
         print('Current AST is: ',variant.current_ast)
@@ -288,7 +282,7 @@ def normal_dv(
 
 
 def main():
-    normal_dv()
+    params_test()
 
 
 if __name__ == "__main__":
