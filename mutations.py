@@ -3,7 +3,7 @@
 #   Bayley King
 
 import random
-from tabulate import tabulate      # used just for testing, remove upon completion
+#from tabulate import tabulate      # used just for testing, remove upon completion
 import itertools
 import operations as op
 
@@ -364,7 +364,7 @@ def main():
     for _ in range(len(original_ast)):
         test.append(addNode(original_ast,ins))
     #print(tabulate(check_every_remove_node(current_ast,ins)))
-    print(tabulate(test))
+    #print(tabulate(test))
 
 
 if __name__ == '__main__':

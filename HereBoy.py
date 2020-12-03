@@ -18,7 +18,6 @@
 '''
 
 import math
-#import StringComp 
 from levenshteinDistance import levenshtein
 import mutations as m
 import pickle as pkl
@@ -26,8 +25,6 @@ from treePrint import treePrint
 #from params import *
 import time
 import random
-import itertools
-import sys
 from os import system
 from GP import GP
 import operations as op
@@ -43,13 +40,15 @@ class HereBoy(GP):
         self, ast, inputs, 
         max_epochs, struc_fit
     ):
-        super().__init__(ast,inputs,max_epochs)
+        super().__init__(inputs,max_epochs)
+        self.original_ast = ast.copy()
+        self.current_ast = ast.copy()
         self.min_struc_fit = struc_fit
-        self.starting_struc_fit = 1 - struc_fit
-       
-        
+        self.starting_struc_fit = 1 - struc_fit      
         self.strucFit = 1 - struc_fit
         self.logFit = struc_fit
+        self.orig_log = self.exhaustiveTest(ast)
+        self.check_ast(self.current_ast)
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -203,7 +202,7 @@ def params_test(
         for _ in range(5):
             
             variant = HereBoy(original_ast,ins,max_epochs,.3)
-            variant.addRandomness(rand)
+            variant.current_ast = variant.addRandomness(rand)
 
             epochs = 0
 
@@ -235,7 +234,7 @@ def normal_dv(
 ):
     
     variant = HereBoy(original_ast,ins,100,.3)
-    variant.addRandomness()
+    variant.current_ast = variant.addRandomness()
 
     treePrint(variant.original_ast,'temp/Original_AST.gv')
     treePrint(variant.current_ast,'temp/Starting_AST.gv')
@@ -268,7 +267,7 @@ def normal_dv(
         epochs +=1
     end = time.time()
     
-    logic2 = variant.exhaustiveTest()
+    logic2 = variant.exhaustiveTest(variant.current_ast)
     
 
     print('\nOriginal AST: ',variant.original_ast)

@@ -22,25 +22,21 @@ import operations as op
 import sys
 import random
 import mutations as  m
+from os import system
 
 class GP:
     def __init__(
-        self,ast,inputs,
+        self,inputs,
         max_epochs
     ):
-        self.original_ast = ast.copy()
-        self.current_ast = ast.copy()
+
         self.ins = inputs
         self.len_ins = len(inputs)
-        self.max_epochs = max_epochs
-        # preform original logic in init
-        self.orig_log = self.exhaustiveTest(ast)
-        self.check_ast()
-        
+        self.max_epochs = max_epochs       
         
     def exhaustiveTest(
         self, 
-        current_ast = None
+        current_ast
     ):
         ''' Returns the exhaustive tested of the AST
 
@@ -62,8 +58,6 @@ class GP:
             .....
             [True,True,........True]
         '''
-        if current_ast == None:
-            current_ast = self.current_ast
         args = []
         test = []
         # creates list of [False,True] the length of number of inputs
@@ -109,11 +103,12 @@ class GP:
         depth = random.randint(min_ast_depth,max_ast_depth)
         for _ in range(depth):
             ast = m.addNode(ast,self.ins)
-        self.current_ast = ast
+        return ast
 
 
     def addRandomness(
-        self,num_muts=10
+        self, current_ast,
+        num_muts=10
     ):
         ''' Takes an AST and preforms num_muts number of mutations, to try and 
             add initial randomness to the AST.
@@ -126,9 +121,10 @@ class GP:
             # 50/50 chance it adds nodes or mutates nodes
             num_mut = random.randint(0,1)
             if num_mut == 0:
-                self.current_ast = m.addNode(self.current_ast,self.ins)
+                current_ast = m.addNode(current_ast,self.ins)
             elif num_mut == 1:
-                self.current_ast = m.randomMutate(self.current_ast,self.ins)
+                current_ast = m.randomMutate(current_ast,self.ins)
+        return current_ast
 
     
     '''
@@ -157,12 +153,16 @@ class GP:
     '''
 
     def check_ast(
-        self
+        self, ast
     ):
-        for node in self.current_ast:
+        for node in ast:
             if node in op.operators:
                 pass
             elif node in self.ins:
                 pass
             else:
                 raise Exception("Invalid node in ast. Node {}".format(node))
+
+    @staticmethod
+    def clear():
+        _ = system("clear")
