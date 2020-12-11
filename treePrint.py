@@ -48,7 +48,7 @@ def checkSoloGate(
 
 def treePrint(
     ast,
-    file_name='test-output.gv'
+    file_name='temp/test-output.gv'
 ):
     ''' Prints ast to a pdf file
     '''
