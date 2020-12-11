@@ -5,7 +5,18 @@
 
 import numpy as np
 
-def levenshtein(seq1, seq2, scale=True):
+def levenshtein(
+    seq1, seq2, 
+    scale=True
+):
+    ''' Levenshtein Distance Calculation
+
+        Creates a matrix sized to the two sequences
+        Returns: (based off of scale bool)
+            Distance in nums of changes needed
+                or
+            nums of changes needed / min of length of sequence 1 and 2 
+    '''
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
     matrix = np.zeros ((size_x, size_y))
@@ -28,20 +39,17 @@ def levenshtein(seq1, seq2, scale=True):
                     matrix[x-1,y-1] + 1,
                     matrix[x,y-1] + 1
                 )
-    #print (matrix)
     if scale:
         return ((matrix[size_x - 1, size_y - 1])/min(size_x-1,size_y-1))
     else:
         return (matrix[size_x - 1, size_y - 1])
 
 
-
-
 def main():
-    newTree2 = ['nand', 'nand', 'I1', 'nand', 'Sel', 'I1', 'or', 'nand', 'Sel', 'Sel', 'nand', 'or', 'Sel', 'I1', 'and', 'I0', 'I0']
+    newTree2 = ['nand', 'nand', 'I0', 'or', 'I1','or','sel','I1','nand','I1','nand','and','I1','and','I1','sel','or','I1','I0']
     newTree1 = ['nand', 'nand', 'I0', 'Sel', 'nand', 'I1', 'nand', 'Sel', 'Sel']
 
-    print(levenshtein(newTree1,newTree2))
+    print(levenshtein(newTree1,newTree2,True))
 
 
 

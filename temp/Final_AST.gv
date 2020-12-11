@@ -1,0 +1,37 @@
+digraph unix {
+	node [color=lightblue2 style=filled]
+	size="6,6"
+	gate_0 [label=nand]
+	gate_1 [label=nand]
+	gate_2 [label=nor]
+	ins_0 [label=I1]
+	ins_1 [label=I1]
+	gate_3 [label=or]
+	gate_4 [label=and]
+	ins_2 [label=Sel]
+	ins_3 [label=I0]
+	ins_4 [label=I1]
+	gate_5 [label=nand]
+	ins_5 [label=I1]
+	gate_6 [label=nand]
+	ins_6 [label=Sel]
+	gate_7 [label=nor]
+	ins_7 [label=I0]
+	ins_8 [label=I0]
+	gate_0 -> gate_1
+	gate_0 -> gate_5
+	gate_1 -> gate_2
+	gate_1 -> gate_3
+	gate_2 -> ins_0
+	gate_2 -> ins_1
+	gate_3 -> gate_4
+	gate_3 -> ins_4
+	gate_4 -> ins_2
+	gate_4 -> ins_3
+	gate_5 -> ins_5
+	gate_5 -> gate_6
+	gate_6 -> ins_6
+	gate_6 -> gate_7
+	gate_7 -> ins_7
+	gate_7 -> ins_8
+}
