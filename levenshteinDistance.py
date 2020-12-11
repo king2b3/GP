@@ -46,10 +46,10 @@ def levenshtein(
 
 
 def main():
-    newTree2 = ['nand', 'nand', 'I1', 'nand', 'Sel', 'I1', 'or', 'nand', 'Sel', 'Sel', 'nand', 'or', 'Sel', 'I1', 'and', 'I0', 'I0']
+    newTree2 = ['nand', 'nand', 'I0', 'or', 'I1','or','sel','I1','nand','I1','nand','and','I1','and','I1','sel','or','I1','I0']
     newTree1 = ['nand', 'nand', 'I0', 'Sel', 'nand', 'I1', 'nand', 'Sel', 'Sel']
 
-    print(levenshtein(newTree1,newTree2))
+    print(levenshtein(newTree1,newTree2,True))
 
 
 

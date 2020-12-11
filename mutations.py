@@ -18,7 +18,7 @@ def mutate(
 ):
     ''' Returns one of each of the mutations
     '''
-    return [m for m in [doNothing(ast,ins),randomMutate(ast,ins),crossover(ast,ins),addNode(ast,ins),removeNode(ast,ins)]]
+    return [m for m in [doNothing(ast,ins),randomMutate(ast,ins),addNode(ast,ins),removeNode(ast,ins)]]
 
 def randomMutation(
     ast,ins
@@ -51,9 +51,9 @@ def randomMutate(
             ranGate = op.randomGate()
         tempAST[gate] = ranGate
     elif ast[gate] in ins:
-        ranIn = random.randint(0,len_ins-1)
+        ranIn = random.randint(1,len_ins-1)
         while ins[ranIn] == ast[gate]:
-            ranIn = random.randint(0,len_ins-1)
+            ranIn = random.randint(1,len_ins-1)
         tempAST[gate] = ins[ranIn]
     elif op.checkSoloGate(ast[gate]):
         ''' This will eventually change the Solo gates, but since the only
@@ -117,40 +117,39 @@ def exhaustiveMutationsCheck(
 
 
 def crossover(
-    ast, ins
+    ast_1, ast_2, ins
 ):
     ''' The bane of my existence, this needs fixing BIG time
+
+        Look into crossover for ordered lists here https://en.wikipedia.org/wiki/Crossover_(genetic_algorithm)
     '''
-    if (len_ast := len(ast)) > 5:
-        #len_ast = len(ast)-1
-        tempAST = ast.copy()
-        gate = random.randint(0,len_ast-1)
-        gateCross = random.randint(0,len_ast-1)
-        while hasChildren(ast,gate,ins) or ast[gate] in ins:
-            gate = random.randint(0,len_ast-1)
-        while gateCross == gate or hasChildren(ast,gateCross,ins) or ast[gateCross] in ins :
-            gateCross = random.randint(0,len_ast-1)
-        #print('First Gate is:',gateCross,'Second Gate is:',gate)
+    len_ast_1 = len(ast_1)
+    len_ast_2 = len(ast_2)
+    gate_ast_1 = random.randint(1,len_ast_1-1)
+    gate_ast_2 = random.randint(1,len_ast_2-1)
+    
+    # makes sure node selected in ast_1 is an operator
+    while ast_1[gate_ast_1] not in op.operators:
+        gate_ast_1 = random.randint(1,len_ast_1-1)
+    # makes sure node selected in ast_2 is an operator
+    while ast_2[gate_ast_2] not in op.operators or gate_ast_1 == gate_ast_2:
+        gate_ast_2 = random.randint(1,len_ast_2-1)
 
-        if gate > gateCross:
-            g1 = gateCross
-            g2 = gate
-        else:
-            g1 = gate
-            g2 = gateCross
+    #print(ast_1)
+    #print(gate_ast_1)
+    #print(ast_2)
+    #print(gate_ast_2)
+    ast_1_first = ast_1[:gate_ast_1]
+    ast_1_middle, ast_1_end = findRoots(ast_1, gate_ast_1,ins)
+    ast_2_first = ast_2[:gate_ast_2]
+    ast_2_middle, ast_2_end = findRoots(ast_2, gate_ast_2,ins)
 
-        start = tempAST[:g1]
-        cross1 = tempAST[g1:g1+3]
-        middle = tempAST[g1+3:g2]
-        cross2 = tempAST[g2:g2+3]
-        end = tempAST[g2+3:]
+    new_ast_1 = ast_1_first + ast_2_middle + ast_1_end
+    new_ast_2 = ast_2_first + ast_1_middle + ast_2_end
 
-        tree = start+cross2+middle+cross1+end
-        return tree
-    else:
-        return ast
+    return new_ast_1, new_ast_2
 
-
+    
 def check_every_add_node(
     ast, ins,
     muts_list=[]
@@ -164,7 +163,7 @@ def check_every_add_node(
                 list(op.operators.keys()), # node value
                 ins, # first child in tree
                 ins # second child in tree
-                ]
+            ]
         ):
 
         temp_ast = ast.copy()
@@ -352,19 +351,43 @@ def hasChildren(
         return False
 
 
+def findRoots(
+    tree, gate, ins
+):
+    ''' This function will return the crossover portion of a circuit 
+
+        Returns:
+        middle: list of strings
+            The middle portion of AST that will be used in crossover
+        end: list of strings
+            The remaining portion of the AST that won't be used in the crossover
+    '''
+    middle = []
+    end = []
+    new_tree = tree[gate:]
+    for node in range(len(new_tree)):
+        if hasChildren(new_tree,node,ins):
+            gate2 = node + 3
+            break
+    middle = new_tree[:gate2]
+    end = new_tree[gate2:]
+
+    return middle, end
+
+
+
 def main():
     # assuming the code works after OOP and operators changes. Might need to check with main again 
     original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel']
+    ast = ['or','nand','I1','nand','Sel','Sel','I0']
     ins = ['I0','I1','Sel']
     #current_ast = original_ast.copy()
-    #ins = ['I0','I1']    
-
-    test = [original_ast]
-    #print(original_ast)
-    for _ in range(len(original_ast)):
-        test.append(addNode(original_ast,ins))
-    #print(tabulate(check_every_remove_node(current_ast,ins)))
-    #print(tabulate(test))
+    #ins = ['I0','I1']   
+    ast1, ast2 = crossover(original_ast,ast,ins)
+    print(ast)
+    print(ast2)
+    print(original_ast)
+    print(ast1)
 
 
 if __name__ == '__main__':

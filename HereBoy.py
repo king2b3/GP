@@ -107,10 +107,6 @@ class HereBoy(GP):
             
         See issue #8
         '''
-        #startSim = .7
-        #minSim = .3
-        #maxEpochs = 1000
-
         temp = self.starting_struc_fit*math.exp(-epochs/self.max_epochs)
         if temp <= self.min_struc_fit:
             self.strucFit = self.min_struc_fit
@@ -121,12 +117,10 @@ class HereBoy(GP):
         if printBool:
             print('Structural Fitness: {:0.4f} and logical fitness: {:0.4f}'.format(
                     self.strucFit,self.logFit))
-        #return strucFit,logFit
-
 
     def exhaustiveCheck(
         self, epochs,
-        circuit_test=[]
+        circuit_test=None
     ):
         ''' HereBOY exhaustive mutation check
         
@@ -140,6 +134,8 @@ class HereBoy(GP):
             variants, the best first option is returned. The exhaustive mutations
             should be checked first, which doesn't change the size of the AST.  
         '''
+        if circuit_test == None:
+            circuit_test = [self.current_ast]
         circuit_test += m.exhaustiveMutationsCheck(self.current_ast,self.ins)
         circuit_test += m.check_every_add_node(self.current_ast,self.ins)
         circuit_test += m.check_every_remove_node(self.current_ast,self.ins)
@@ -149,9 +145,7 @@ class HereBoy(GP):
         # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
         for circuit in circuit_test:
             fit_check.append(self.checkFitness(epochs,circuit,False))
-        #print(fit_check)
         max_fit_loc = fit_check.index(max(fit_check))
-        #print(fit_check[max_fit_loc])
         self.current_ast = circuit_test[max_fit_loc]
 
 
@@ -234,7 +228,7 @@ def normal_dv(
 ):
     
     variant = HereBoy(original_ast,ins,100,.3)
-    variant.current_ast = variant.addRandomness()
+    #variant.current_ast = variant.createRandomAST()
 
     treePrint(variant.original_ast,'temp/Original_AST.gv')
     treePrint(variant.current_ast,'temp/Starting_AST.gv')
@@ -281,7 +275,7 @@ def normal_dv(
 
 
 def main():
-    params_test()
+    normal_dv()
 
 
 if __name__ == "__main__":

@@ -36,12 +36,14 @@ class GA(GP):
     '''
     def __init__(
         self, inputs, 
-        max_epochs, 
+        max_epochs,
+        orig_logic, 
         pop_size = 1000,
         selection_size = 100
     ):
         super().__init__(inputs,max_epochs)
         # test numpy to see if memory management is better
+        self.orig_logic = orig_logic
         self.pop_size = pop_size
         self.selection_size = selection_size
         self.population = [ self.createRandomAST() for x in range(pop_size) ]
@@ -56,13 +58,19 @@ class GA(GP):
     def tournamentSelection(
         self, k
     ):
+        ''' Standard k-tournament selector
+
+            k members of the population are seeded in a tournament, the best 
+              individual is selected for the next generation.
+            After selection_size individuals have been selected, then the next population
+              is generated using the tournament winners
+        '''
         next_gen = []
         for _ in range(self.selection_size):
             tournament_population = self.population.copy()
             random.shuffle(tournament_population)
             tournament_population = tournament_population[:k]
             fit_check = []
-            # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
             for circuit in tournament_population:
                 fit_check.append(self.checkFitness(circuit))
             max_fit_loc = fit_check.index(max(fit_check))
@@ -72,16 +80,35 @@ class GA(GP):
     def fillPopulation(
         self, next_gen
     ):
-        for _ in range(self.pop_size - self.selection_size):
-            # either mutate member of next_gen or crossover two members of next_gen
+        ''' Fills the next population from the winners selected in tournamentSelection
+
+            Returns: new_gen -> List
+                List of list of strings. The list is thenew poulation of individuals
+                  and each individual list is a single individual.
+        '''
+        new_gen = next_gen.copy()
+        while len(new_gen) < self.pop_size - self.selection_size:
+            mut_type = random.randint(0,2)
+            random.shuffle(next_gen)
+            if mut_type == 0:
+                new_gen += m.addNode(next_gen[0],self.ins)
+            elif mut_type == 1:
+                new_gen += m.removeNode(next_gen[0],self.ins)
+            else:
+                new_gen += m.crossover(next_gen[0],next_gen[1],self.ins)
             pass
-        return None
+        return new_gen
 
     def checkFitness(
         self, circuit
     ):
-        pass
-
+        ''' Returns the logical fitness of the circuit from exhaustive testing
+        '''
+        logical_result = self.exhaustiveTest(circuit)
+        for t in range(len(logical_result)):
+            if logical_result[t] == self.orig_logic[t]:
+                score += 1
+        return score/len(logical_result)
 
 
 ############# Test Functions  #############
