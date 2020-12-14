@@ -29,6 +29,7 @@ import time
 import random
 from GP import GP
 import operations as op
+from tabulate import tabulate
 
 
 class GA(GP):
@@ -37,16 +38,18 @@ class GA(GP):
     def __init__(
         self, inputs, 
         max_epochs,
-        orig_logic, 
+        orig_ast, 
         pop_size = 1000,
         selection_size = 100
     ):
         super().__init__(inputs,max_epochs)
         # test numpy to see if memory management is better
-        self.orig_logic = orig_logic
+        self.orig_logic = self.exhaustiveTest(orig_ast)
         self.pop_size = pop_size
         self.selection_size = selection_size
         self.population = [ self.createRandomAST() for x in range(pop_size) ]
+        self.fit_check = []
+        self.current_epoch = 0
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -70,11 +73,13 @@ class GA(GP):
             tournament_population = self.population.copy()
             random.shuffle(tournament_population)
             tournament_population = tournament_population[:k]
+            #print('tournament selection ',tabulate(tournament_population))
             fit_check = []
             for circuit in tournament_population:
                 fit_check.append(self.checkFitness(circuit))
             max_fit_loc = fit_check.index(max(fit_check))
-            next_gen += tournament_population[max_fit_loc]
+            next_gen += [tournament_population[max_fit_loc]]
+            #print('next gen',tabulate(next_gen))
         self.population = self.fillPopulation(next_gen)
 
     def fillPopulation(
@@ -87,15 +92,16 @@ class GA(GP):
                   and each individual list is a single individual.
         '''
         new_gen = next_gen.copy()
-        while len(new_gen) < self.pop_size - self.selection_size:
-            mut_type = random.randint(0,2)
+        while len(new_gen) < self.pop_size:
+            mut_type = random.randint(0,1)
             random.shuffle(next_gen)
             if mut_type == 0:
-                new_gen += m.addNode(next_gen[0],self.ins)
-            elif mut_type == 1:
-                new_gen += m.removeNode(next_gen[0],self.ins)
+                new_gen += [m.addNode(next_gen[0],self.ins)]
+            #elif mut_type == 1:
             else:
-                new_gen += m.crossover(next_gen[0],next_gen[1],self.ins)
+                new_gen += [m.removeNode(next_gen[0],self.ins)]
+            #else:
+            #    new_gen += m.crossover(next_gen[0],next_gen[1],self.ins)
             pass
         return new_gen
 
@@ -105,18 +111,45 @@ class GA(GP):
         ''' Returns the logical fitness of the circuit from exhaustive testing
         '''
         logical_result = self.exhaustiveTest(circuit)
+        score = 0
         for t in range(len(logical_result)):
             if logical_result[t] == self.orig_logic[t]:
                 score += 1
         return score/len(logical_result)
 
+    def printStats(
+        self
+    ):
+        ''' Prints out the stats of the current generation
+        '''
+        fit_check = []
+        num_circuit = 0
+        for circuit in self.population:
+            fit_check.append(self.checkFitness(circuit))
+            num_circuit += 1
+        table = [ [self.current_epoch, min(fit_check), sum(fit_check)/len(fit_check), max(fit_check)] ]
+        print(tabulate(table,headers=["Epoch", "Min", "Average", "Max"]))
+
+
+def normalTest(
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+    ins = ['I0','I1','Sel'],
+    max_epochs = 1000
+):
+    ''' Normal test of the GA system
+    '''
+    test = GA(ins,max_epochs,original_ast)
+    test.printStats()
+
+    while test.current_epoch < test.max_epochs:
+        test.tournamentSelection(10)
+        test.current_epoch += 1
+        test.printStats()
 
 ############# Test Functions  #############
 
-
-
 def main():
-    pass
+    normalTest()
 
 
 if __name__ == "__main__":

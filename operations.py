@@ -125,7 +125,7 @@ def returnLogic(
                     tempStart = currentAST[:node+1]
                     tempEnd = currentAST[node+2:]
                     # preforms logical operation
-                    tempResult = returnGate(currentAST[node],children)
+                    tempResult = returnGate(currentAST[node],child)
                     # combines logical result with AST
                     tempAST = tempStart  + tempEnd
                     tempAST[node] = tempResult

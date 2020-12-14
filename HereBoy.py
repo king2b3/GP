@@ -176,106 +176,106 @@ class HereBoy(GP):
         else: # 3%
             pass
 
+    @staticmethod
+    def params_test(
+        total_success = 0,
+        num_runs = 0,
+        max_epochs = 100,
+        #original_ast = ['or','I0','I1'],
+        original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+        ins = ['I0','I1','Sel']
+    ):
 
-############# Test Functions  #############
+        for rand in range(0,20):
+            lev_total = []
+            average_epochs = []
+            total_success = 0
+            num_runs = 0
+            for _ in range(5):
+                
+                variant = HereBoy(original_ast,ins,max_epochs,.3)
+                variant.current_ast = variant.addRandomness(rand)
 
-def params_test(
-    total_success = 0,
-    num_runs = 0,
-    max_epochs = 100,
-    #original_ast = ['or','I0','I1'],
-    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-    ins = ['I0','I1','Sel']
-):
+                epochs = 0
 
-    for rand in range(0,20):
-        lev_total = []
-        average_epochs = []
-        total_success = 0
-        num_runs = 0
-        for _ in range(5):
+                while epochs < variant.max_epochs and variant.checkFitness(epochs):
+                    variant.exhaustiveCheck(epochs) 
+                    variant.updateFitness(epochs)
+                    epochs +=1
+
+                logic2 = variant.exhaustiveTest(variant.current_ast)
+                num_runs += 1
+                if variant.orig_log == logic2:
+                    total_success += 1
+                
+                average_epochs.append(epochs)
+                lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+
+            print('\nAverage lev distance for {} initial randoms muts: {}'.format(
+                sum(lev_total)/len(lev_total),rand))
+            print('Number of hits: {}'.format(total_success/num_runs))
+            print('Average number of epochs needed: {}'.format(
+                sum(average_epochs)/len(average_epochs)))
+
+
+    @staticmethod
+    def normal_dv(
+        original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+        #original_ast = ['or','I0','I1'],
+        #ins = ['I0','I1']
+        ins = ['I0','I1','Sel']
+    ):
+        
+        variant = HereBoy(original_ast,ins,100,.3)
+        #variant.current_ast = variant.createRandomAST()
+
+        treePrint(variant.original_ast,'temp/Original_AST.gv')
+        treePrint(variant.current_ast,'temp/Starting_AST.gv')
+
+        epochs = 0
+        same_count = 0
+        same_count_max = 3
+
+        start = time.time()
+        while epochs < variant.max_epochs and variant.checkFitness(epochs):
+            print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
+                variant.checkFitness(epochs,variant.current_ast,False)))
+            print('Current AST is: ',variant.current_ast)
+            past_ast = variant.current_ast.copy()
+            variant.exhaustiveCheck(epochs) 
+            variant.updateFitness(epochs)
             
-            variant = HereBoy(original_ast,ins,max_epochs,.3)
-            variant.current_ast = variant.addRandomness(rand)
-
-            epochs = 0
-
-            while epochs < variant.max_epochs and variant.checkFitness(epochs):
-                variant.exhaustiveCheck(epochs) 
-                variant.updateFitness(epochs)
-                epochs +=1
-
-            logic2 = variant.exhaustiveTest(variant.current_ast)
-            num_runs += 1
-            if variant.orig_log == logic2:
-                total_success += 1
+            if past_ast == variant.current_ast:
+                same_count += 1
+            else:
+                same_count = 0
             
-            average_epochs.append(epochs)
-            lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+            if same_count > same_count_max:
+                print('Adding diversity, circuit been way to stable son')
+                variant.current_ast = m.randomMutation(variant.current_ast,variant.ins)
+                same_count = 0
+            
 
-        print('\nAverage lev distance for {} initial randoms muts: {}'.format(
-            sum(lev_total)/len(lev_total),rand))
-        print('Number of hits: {}'.format(total_success/num_runs))
-        print('Average number of epochs needed: {}'.format(
-            sum(average_epochs)/len(average_epochs)))
-
-
-def normal_dv(
-    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-    #original_ast = ['or','I0','I1'],
-    #ins = ['I0','I1']
-    ins = ['I0','I1','Sel']
-):
-    
-    variant = HereBoy(original_ast,ins,100,.3)
-    #variant.current_ast = variant.createRandomAST()
-
-    treePrint(variant.original_ast,'temp/Original_AST.gv')
-    treePrint(variant.current_ast,'temp/Starting_AST.gv')
-
-    epochs = 0
-    same_count = 0
-    same_count_max = 3
-
-    start = time.time()
-    while epochs < variant.max_epochs and variant.checkFitness(epochs):
-        print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
-            variant.checkFitness(epochs,variant.current_ast,False)))
-        print('Current AST is: ',variant.current_ast)
-        past_ast = variant.current_ast.copy()
-        variant.exhaustiveCheck(epochs) 
-        variant.updateFitness(epochs)
+            print('Mutated AST is: ',variant.current_ast)
+            epochs +=1
+        end = time.time()
         
-        if past_ast == variant.current_ast:
-            same_count += 1
-        else:
-            same_count = 0
-        
-        if same_count > same_count_max:
-            print('Adding diversity, circuit been way to stable son')
-            variant.current_ast = m.randomMutation(variant.current_ast,variant.ins)
-            same_count = 0
+        logic2 = variant.exhaustiveTest(variant.current_ast)
         
 
-        print('Mutated AST is: ',variant.current_ast)
-        epochs +=1
-    end = time.time()
-    
-    logic2 = variant.exhaustiveTest(variant.current_ast)
-    
-
-    print('\nOriginal AST: ',variant.original_ast)
-    print('Final AST is: ',variant.current_ast)
-    print('\nNumber of epochs ran {}'.format(epochs))
-    print('Final fitness: {:0.4f}'.format(
-            variant.checkFitness(epochs,variant.current_ast,False)))
-    print('Run time: {:0.4f}\n'.format(end-start))
-    print(list(zip(variant.orig_log,logic2)))
-    treePrint(variant.current_ast,'temp/Final_AST.gv')
+        print('\nOriginal AST: ',variant.original_ast)
+        print('Final AST is: ',variant.current_ast)
+        print('\nNumber of epochs ran {}'.format(epochs))
+        print('Final fitness: {:0.4f}'.format(
+                variant.checkFitness(epochs,variant.current_ast,False)))
+        print('Run time: {:0.4f}\n'.format(end-start))
+        print(list(zip(variant.orig_log,logic2)))
+        treePrint(variant.current_ast,'temp/Final_AST.gv')
 
 
 def main():
-    normal_dv()
+    test1 = HereBoy(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],['I0','I1','Sel'],100,0.3)
+    test1.normal_dv()
 
 
 if __name__ == "__main__":

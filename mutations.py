@@ -3,7 +3,7 @@
 #   Bayley King
 
 import random
-#from tabulate import tabulate      # used just for testing, remove upon completion
+from tabulate import tabulate      # used just for testing, remove upon completion
 import itertools
 import operations as op
 
@@ -147,7 +147,7 @@ def crossover(
     new_ast_1 = ast_1_first + ast_2_middle + ast_1_end
     new_ast_2 = ast_2_first + ast_1_middle + ast_2_end
 
-    return new_ast_1, new_ast_2
+    return [new_ast_1, new_ast_2]
 
     
 def check_every_add_node(
