@@ -7,12 +7,6 @@ from tabulate import tabulate      # used just for testing, remove upon completi
 import itertools
 import operations as op
 
-
-#ops = ['or','and','not','nand']
-#binOps = ['or','and','nand']
-#soloOps = ['not']
-#ops = binOps+soloOps
-
 def mutate(
     ast,ins
 ):

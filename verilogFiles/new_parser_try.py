@@ -9,13 +9,14 @@ from hdlConvertorAst.to.verilog.verilog2005 import ToVerilog2005
 from hdlConvertorAst.to.common import ToHdlCommon
 import json
 
-#TEST_DIR = os.path.join("..", "tests", "verilog")
+#TEST_DIR = os.path.join("..", "tests", "verilog")  # uncomment for song in these directories
+#filenames = [os.path.join(TEST_DIR, "dff_async_reset.v"), ]
 
-filenames = "uart.v"#[os.path.join(TEST_DIR, "dff_async_reset.v"), ]
+filenames = "big_test.v" 
 include_dirs = []
 c = HdlConvertor()
 # note that there is also Language.VERILOG_2005, Language.SYSTEM_VERILOG_2017 and others
-d = c.parse(filenames, Language.VERILOG, include_dirs, hierarchyOnly=False, debug=True)
+d = c.parse(filenames, Language.VERILOG, include_dirs, hierarchyOnly=True, debug=True)
 
 for o in d.objs:
     print(o)

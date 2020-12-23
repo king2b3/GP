@@ -104,8 +104,6 @@ class HereBoy(GP):
     ):
         '''
             Returns the new weights for each part of the fitness function
-            
-        See issue #8
         '''
         temp = self.starting_struc_fit*math.exp(-epochs/self.max_epochs)
         if temp <= self.min_struc_fit:

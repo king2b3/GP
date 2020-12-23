@@ -2,8 +2,7 @@
 #   Bayley King
 #   20 November 2020
 #   Python 3.8
-'''
-    General container for this genetic framework. There are multiple child classes
+''' General container for this genetic framework. There are multiple child classes
       all explained below. 
 
         HereBoy: 
@@ -26,37 +25,38 @@ from os import system
 
 class GP:
     def __init__(
-        self,inputs,
+        self, inputs,
         max_epochs
     ):
-
+        ''' General container for genetic program system
+        '''
         self.ins = inputs
         self.len_ins = len(inputs)
         self.max_epochs = max_epochs       
         
     def exhaustiveTest(
-        self, 
-        current_ast
+        self, current_ast
     ):
         ''' Returns the exhaustive tested of the AST
 
-        Dynamically tests the AST on its full range of input values
-        Returns list of boolean results.
-        For a set of inputs like
-            ['in1','in2',.....]
-        the dynamic testing works like this
-            for [False,True] in input_1:
-                for [False,True] in input_2:
-                    ......
-        itertools offers a dynamic approach instead of hardcoding like above.
-        The input list will change from left to right with all inputs starting
-        at False. EX.
-            [False,False,....,False]
-            [True,False,.....,False]
-            [False,True,.....,False]
-            [True,True,......,False]
-            .....
-            [True,True,........True]
+            Dynamically tests the AST on its full range of input values
+            
+            Returns list of boolean results.
+            For a set of inputs like
+                ['in1','in2',.....]
+            the dynamic testing works like this
+                for [False,True] in input_1:
+                    for [False,True] in input_2:
+                        ......
+            itertools offers a dynamic approach instead of hardcoding like above.
+            The input list will change from left to right with all inputs starting
+            at False. EX.
+                [False,False,....,False]
+                [True,False,.....,False]
+                [False,True,.....,False]
+                [True,True,......,False]
+                .....
+                [True,True,........True]
         '''
         args = []
         test = []
@@ -77,11 +77,13 @@ class GP:
 
 
     def createRandomAST(
-        self, min_ast_depth=3,
-        max_ast_depth=6, ast=None
+        self, 
+        min_ast_depth=3,
+        max_ast_depth=6, 
+        ast=None
     ):
-        '''
-            Recursive function which adds new gates to AST.
+        ''' Recursive function which adds new gates to AST.
+
             depth: set number of layers in the AST
             gates: list containing possible gates, both binary and singular ops
             current_depth: current depth of AST creation
@@ -113,9 +115,9 @@ class GP:
         ''' Takes an AST and preforms num_muts number of mutations, to try and 
             add initial randomness to the AST.
 
-        See issue #11
-        
-        Returns AST with random mutation 
+            See issue #11
+            
+            Returns AST with random mutation 
         '''
         for _ in range(num_muts):
             # 50/50 chance it adds nodes or mutates nodes
