@@ -241,8 +241,8 @@ class HereBoy(GP):
         ins = ['I0','I1','Sel']
     ):
         
-        variant = HereBoy(original_ast,ins,100,.3)
-        #variant.current_ast = variant.createRandomAST()
+        variant = HereBoy(original_ast,ins,4000,.3)
+        variant.current_ast = variant.createRandomAST()
 
         treePrint(variant.original_ast,'temp/Original_AST.gv')
         treePrint(variant.current_ast,'temp/Starting_AST.gv')
@@ -257,9 +257,10 @@ class HereBoy(GP):
                 variant.checkFitness(epochs,variant.current_ast,False)))
             print('Current AST is: ',variant.current_ast)
             past_ast = variant.current_ast.copy()
-            variant.exhaustiveCheck(epochs) 
+            variant.hereBoy(epochs) 
             variant.updateFitness(epochs)
             
+            '''
             if past_ast == variant.current_ast:
                 same_count += 1
             else:
@@ -270,7 +271,7 @@ class HereBoy(GP):
                 variant.current_ast = m.randomMutation(variant.current_ast,variant.ins)
                 same_count = 0
             
-
+            '''
             print('Mutated AST is: ',variant.current_ast)
             epochs +=1
         end = time.time()
@@ -289,7 +290,7 @@ class HereBoy(GP):
 
 
 def main():
-    test1 = HereBoy(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],['I0','I1','Sel'],100,0.3)
+    test1 = HereBoy(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],['I0','I1','Sel'],4000,0.3)
     test1.normal_dv()
 
 
