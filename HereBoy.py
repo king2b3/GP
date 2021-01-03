@@ -29,6 +29,7 @@ import random
 from os import system
 from GP import GP
 import operations as op
+import datetime
 
 def clear():
     _ = system("clear")
@@ -224,6 +225,11 @@ class HereBoy(GP):
         ins = ['I0','I1','Sel']
     ):
 
+        f = open("paramsOutput.txt","a")
+        now = datetime.datetime.now()
+        new_str = "New test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+        f.write(new_str)
+        f.close()
         for rand in range(1,20):
             lev_total = []
             average_epochs = []
@@ -258,11 +264,20 @@ class HereBoy(GP):
                 average_epochs.append(epochs)
                 lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
 
-            print('\nAverage lev distance for {} %% mutations: {}'.format(
-                sum(lev_total)/len(lev_total),rand))
-            print('Number of hits: {}'.format(total_success/num_runs))
-            print('Average number of epochs needed: {}'.format(
-                sum(average_epochs)/len(average_epochs)))
+            
+            
+            f = open("paramsOutput.txt","a")
+            str1 = "Average lev distance for {:0.4f} %% mutations: {}\n".format(
+                sum(lev_total)/len(lev_total),rand)
+            str2 = "Number of hits: {}\n".format(total_success/num_runs)
+            str3 = "Average number of epochs needed: {}\n".format(
+                sum(average_epochs)/len(average_epochs))
+            f.write(str1)
+            f.write(str2)
+            f.write(str3)
+            f.close()
+            print('past')
+
 
 
     @staticmethod
