@@ -21,6 +21,7 @@ import math
 from levenshteinDistance import levenshtein
 import mutations as m
 import pickle as pkl
+import math
 from treePrint import treePrint
 #from params import *
 import time
@@ -38,7 +39,7 @@ class HereBoy(GP):
     '''
     def __init__(
         self, ast, inputs, 
-        max_epochs, struc_fit
+        max_epochs, struc_fit, rand=.1
     ):
         super().__init__(inputs,max_epochs)
         self.original_ast = ast.copy()
@@ -49,6 +50,8 @@ class HereBoy(GP):
         self.logFit = struc_fit
         self.orig_log = self.exhaustiveTest(ast)
         self.check_ast(self.current_ast)
+        self.mutation_fraction = rand
+        self.max_score = 100
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -116,6 +119,19 @@ class HereBoy(GP):
             print('Structural Fitness: {:0.4f} and logical fitness: {:0.4f}'.format(
                     self.strucFit,self.logFit))
 
+
+    def updateHereBoy(
+        self, cur_fit
+    ):
+        '''
+            Mutation Bits = αβ 
+            α = MaxMutationRate = UserFraction*ChromosomeBits
+            β = (MaxScore – MaxCurrentScore)/MaxScore (4)
+        '''
+        alpha = self.mutation_fraction*len(self.current_ast)
+        beta = (self.max_score - cur_fit) / self.max_score
+        return math.ceil(alpha*beta)
+
     
     def hereBoy(
         self, epochs
@@ -126,12 +142,19 @@ class HereBoy(GP):
             Will either mutate AST or leave AST alone
         '''
 
-        cur_fit = self.checkFitness(epochs)
-        mut_ast = m.randomMutation(self.current_ast,self.ins)
-        mut_fit = self.checkFitness(epochs,mut_ast)
+        # figures out how many mutations can happen 
+        cur_fit = self.checkFitness(epochs,self.current_ast,False)
+        num_muts = self.updateHereBoy(cur_fit)
+        mut_ast = self.current_ast.copy()
+        for _ in range(num_muts):
+            mut_ast = m.randomMutation(mut_ast,self.ins)
+        mut_fit = self.checkFitness(epochs,mut_ast,False)
 
         if mut_fit > cur_fit:
             self.current_ast = mut_ast
+            #print('current fitness {:0.3f} and mutated fitness {:0.3f} with {} mutations'.format(
+            #    cur_fit,mut_fit,num_muts))
+
     
     def exhaustiveCheck(
         self, epochs,
@@ -195,28 +218,37 @@ class HereBoy(GP):
     def params_test(
         total_success = 0,
         num_runs = 0,
-        max_epochs = 100,
+        max_epochs = 4000,
         #original_ast = ['or','I0','I1'],
         original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
         ins = ['I0','I1','Sel']
     ):
 
-        for rand in range(0,20):
+        for rand in range(1,20):
             lev_total = []
             average_epochs = []
             total_success = 0
             num_runs = 0
+            rand = rand / 100
             for _ in range(5):
                 
-                variant = HereBoy(original_ast,ins,max_epochs,.3)
-                variant.current_ast = variant.addRandomness(rand)
+                variant = HereBoy(original_ast,ins,4000,.3,rand)
+                #variant.current_ast = variant.createRandomAST()
 
                 epochs = 0
 
+                start = time.time()
                 while epochs < variant.max_epochs and variant.checkFitness(epochs):
-                    variant.exhaustiveCheck(epochs) 
+                    #print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
+                        #variant.checkFitness(epochs,variant.current_ast,False)))
+                    #print('Current AST is: ',variant.current_ast)
+                    past_ast = variant.current_ast.copy()
+                    variant.hereBoy(epochs) 
                     variant.updateFitness(epochs)
+                    
+                    #print('Mutated AST is: ',variant.current_ast)
                     epochs +=1
+                end = time.time()
 
                 logic2 = variant.exhaustiveTest(variant.current_ast)
                 num_runs += 1
@@ -226,7 +258,7 @@ class HereBoy(GP):
                 average_epochs.append(epochs)
                 lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
 
-            print('\nAverage lev distance for {} initial randoms muts: {}'.format(
+            print('\nAverage lev distance for {} %% mutations: {}'.format(
                 sum(lev_total)/len(lev_total),rand))
             print('Number of hits: {}'.format(total_success/num_runs))
             print('Average number of epochs needed: {}'.format(
@@ -242,37 +274,23 @@ class HereBoy(GP):
     ):
         
         variant = HereBoy(original_ast,ins,4000,.3)
-        variant.current_ast = variant.createRandomAST()
+        #variant.current_ast = variant.createRandomAST()
 
         treePrint(variant.original_ast,'temp/Original_AST.gv')
         treePrint(variant.current_ast,'temp/Starting_AST.gv')
 
         epochs = 0
-        same_count = 0
-        same_count_max = 3
 
         start = time.time()
         while epochs < variant.max_epochs and variant.checkFitness(epochs):
-            print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
-                variant.checkFitness(epochs,variant.current_ast,False)))
-            print('Current AST is: ',variant.current_ast)
+            #print('\nEpoch: {} Current Fitness: {:0.4f}'.format(epochs,
+                #variant.checkFitness(epochs,variant.current_ast,False)))
+            #print('Current AST is: ',variant.current_ast)
             past_ast = variant.current_ast.copy()
             variant.hereBoy(epochs) 
             variant.updateFitness(epochs)
             
-            '''
-            if past_ast == variant.current_ast:
-                same_count += 1
-            else:
-                same_count = 0
-            
-            if same_count > same_count_max:
-                print('Adding diversity, circuit been way to stable son')
-                variant.current_ast = m.randomMutation(variant.current_ast,variant.ins)
-                same_count = 0
-            
-            '''
-            print('Mutated AST is: ',variant.current_ast)
+            #print('Mutated AST is: ',variant.current_ast)
             epochs +=1
         end = time.time()
         
@@ -290,8 +308,8 @@ class HereBoy(GP):
 
 
 def main():
-    test1 = HereBoy(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],['I0','I1','Sel'],4000,0.3)
-    test1.normal_dv()
+    test1 = HereBoy(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],['I0','I1','Sel'],40000,0.3)
+    test1.params_test()
 
 
 if __name__ == "__main__":
