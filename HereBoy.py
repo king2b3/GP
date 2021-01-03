@@ -116,6 +116,23 @@ class HereBoy(GP):
             print('Structural Fitness: {:0.4f} and logical fitness: {:0.4f}'.format(
                     self.strucFit,self.logFit))
 
+    
+    def hereBoy(
+        self, epochs
+    ):
+        ''' Closer approximation to the HereBOY algorithm
+
+            Returns nothing
+            Will either mutate AST or leave AST alone
+        '''
+
+        cur_fit = self.checkFitness(epochs)
+        mut_ast = m.randomMutation(self.current_ast,self.ins)
+        mut_fit = self.checkFitness(epochs,mut_ast)
+
+        if mut_fit > cur_fit:
+            self.current_ast = mut_ast
+    
     def exhaustiveCheck(
         self, epochs,
         circuit_test=None
