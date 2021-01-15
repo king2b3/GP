@@ -176,11 +176,22 @@ def check_every_add_node(
             newNode.append(gate)
 
             # add children to new subtree
-            if gate in op.solo_operators:
+            if op.checkSoloGate(gate):
                 newNode.append(comb[2]) 
-            else:
+            elif op.checkBinaryGate(gate):
                 newNode.append(comb[2])
                 newNode.append(comb[3])
+            '''
+            else:
+                # creates a random ff. child one is saved key, child 2 is a random input
+                temp = op.returnFFLen()
+                temp = 'ff_'+str(temp)
+                # adds new key to saved 
+                op.ff_statements[temp] = False
+                newNode.append(temp)
+                # radnom input
+                newNode.append(comb[2])
+            '''
 
             # insert new subtree in middle of split tree
             temp = tempStart+newNode+tempEnd
@@ -215,12 +226,23 @@ def addNode(
         # create one random child 
         child = random.randint(0,len_ins)
         newNode.append(ins[child]) 
-    else:
+    elif op.checkBinaryGate(gate):
         # create two random children
         child1 = random.randint(0,len_ins)
         child2 = random.randint(0,len_ins)
         newNode.append(ins[child1])
         newNode.append(ins[child2])
+    '''
+    else:
+        # creates a random ff. child one is saved key, child 2 is a random input
+        temp = op.returnFFLen()
+        temp = 'ff_'+str(temp)
+        # adds new key to saved 
+        op.ff_statements[temp] = False
+        newNode.append(temp)
+        # radnom input
+        newNode.append(ins[random.randint(0,len_ins)])
+    '''
 
     # recombine AST and return it
     return tempStart+newNode+tempEnd

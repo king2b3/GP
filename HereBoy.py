@@ -61,6 +61,66 @@ class HereBoy(GP):
             be the data handeling classes.
         '''
 
+    def init_ffs(
+        self
+    ):
+        ''' Defines the initial states of each flip flop in the original ast
+        '''
+        count = 0
+        for g in self.original_ast:
+            if g == 'ff':
+                temp = 'ff_'+str(count)
+                op.ff_statements[temp] = False
+                count += 1
+
+
+    def insertCombTrojan(
+        self
+    ):
+        ''' This function will insert a random combinational trojan on some node of the AST
+
+            The trojan is a fault injecting combinatonal trojan, that looks for a specific
+              input pattern to inject a fault onto a wire.
+
+            A random wire is selected to be fed into an xor gate. The other input to the xor gate
+              is an combination of AND gates that take [2,N] inputs for N number of inputs. The 
+              number of inputs used are randomly selected.
+
+            Nothing is returned, but the function calls self and replaces the current AST
+              to insert the trojan. 
+        '''
+        # len calcs 
+        len_ast = len(self.current_ast)-1
+        len_ins = len(self.ins)-1
+        # creates a copy of the current ast
+        temp_ast = self.current_ast.copy()
+        # picks what wire the trojan will be added on
+        wire = random.randint(0,len_ast)
+        # selects a random number of inputs in the comb logic
+        num_combs = random.randint(2,len_ins+1)
+        # breaks the temp ast into pieces to add the trojan
+        temp_start = temp_ast[:wire]
+        temp_end = temp_ast[wire+1:]
+        # adds the torjan to newNode
+        new_node = []
+        new_node.append('xor')
+        for n in range(1,num_combs):
+            new_node.append('and')
+            new_node.append(self.ins[random.randint(0,len_ins)])
+        new_node.append(self.ins[random.randint(0,len_ins)])
+        new_node.append(temp_ast[wire])
+        # recombine the temp_ast and save it to self.current_ast
+        #print('trojan inserted)')
+        self.current_ast = temp_start+new_node+temp_end
+        
+    def __del__(
+        self
+    ):
+        ''' deconstructor 
+        '''
+        pass
+
+    
     def checkFitness(
         self, epochs,
         ast = None,
@@ -189,7 +249,7 @@ class HereBoy(GP):
 
 
     def randomExhaustive(
-        self, 
+        self, epochs,
         print_bool=False
     ):
         ''' Returns a stochastically selected mutated AST
@@ -199,7 +259,14 @@ class HereBoy(GP):
         num_mut = random.randint(0,1000)
         if num_mut < 800: # 80%
             if print_bool: print('\nexhaustive mut check')
-            self.current_ast = m.exhaustiveMutationsCheck(self.current_ast,self.ins)
+            circuit_test = m.exhaustiveMutationsCheck(self.current_ast,self.ins)
+            random.shuffle(circuit_test)
+            fit_check = []
+            # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
+            for circuit in circuit_test:
+                fit_check.append(self.checkFitness(epochs,circuit,False))
+            max_fit_loc = fit_check.index(max(fit_check))
+            self.current_ast = circuit_test[max_fit_loc]
         elif num_mut < 900: # 10%
             if print_bool: print('\nRandom Mutation')
             self.current_ast = m.randomMutate(self.current_ast,self.ins)
@@ -219,7 +286,7 @@ class HereBoy(GP):
     def params_test(
         total_success = 0,
         num_runs = 0,
-        max_epochs = 4000,
+        max_epochs = 8000,
         #original_ast = ['or','I0','I1'],
         original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
         ins = ['I0','I1','Sel']
@@ -230,15 +297,16 @@ class HereBoy(GP):
         new_str = "New test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
         f.write(new_str)
         f.close()
-        for rand in range(1,20):
+        for _ in range(1):
             lev_total = []
             average_epochs = []
             total_success = 0
             num_runs = 0
-            rand = rand / 100
+            #rand = rand / 100
             for _ in range(5):
                 
-                variant = HereBoy(original_ast,ins,4000,.3,rand)
+                variant = HereBoy(original_ast,ins,max_epochs,.3)
+                variant.insertCombTrojan()
                 #variant.current_ast = variant.createRandomAST()
 
                 epochs = 0
@@ -249,7 +317,7 @@ class HereBoy(GP):
                         #variant.checkFitness(epochs,variant.current_ast,False)))
                     #print('Current AST is: ',variant.current_ast)
                     past_ast = variant.current_ast.copy()
-                    variant.hereBoy(epochs) 
+                    variant.randomExhaustive(epochs) 
                     variant.updateFitness(epochs)
                     
                     #print('Mutated AST is: ',variant.current_ast)
@@ -263,12 +331,11 @@ class HereBoy(GP):
                 
                 average_epochs.append(epochs)
                 lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
-
-            
+                print('pass')
             
             f = open("paramsOutput.txt","a")
-            str1 = "Average lev distance for {:0.4f} %% mutations: {}\n".format(
-                sum(lev_total)/len(lev_total),rand)
+            str1 = "Average lev distance for {:0.4f}\n".format(
+                sum(lev_total)/len(lev_total))
             str2 = "Number of hits: {}\n".format(total_success/num_runs)
             str3 = "Average number of epochs needed: {}\n".format(
                 sum(average_epochs)/len(average_epochs))
@@ -276,7 +343,7 @@ class HereBoy(GP):
             f.write(str2)
             f.write(str3)
             f.close()
-            print('past')
+            #print('past')
 
 
 
@@ -285,10 +352,12 @@ class HereBoy(GP):
         original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
         #original_ast = ['or','I0','I1'],
         #ins = ['I0','I1']
-        ins = ['I0','I1','Sel']
+        ins = ['I0','I1','Sel'],
+        max_epochs = 8000
+
     ):
         
-        variant = HereBoy(original_ast,ins,4000,.3)
+        variant = HereBoy(original_ast,ins,max_epochs,.3)
         #variant.current_ast = variant.createRandomAST()
 
         treePrint(variant.original_ast,'temp/Original_AST.gv')
@@ -324,6 +393,7 @@ class HereBoy(GP):
 
 def main():
     test1 = HereBoy(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],['I0','I1','Sel'],40000,0.3)
+    #test1.insertCombTrojan()
     test1.params_test()
 
 

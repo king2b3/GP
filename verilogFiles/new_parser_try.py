@@ -12,7 +12,7 @@ import json
 #TEST_DIR = os.path.join("..", "tests", "verilog")  # uncomment for song in these directories
 #filenames = [os.path.join(TEST_DIR, "dff_async_reset.v"), ]
 
-filenames = "big_test.v" 
+filenames = "ff.v" 
 include_dirs = []
 c = HdlConvertor()
 # note that there is also Language.VERILOG_2005, Language.SYSTEM_VERILOG_2017 and others

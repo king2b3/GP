@@ -26,22 +26,84 @@ def nor_op(args):
 def not_op(args):
     return not args
 
+def xor_op(args):
+    return and_op([or_op(args),nand_op(args)])
+
+def ff_op(args):
+    ''' returns saved value from FF, sets new saved value to current 2nd child value
+    '''
+    temp = ff_statements[args[0]]
+    ff_statements[args[0]] = args[1]
+    return temp
+
+def if_op(args):
+    ''' Returns IF statement operations.
+    args is in this format
+        if x == 1:
+            return True
+        else:
+            return False
+
+    ['=','x','1',True,False]
+                    if
+            =             body
+        x       1   if_true     if_false
+
+        CURRENTLY UNUSED
+    '''
+    temp = check_cond(args)
+    if temp:
+        return args[3]
+    else:
+        return args[4]
+    
+
+def check_cond(args):
+    ''' Returns if result from conditions
+    '''
+    if args[0] == '=':
+        return args[1] == args [2]
+    elif args[0] == '>':
+        return args[1] > args [2]
+    elif args[0] == '<':
+        return args[1] < args [2]
+    elif args[0] == '!=':
+        return not (args[1] == args [2])
+    elif args[0] == '>=':
+        return args[1] >= args [2]
+    elif args[0] == '<=':
+        return args[1] <= args [2]
+
 ######  Functions  ######
+
+ff_statements = {
+}
 
 binary_operators = {
     'and': and_op,
     'or': or_op,
     'nand': nand_op,
-    'nor': nor_op
+    'nor': nor_op,
+    'xor': xor_op
 }
 
 solo_operators = {
     'not': not_op
 }
 
-operators = {
-    **binary_operators,**solo_operators
+statement_operators = {
+    #'if': if_op,
+    'ff': ff_op
 }
+
+operators = {
+    **binary_operators,**solo_operators #,**statement_operators
+}
+
+
+def returnFFLen():
+    return len(ff_statements)
+
 
 def randomGate():
     return random.choice(list(operators.keys()))      
@@ -53,6 +115,14 @@ def returnGate(
     '''Returns the results of the operation
     '''
     return(operators[op](args))
+
+
+def checkStatementGate(
+    node
+):
+    ''' Checks if the node is a statement operator
+    '''
+    return node in statement_operators
 
 
 def checkBinaryGate(
@@ -131,12 +201,30 @@ def returnLogic(
                     tempAST = tempStart  + tempEnd
                     tempAST[node] = tempResult
                     break
+
+            elif checkStatementGate(currentAST[node]):
+                children = currentAST[node+1:node+3]
+                if type(children[1]) == bool:
+                    tempStart = currentAST[:node+1]
+                    tempEnd = currentAST[node+3:]
+                    # preforms statement operation
+                    tempResult = returnGate(currentAST[node],children)
+                    # combines logical result with AST
+                    tempAST = tempStart  + tempEnd
+                    tempAST[node] = tempResult
+                    break
+
     return currentAST
 
 
 def main():
-    for _ in range(10):
-        print(randomGate())
+    #ff_statements['ff_0'] = False
+    #t = ['ff_0',False]
+    #print(returnGate('ff',t))
+    print(xor_op([False,False]))
+    print(xor_op([False,True]))
+    print(xor_op([True,False]))
+    print(xor_op([True,True]))
 
 if __name__ == "__main__":
     main()
