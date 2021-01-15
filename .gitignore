@@ -5,6 +5,10 @@ Zach-thesis-master/
 .vscode/
 test.py
 papers/
+temp/
+funny_results/
+savedOutputs/
+paramsOutput.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
