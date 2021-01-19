@@ -1,0 +1,14 @@
+#!/bin/bash
+# a bash script to run every file in the test programs directory
+# testPgms/correct/.
+clear;
+mut_types="-hb -s -e"
+mode_types="-r -ct -v"
+
+for mut_type in $mut_types
+do
+	for mode_type in $mode_types
+	do
+		python HereBoy.py 2 "$mut_type" "$mode_type"
+	done
+done

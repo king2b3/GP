@@ -21,7 +21,8 @@ import operations as op
 import sys
 import random
 import mutations as  m
-from os import system
+#from scanner import Scanner
+
 
 class GP:
     def __init__(
@@ -32,8 +33,9 @@ class GP:
         '''
         self.ins = inputs
         self.len_ins = len(inputs)
-        self.max_epochs = max_epochs       
-        
+        self.max_epochs = max_epochs      
+
+
     def exhaustiveTest(
         self, current_ast
     ):
@@ -41,7 +43,8 @@ class GP:
 
             Dynamically tests the AST on its full range of input values
             
-            Returns list of boolean results.
+            Returns: List of logical results.
+
             For a set of inputs like
                 ['in1','in2',.....]
             the dynamic testing works like this
@@ -59,7 +62,7 @@ class GP:
                 [True,True,........True]
         '''
         args = []
-        test = []
+        logical_result = []
         # creates list of [False,True] the length of number of inputs
         args = [[False,True] for i in range(self.len_ins) ]
         for comb in product(*args):
@@ -71,9 +74,8 @@ class GP:
                         # Inserts either True or False into proper input
                         ast[gate] = comb[ins_counter]
                 ins_counter += 1
-            test.append(op.returnLogic(ast,self.ins)) 
-
-        return test
+            logical_result.append(op.returnLogic(ast,self.ins)) 
+        return logical_result
 
 
     def createRandomAST(
