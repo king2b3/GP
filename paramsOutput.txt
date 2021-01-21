@@ -1,1 +1,125 @@
 Creation of log on 1-3-2021 at 2:45 PM EST
+
+
+New test at: 2021-01-19 12:47:29
+Random AST with software HereBOY
+Average lev distance for 1.1811
+Number of hits: 0.3
+Average number of epochs needed: 1724.0
+
+New test at: 2021-01-19 12:47:56
+Combination Trojan inserted into AST with software HereBOY
+Average lev distance for 1.2556
+Number of hits: 0.95
+Average number of epochs needed: 233.95
+
+New test at: 2021-01-19 12:48:02
+Diverse variant AST with software HereBOY
+Average lev distance for 1.1046
+Number of hits: 0.4
+Average number of epochs needed: 1396.6
+
+New test at: 2021-01-19 12:48:18
+Random AST with stochastic mutations
+
+New test at: 2021-01-20 20:19:34
+Diverse variant AST with exhaustive mutations checking
+Average lev distance for 1.1111
+Number of hits: 1.0
+Average number of epochs needed: 4.0
+
+New test at: 2021-01-20 20:20:22
+Random AST with exhaustive mutations checking
+Average lev distance for 1.4000
+Number of hits: 1.0
+Average number of epochs needed: 1.0
+
+New test at: 2021-01-20 20:20:40
+Random AST with exhaustive mutations checking
+Average lev distance for 2.1111
+Number of hits: 1.0
+Average number of epochs needed: 1.8
+
+New test at: 2021-01-20 20:20:55
+Random AST with exhaustive mutations checking
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 1.2
+
+New test at: 2021-01-20 20:21:00
+Random AST with exhaustive mutations checking
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 1.0
+
+New test at: 2021-01-20 20:21:19
+Diverse variant AST with exhaustive mutations checking
+Average lev distance for 1.1556
+Number of hits: 1.0
+Average number of epochs needed: 1.8
+
+New test at: 2021-01-20 20:21:28
+Diverse variant AST with exhaustive mutations checking
+Average lev distance for 1.3333
+Number of hits: 1.0
+Average number of epochs needed: 1.8
+
+New test at: 2021-01-20 20:21:40
+Diverse variant AST with exhaustive mutations checking
+Average lev distance for 1.1000
+Number of hits: 1.0
+Average number of epochs needed: 1.3
+
+New test at: 2021-01-20 20:21:55
+Combination Trojan inserted into AST with exhaustive mutations checking
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 1.0
+
+New test at: 2021-01-20 20:22:09
+Combination Trojan inserted into AST with exhaustive mutations checking
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 1.0
+
+New test at: 2021-01-20 20:22:58
+Random AST with stochastic mutations
+Average lev distance for 1.1111
+Number of hits: 1.0
+Average number of epochs needed: 78.3
+
+New test at: 2021-01-20 20:23:13
+Random AST with stochastic mutations
+Average lev distance for 1.2000
+Number of hits: 0.9
+Average number of epochs needed: 351.0
+
+New test at: 2021-01-20 20:25:39
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.0476
+Number of hits: 1.0
+Average number of epochs needed: 212.4
+
+New test at: 2021-01-20 20:25:56
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 173.6
+
+New test at: 2021-01-20 20:26:07
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.0556
+Number of hits: 1.0
+Average number of epochs needed: 34.9
+
+New test at: 2021-01-20 20:26:14
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.0667
+Number of hits: 1.0
+Average number of epochs needed: 17.8
+
+New test at: 2021-01-20 20:35:08
+Random AST with stochastic mutations
+Average lev distance for 1.0976
+Number of hits: 1.0
+Average number of epochs needed: 122.15
