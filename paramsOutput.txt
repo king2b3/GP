@@ -123,3 +123,75 @@ Random AST with stochastic mutations
 Average lev distance for 1.0976
 Number of hits: 1.0
 Average number of epochs needed: 122.15
+
+New test at: 2021-01-21 11:21:59
+Scalability Test with 100 inputs stochastic mutations
+Average lev distance for 19.4444
+Number of hits: 1.0
+Average number of epochs needed: 1.0
+
+New test at: 2021-01-21 11:25:18
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 11:25:43
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 11:26:37
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 13:14:34
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 13:15:23
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 13:16:47
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 13:17:17
+Scalability Test with 100 inputs stochastic mutations
+
+New test at: 2021-01-21 13:17:57
+Scalability Test with 100 inputs software HereBOY
+
+New test at: 2021-01-21 13:19:05
+Scalability Test with 100 inputs software HereBOY
+
+New test at: 2021-01-21 13:19:34
+Scalability Test with 100 inputs software HereBOY
+Average lev distance for 1.0873
+Number of hits: 0.0
+Average number of epochs needed: 8000.0
+
+New test at: 2021-01-21 18:45:18
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 18:45:59
+Scalability Test with 30 inputs stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 199.0
+
+New test at: 2021-01-21 19:09:14
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 19:10:16
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 19:10:35
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 19:13:59
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 19:14:39
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 19:14:52
+Scalability Test with 30 inputs stochastic mutations
+
+New test at: 2021-01-21 19:16:49
+Scalability Test with 10 inputs stochastic mutations
+Average lev distance for 2.3250
+Number of hits: 1.0
+Average number of epochs needed: 202.33333333333334

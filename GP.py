@@ -27,12 +27,16 @@ import mutations as  m
 class GP:
     def __init__(
         self, inputs,
-        max_epochs
+        max_epochs,
+        num_ins=0
     ):
         ''' General container for genetic program system
         '''
-        self.ins = inputs
-        self.len_ins = len(inputs)
+        if num_ins != 0:
+            self.ins = self.createInputs(num_ins)
+        else:
+            self.ins = inputs
+        self.len_ins = len(self.ins)
         self.max_epochs = max_epochs      
 
 
@@ -83,8 +87,8 @@ class GP:
         min_ast_depth=3,
         max_ast_depth=6, 
         ast=None
-    ):
-        ''' Recursive function which adds new gates to AST.
+    ) -> list:
+        ''' Retruns a random AST between two lengths
 
             depth: set number of layers in the AST
             gates: list containing possible gates, both binary and singular ops
@@ -129,6 +133,18 @@ class GP:
             elif num_mut == 1:
                 current_ast = m.randomMutate(current_ast,self.ins)
         return current_ast
+    
+    @staticmethod
+    def createInputs(
+        numInputs
+    ) -> list:
+        '''
+            Function will return a set of inputs
+        '''
+        ins = []
+        for i in range(numInputs):
+            ins.append('I'+str(i))
+        return ins
 
     
     '''

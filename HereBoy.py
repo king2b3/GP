@@ -29,8 +29,6 @@ from os import system
 from GP import GP
 import operations as op
 import datetime
-import argparse
-import os
 
 def clear():
     _ = system("clear")
@@ -42,16 +40,22 @@ class HereBoy(GP):
     def __init__(
         self, ast, inputs, 
         max_epochs, struc_fit, 
-        test_cases = None, rand =.1
+        in_num=0,
+        test_cases = None, 
+        rand =.1,
+        cir_depth=100
     ):
-        super().__init__(inputs,max_epochs)
-        self.original_ast = ast.copy()
-        self.current_ast = ast.copy()
+        super().__init__(inputs,max_epochs,in_num)
+        if ast == None:
+            self.original_ast = self.createRandomAST(cir_depth-1,cir_depth)
+        else:
+            self.original_ast = ast.copy()
+        self.current_ast = self.original_ast.copy()
         self.min_struc_fit = struc_fit
         self.starting_struc_fit = 1 - struc_fit      
         self.strucFit = 1 - struc_fit
         self.logFit = struc_fit
-        self.orig_log = self.exhaustiveTest(ast)
+        self.orig_log = self.exhaustiveTest(self.original_ast)
         self.check_ast(self.current_ast)
         self.mutation_fraction = rand
         self.max_score = 1
@@ -208,9 +212,9 @@ class HereBoy(GP):
         self, cur_fit
     ):
         '''
-            Mutation Bits = αβ 
-            α = MaxMutationRate = UserFraction*ChromosomeBits
-            β = (MaxScore – MaxCurrentScore)/MaxScore (4)
+            Mutation Bits = alpha * beta 
+            alpha = MaxMutationRate = UserFraction*ChromosomeBits
+            beta = (MaxScore – MaxCurrentScore)/MaxScore (4)
         '''
         alpha = self.mutation_fraction*len(self.current_ast)
         beta = (self.max_score - cur_fit) / self.max_score
@@ -280,7 +284,7 @@ class HereBoy(GP):
         See issue #6
         '''
         num_mut = random.randint(0,1000)
-        if num_mut < 800: # 80%
+        if num_mut < 500: # 50%
             if print_bool: print('\nexhaustive mut check')
             circuit_test = m.exhaustiveMutationsCheck(self.current_ast,self.ins)
             random.shuffle(circuit_test)
@@ -290,20 +294,107 @@ class HereBoy(GP):
                 fit_check.append(self.checkFitness(epochs,circuit,False))
             max_fit_loc = fit_check.index(max(fit_check))
             self.current_ast = circuit_test[max_fit_loc]
-        elif num_mut < 900: # 10%
+        elif num_mut < 800: # 30%
             if print_bool: print('\nRandom Mutation')
             self.current_ast = m.randomMutate(self.current_ast,self.ins)
-        elif num_mut < 910: # 1%
+        elif num_mut < 900: # 10%
             if print_bool: print('\nAdd a randoom node')
             self.current_ast = m.addNode(self.current_ast,self.ins)
-        elif num_mut < 920: # 1%
+        #elif num_mut < 950: # 1%
+        else: # 10%
             if print_bool: print('\nRemove a random node')
             self.current_ast = m.removeNode(self.current_ast,self.ins)
         #elif num_mut < 970: # 5%
         #    if print_bool: print('\nCrossover a random node')
         #    current_ast = m.crossover(current_ast,ins)
-        else: # 3%
-            pass
+        #else: # 3%
+        #    pass
+
+    
+    @staticmethod
+    def scalabilityTest(
+            mutation_mode, test_mode, number_of_runs,
+            nums_ins=0,
+            total_success = 0,
+            max_epochs = 4000,
+            original_ast = None,
+            #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+            #ins = ['I0','I1','Sel']
+            ins = None
+
+        ):
+
+            f = open("paramsOutput.txt","a")
+            now = datetime.datetime.now()
+            new_str = "\nNew test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+            max_depth = nums_ins*2
+            f.write(new_str)
+            f.write('Scalability Test with {} inputs '.format(max_depth))
+
+            if mutation_mode == 1:
+                f.write('software HereBOY\n')
+            elif mutation_mode == 2:
+                f.write('exhaustive mutations checking\n')
+            else:
+                f.write('stochastic mutations\n')
+            f.close()
+            lev_total = []
+            average_epochs = []
+            total_success = 0
+            num_runs = 0
+            for _ in range(int(number_of_runs)):
+                
+                variant = HereBoy(original_ast,ins,max_epochs,.3,nums_ins)
+                
+                # determine testing type from args parse
+                variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
+                variant.current_ast = variant.original_ast.copy()
+                variant.orig_log = variant.exhaustiveTest(variant.current_ast)
+                
+                if test_mode == 1:
+                    variant.current_ast = variant.createRandomAST(29,31)
+                elif test_mode == 2:
+                    variant.insertCombTrojan()
+                else:
+                    pass
+                
+                
+                epochs = 0
+
+                start = time.time()
+                while epochs < variant.max_epochs and variant.checkFitness(epochs):
+                    
+                    if mutation_mode == 1:
+                        variant.hereBoy(epochs)
+                    #elif mutation_mode == 2:
+                    #    variant.exhaustiveCheck(epochs)
+                    else:
+                        variant.randomExhaustive(epochs) 
+                    
+                    variant.updateFitness(epochs)
+                    #print('Curret epoch {}\nCurrent AST {}'.format(epochs,variant.current_ast))
+                    epochs +=1
+                end = time.time()
+
+                logic2 = variant.exhaustiveTest(variant.current_ast)
+                num_runs += 1
+                if variant.orig_log == logic2:
+                    total_success += 1
+                
+                average_epochs.append(epochs)
+                lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+                
+            f = open("paramsOutput.txt","a")
+            str1 = "Average lev distance for {:0.4f}\n".format(
+                sum(lev_total)/len(lev_total))
+            str2 = "Number of hits: {}\n".format(total_success/num_runs)
+            str3 = "Average number of epochs needed: {}\n".format(
+                sum(average_epochs)/len(average_epochs))
+            f.write(str1)
+            f.write(str2)
+            f.write(str3)
+            f.close()
+            #print('past')
 
     @staticmethod
     def params_test(
@@ -386,7 +477,6 @@ class HereBoy(GP):
         #print('past')
 
 
-
     @staticmethod
     def normal_dv(
         original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
@@ -431,107 +521,9 @@ class HereBoy(GP):
         treePrint(variant.current_ast,'temp/Final_AST.gv')
 
 
-def parse_arguments(
-    args=None
-) -> None:
-    """Returns the parsed arguments.
-
-    Parameters
-    ----------
-    args: List of strings to be parsed by argparse.
-        The default None results in argparse using the values passed into
-        sys.args.
-    """
-    parser = argparse.ArgumentParser(
-            description="Argument parsing for genetic programming system",
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    #parser.add_argument("input_file", help="Path to the input file.")
-    parser.add_argument("runs", help="Sets the number of runs to be averaged and saved",
-            default=1)
-    parser.add_argument("-hb", "--hboy", help="Chooses the hereBOY mutation system",
-            default=False, action="store_true")
-    parser.add_argument("-s", "--stochastic", help="Chooses the stochastic mutation system",
-            default=False, action="store_true")
-    parser.add_argument("-e", "--exhaustive", help="Chooses the exhaustive mutation approach",
-            default=False, action="store_true")
-    parser.add_argument("-r", "--random", help="Sets the number of runs to be averaged and saved",
-            default=False, action="store_true")
-    parser.add_argument("-ct", "--combinational_trojan", help="Sets the number of runs to be averaged and saved",
-            default=False, action="store_true")
-    parser.add_argument("-v", "--variant", help="Sets the number of runs to be averaged and saved",
-            default=False, action="store_true")
-
-    args = parser.parse_args(args=args)
-    return args
-
-def main(
-    runs=1,
-    hboy=False, 
-    stochastic=False,
-    exhaustive=False,
-    random=False, 
-    combinational_trojan=False,
-    variant=False
-) -> None:
-    """ Main function.
-
-    Parameters
-    ----------
-    runs: int
-        Number of runs to average for testing. Default is 1 test
-    here_boy: bool
-        Mutation type is the software HereBOY approach. 
-    stochastic: bool
-        Mutation type is a stoachatic mutations check
-    exhaustive: bool
-        Mutation type is exhaustive mutation checking
-    random: bool
-        Starting circuit is randomly generated
-    combinational_trojan: bool
-        Random combinational trojan is inserted
-    variant: bool
-        A varint is created from the original ast
-    ------
-    FileNotFoundError
-        Means that the input file was not found.
-    """   
-    # Error check if the file even exists
-    #if not os.path.isfile(input_file):
-    #    raise FileNotFoundError("File not found: {}".format(input_file))
-    
-    test1 = HereBoy(
-        ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # ast
-        ['I0','I1','Sel'], # ins
-        40000, # num epochs
-        0.3 # init struct fit
-    )
-
-    if hboy:
-        mutation_mode = 1
-    elif exhaustive:
-        mutation_mode = 2
-    else:
-        mutation_mode = 3
-
-    if random:
-        test_mode = 1
-    elif combinational_trojan:
-        test_mode = 2
-    else:
-        test_mode = 3
-
-    test1.params_test(
-        mutation_mode,
-        test_mode,
-        runs
-    )
+def main():
+    pass
 
 
 if __name__ == "__main__":
-    import sys
-    args = parse_arguments()
-    try:
-        main(**vars(args))
-    except FileNotFoundError as exp:
-        print(exp, file=sys.stderr)
-        exit(-1)
+    main()
