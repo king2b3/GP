@@ -18,7 +18,7 @@
 
 from itertools import product
 import operations as op
-import sys
+from os import system
 import random
 import mutations as  m
 #from scanner import Scanner
@@ -147,31 +147,6 @@ class GP:
         return ins
 
     
-    '''
-    # Future implementation. See issue #16
-
-    @classmethod
-    def from_pickle(cls, filename)
-        return cls()
-
-    @classmethod
-    def from_json(cls, filename)
-        return cls
-
-    @classmethod
-    def from_text(cls, filename)
-        return cls   
-
-    @classmethod
-    def from_verilog(cls, filename)
-        return cls
-
-    @classmethod
-    def from_vhdl(cls, filename)
-        return cls    
-
-    '''
-
     def check_ast(
         self, ast
     ):

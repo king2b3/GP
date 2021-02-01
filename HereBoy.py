@@ -81,8 +81,8 @@ class HereBoy(GP):
         logical_result = self.exhaustiveTest(current_ast)
         orig_log = self.orig_log.copy()
         if test_cases != None:
-            logical_result = logical_result[:math.floor(len(logical_results)*test_case_per)]
-            orig_log = self.orig_log[:math.floor(len(logical_results)*test_case_per)]
+            logical_result = logical_result[:math.floor(len(logical_result)*test_case_per)]
+            orig_log = self.orig_log[:math.floor(len(logical_result)*test_case_per)]
         score = 0
         # logical fitness check
         for t in range(len(logical_result)):
@@ -91,10 +91,10 @@ class HereBoy(GP):
         return score/len(logical_result)
         
         ''' Need to reposition
-        if print_bool:
-            print('\nEpoch {}'.format(epochs))
-            print('Orig logic:    {}'.format(self.orig_log))
-            print('Current logic: {}'.format(logical_result))
+            if print_bool:
+                print('\nEpoch {}'.format(epochs))
+                print('Orig logic:    {}'.format(self.orig_log))
+                print('Current logic: {}'.format(logical_result))
         '''  
     
     def init_ffs(
