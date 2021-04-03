@@ -40,10 +40,10 @@ class HereBoy(GP):
     def __init__(
         self, ast, inputs, 
         max_epochs, struc_fit, 
-        in_num=0,
+        in_num=4,
         test_cases = None, 
         rand =.1,
-        cir_depth=100
+        cir_depth=4
     ):
         super().__init__(inputs,max_epochs,in_num)
         if ast == None:
@@ -81,10 +81,12 @@ class HereBoy(GP):
         logical_result = self.exhaustiveTest(current_ast)
         orig_log = self.orig_log.copy()
         if test_cases != None:
-            logical_result = logical_result[:math.floor(len(logical_result)*test_case_per)]
             orig_log = self.orig_log[:math.floor(len(logical_result)*test_case_per)]
+            logical_result = logical_result[:math.floor(len(logical_result)*test_case_per)]
         score = 0
         # logical fitness check
+        #print(len(logical_result))
+        #print(len(orig_log))
         for t in range(len(logical_result)):
             if logical_result[t] == orig_log[t]:
                 score += 1
@@ -154,14 +156,15 @@ class HereBoy(GP):
     ):
         ''' deconstructor 
         '''
-        pass
+        ...
 
     
     def checkFitness(
         self, epochs,
         ast = None,
         returnCheck=True,
-        print_bool=False
+        print_bool=False,
+        log_fit_bool=None
     ):
         ''' Can either return if exit conditions are met or current numerical fitness
 
@@ -170,7 +173,7 @@ class HereBoy(GP):
         '''                
         if ast == None:
             ast = self.current_ast.copy()
-        logical_fitness = self.logicalFitness(ast)
+        logical_fitness = self.logicalFitness(ast,log_fit_bool)
         logical_fitness = self.logFit*logical_fitness
         #structural fitness check
         structural_fitness = levenshtein(ast,self.original_ast)
@@ -279,7 +282,7 @@ class HereBoy(GP):
         self, epochs,
         print_bool=False
     ):
-        ''' Returns a stochastically selected mutated AST
+        ''' Sets a stochastically selected mutated AST as the current AST
 
         See issue #6
         '''
@@ -291,7 +294,7 @@ class HereBoy(GP):
             fit_check = []
             # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
             for circuit in circuit_test:
-                fit_check.append(self.checkFitness(epochs,circuit,False))
+                fit_check.append(self.checkFitness(epochs,circuit,False,log_fit_bool=True))
             max_fit_loc = fit_check.index(max(fit_check))
             self.current_ast = circuit_test[max_fit_loc]
         elif num_mut < 800: # 30%
@@ -300,102 +303,12 @@ class HereBoy(GP):
         elif num_mut < 900: # 10%
             if print_bool: print('\nAdd a randoom node')
             self.current_ast = m.addNode(self.current_ast,self.ins)
-        #elif num_mut < 950: # 1%
         else: # 10%
             if print_bool: print('\nRemove a random node')
             self.current_ast = m.removeNode(self.current_ast,self.ins)
-        #elif num_mut < 970: # 5%
-        #    if print_bool: print('\nCrossover a random node')
-        #    current_ast = m.crossover(current_ast,ins)
-        #else: # 3%
-        #    pass
+
 
     
-    @staticmethod
-    def scalabilityTest(
-            mutation_mode, test_mode, number_of_runs,
-            nums_ins=0,
-            total_success = 0,
-            max_epochs = 4000,
-            original_ast = None,
-            #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-            #ins = ['I0','I1','Sel']
-            ins = None
-
-        ):
-
-            f = open("paramsOutput.txt","a")
-            now = datetime.datetime.now()
-            new_str = "\nNew test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
-            max_depth = nums_ins*2
-            f.write(new_str)
-            f.write('Scalability Test with {} inputs '.format(max_depth))
-
-            if mutation_mode == 1:
-                f.write('software HereBOY\n')
-            elif mutation_mode == 2:
-                f.write('exhaustive mutations checking\n')
-            else:
-                f.write('stochastic mutations\n')
-            f.close()
-            lev_total = []
-            average_epochs = []
-            total_success = 0
-            num_runs = 0
-            for _ in range(int(number_of_runs)):
-                
-                variant = HereBoy(original_ast,ins,max_epochs,.3,nums_ins)
-                
-                # determine testing type from args parse
-                variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
-                variant.current_ast = variant.original_ast.copy()
-                variant.orig_log = variant.exhaustiveTest(variant.current_ast)
-                
-                if test_mode == 1:
-                    variant.current_ast = variant.createRandomAST(29,31)
-                elif test_mode == 2:
-                    variant.insertCombTrojan()
-                else:
-                    pass
-                
-                
-                epochs = 0
-
-                start = time.time()
-                while epochs < variant.max_epochs and variant.checkFitness(epochs):
-                    
-                    if mutation_mode == 1:
-                        variant.hereBoy(epochs)
-                    #elif mutation_mode == 2:
-                    #    variant.exhaustiveCheck(epochs)
-                    else:
-                        variant.randomExhaustive(epochs) 
-                    
-                    variant.updateFitness(epochs)
-                    #print('Curret epoch {}\nCurrent AST {}'.format(epochs,variant.current_ast))
-                    epochs +=1
-                end = time.time()
-
-                logic2 = variant.exhaustiveTest(variant.current_ast)
-                num_runs += 1
-                if variant.orig_log == logic2:
-                    total_success += 1
-                
-                average_epochs.append(epochs)
-                lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
-                
-            f = open("paramsOutput.txt","a")
-            str1 = "Average lev distance for {:0.4f}\n".format(
-                sum(lev_total)/len(lev_total))
-            str2 = "Number of hits: {}\n".format(total_success/num_runs)
-            str3 = "Average number of epochs needed: {}\n".format(
-                sum(average_epochs)/len(average_epochs))
-            f.write(str1)
-            f.write(str2)
-            f.write(str3)
-            f.close()
-            #print('past')
-
     @staticmethod
     def params_test(
         mutation_mode, test_mode, number_of_runs,
@@ -519,6 +432,114 @@ class HereBoy(GP):
         print('Run time: {:0.4f}\n'.format(end-start))
         print(list(zip(variant.orig_log,logic2)))
         treePrint(variant.current_ast,'temp/Final_AST.gv')
+
+def scalabilityTest(
+    mutation_mode, test_mode, number_of_runs,
+    nums_ins = 3,
+    total_success = 0,
+    max_epochs = 1000,
+    #original_ast = None, # comb logic
+    #ins = ['A','B','C','D'] #comb logic
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # 2-1
+    ins = ['I0','I1','Sel'] # 2-1
+    #original_ast = ['or','or','and','and','not','s1','not','s2','d0','and','and','not','s1','s0','d1','or','and','and','s1','not','s0','d0','and','and','s1','s0','d3'],
+    #ins = ['s0','s1','s2','d1','d2','d3']
+    #original_ast = ['or','and','A','B','and','Cin','xor','A','B'], # carry out
+    #ins = ['A','B','Cin'] # carry out
+):
+    f = open("paramsOutput.txt","a")
+    now = datetime.datetime.now()
+    new_str = "\nNew test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+    max_depth = nums_ins*2
+    f.write(new_str)
+    f.write('Scalability Test with {} depth '.format(max_depth))
+
+    if mutation_mode == 1:
+        f.write('software HereBOY\n')
+    elif mutation_mode == 2:
+        f.write('exhaustive mutations checking\n')
+    else:
+        f.write('stochastic mutations\n')
+    f.close()
+    lev_total = []
+    average_epochs = []
+    total_success = 0
+    num_runs = 0
+
+    import os
+
+
+    for _ in range(int(number_of_runs)):
+        
+        output_folder = 'temp/temp/'
+
+        #path = output_folder+str(time.time())
+        #os.mkdir(path)
+        variant = HereBoy(original_ast,ins,max_epochs,.3,nums_ins)
+
+        # determine testing type from args parse
+        #variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
+        #variant.current_ast = variant.original_ast.copy()
+        #variant.orig_log = variant.exhaustiveTest(variant.current_ast)
+        treePrint(variant.current_ast, "temp/original")
+        if test_mode == 1:
+            variant.current_ast = variant.createRandomAST(8,10)
+            #print("random ast created")
+        elif test_mode == 2:
+            variant.insertCombTrojan()
+            #print("trojan inserted")
+        else:
+            #print("variant used")
+            pass
+        
+        
+        epochs = 0
+        treePrint(variant.current_ast, "temp/original")
+
+        start = time.time()
+        while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=True):
+            
+            variant.randomExhaustive(epochs) 
+            
+            variant.updateFitness(epochs)
+            #print('Curret epoch {}\nCurrent AST {}'.format(epochs,variant.current_ast))
+            epochs +=1
+            #treePrint(variant.current_ast, path+'/'+str(epochs))
+        end = time.time()
+
+        #print(variant.exhaustiveTest(variant.current_ast))
+        #print(variant.exhaustiveTest(variant.original_ast))
+
+        logic1 = variant.exhaustiveTest(variant.current_ast)
+        logic2 = variant.exhaustiveTest(variant.original_ast)
+        num_runs += 1
+        if logic1 == logic2:
+            total_success += 1
+        
+        average_epochs.append(epochs)
+        lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+        treePrint(variant.current_ast, "temp/final")
+        
+        '''
+        # creates the gif 
+        command1 = "ffmpeg -framerate 1 -f image2 -i "+path+"/%d.png "+path+"/video.avi"
+        command2 = "ffmpeg -i "+path+"/video.avi temp/temp"+str(".gif")
+        os.system(command1)
+        os.system(command2)
+        '''
+
+    f = open("paramsOutput.txt","a")
+    str1 = "Average lev distance for {:0.4f}\n".format(
+        sum(lev_total)/len(lev_total))
+    str2 = "Number of hits: {}\n".format(total_success/num_runs)
+    str3 = "Average number of epochs needed: {}\n".format(
+        sum(average_epochs)/len(average_epochs))
+    f.write(str1)
+    f.write(str2)
+    f.write(str3)
+    f.close()
+    #print('past')
+
 
 
 def main():

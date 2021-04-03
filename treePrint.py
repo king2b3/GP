@@ -48,7 +48,8 @@ def checkSoloGate(
 
 def treePrint(
     ast,
-    file_name='temp/test-output.gv'
+    fname='temp/temp/output',
+    file_name='temp/test-output.gv',
 ):
     ''' Prints ast to a pdf file
     '''
@@ -107,12 +108,12 @@ def treePrint(
             # no need to draw a line if its a input
             pass
 
-    u.render()
+    u.render(filename=fname,format='png')
 
 
 def main():
-    treePrint(['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'])
-    treePrint(['nor', 'nand', 'Sel', 'or', 'nor', 'I1', 'nand', 'not', 'I0', 'I1', 'nand', 'and', 'Sel', 'nand', 'I1'])
+    treePrint(['or','or','and','and','not','s1','not','s2','d0','and','and','not','s1','s0','d1','or','and','and','s1','not','s0','d0','and','and','s1','s0','d3'])
+    #treePrint(['nor', 'nand', 'Sel', 'or', 'nor', 'I1', 'nand', 'not', 'I0', 'I1', 'nand', 'and', 'Sel', 'nand', 'I1'])
 
 if __name__ == "__main__":
     main()

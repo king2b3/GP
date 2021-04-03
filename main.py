@@ -1,4 +1,4 @@
-from HereBoy import HereBoy
+from HereBoy import HereBoy, scalabilityTest
 import argparse
 import os
 
@@ -75,16 +75,6 @@ def main(
     #    raise FileNotFoundError("File not found: {}".format(input_file))
     
 
-    test1 = HereBoy(
-        None,
-        #['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # ast
-        None,
-        #['I0','I1','Sel'], # ins
-        40000, # num epochs
-        0.3, # init struct fit
-        in_num
-    )
-
     if hboy:
         mutation_mode = 1
     elif exhaustive:
@@ -99,7 +89,7 @@ def main(
     else:
         test_mode = 3
 
-    test1.scalabilityTest(
+    scalabilityTest(
         mutation_mode,
         test_mode,
         runs,

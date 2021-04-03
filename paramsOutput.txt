@@ -1,197 +1,220 @@
 Creation of log on 1-3-2021 at 2:45 PM EST
 
+New test at: 2021-04-02 23:36:16
+Scalability Test with 12 depth stochastic mutations
 
-New test at: 2021-01-19 12:47:29
-Random AST with software HereBOY
-Average lev distance for 1.1811
-Number of hits: 0.3
-Average number of epochs needed: 1724.0
+New test at: 2021-04-02 23:37:26
+Scalability Test with 12 depth stochastic mutations
 
-New test at: 2021-01-19 12:47:56
-Combination Trojan inserted into AST with software HereBOY
-Average lev distance for 1.2556
-Number of hits: 0.95
-Average number of epochs needed: 233.95
+New test at: 2021-04-02 23:37:54
+Scalability Test with 12 depth stochastic mutations
 
-New test at: 2021-01-19 12:48:02
-Diverse variant AST with software HereBOY
-Average lev distance for 1.1046
-Number of hits: 0.4
-Average number of epochs needed: 1396.6
+New test at: 2021-04-02 23:41:35
+Scalability Test with 12 depth stochastic mutations
 
-New test at: 2021-01-19 12:48:18
-Random AST with stochastic mutations
+New test at: 2021-04-02 23:42:07
+Scalability Test with 12 depth stochastic mutations
 
-New test at: 2021-01-20 20:19:34
-Diverse variant AST with exhaustive mutations checking
+New test at: 2021-04-02 23:44:47
+Scalability Test with 12 depth stochastic mutations
+
+New test at: 2021-04-02 23:45:19
+Scalability Test with 12 depth stochastic mutations
+
+New test at: 2021-04-02 23:45:43
+Scalability Test with 12 depth stochastic mutations
+
+New test at: 2021-04-02 23:49:31
+Scalability Test with 12 depth stochastic mutations
+
+New test at: 2021-04-02 23:49:57
+Scalability Test with 12 depth stochastic mutations
+
+New test at: 2021-04-02 23:57:32
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.6667
+Number of hits: 1.0
+Average number of epochs needed: 41.0
+
+New test at: 2021-04-02 23:57:37
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 4.4444
+Number of hits: 1.0
+Average number of epochs needed: 315.0
+
+New test at: 2021-04-02 23:57:51
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.8889
+Number of hits: 1.0
+Average number of epochs needed: 14.0
+
+New test at: 2021-04-02 23:57:54
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 1.0
+Average number of epochs needed: 2.0
+
+New test at: 2021-04-02 23:57:55
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.6667
+Number of hits: 1.0
+Average number of epochs needed: 5.0
+
+New test at: 2021-04-02 23:58:52
+Scalability Test with 6 depth stochastic mutations
+
+New test at: 2021-04-02 23:59:19
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 197.0
+
+New test at: 2021-04-02 23:59:25
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 1.0
+Average number of epochs needed: 213.0
+
+New test at: 2021-04-03 00:00:08
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 1.0
+Average number of epochs needed: 114.0
+
+New test at: 2021-04-03 00:00:10
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.8889
+Number of hits: 1.0
+Average number of epochs needed: 93.0
+
+New test at: 2021-04-03 00:00:19
+Scalability Test with 6 depth stochastic mutations
 Average lev distance for 1.1111
 Number of hits: 1.0
+Average number of epochs needed: 435.0
+
+New test at: 2021-04-03 00:02:52
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 8.0
+
+New test at: 2021-04-03 00:02:54
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.2222
+Number of hits: 1.0
+Average number of epochs needed: 82.0
+
+New test at: 2021-04-03 00:02:56
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.2222
+Number of hits: 1.0
+Average number of epochs needed: 6.0
+
+New test at: 2021-04-03 00:03:38
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 1.0
+Average number of epochs needed: 229.0
+
+New test at: 2021-04-03 00:03:43
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 2.7778
+Number of hits: 1.0
+Average number of epochs needed: 436.0
+
+New test at: 2021-04-03 00:04:50
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 69.0
+
+New test at: 2021-04-03 00:04:59
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 0.0
+Average number of epochs needed: 9.5
+
+New test at: 2021-04-03 00:05:03
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 0.0
+Average number of epochs needed: 18.0
+
+New test at: 2021-04-03 00:05:11
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0889
+Number of hits: 0.0
+Average number of epochs needed: 6.2
+
+New test at: 2021-04-03 00:05:21
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.1056
+Number of hits: 0.15
+Average number of epochs needed: 16.65
+
+New test at: 2021-04-03 00:05:55
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0949
+Number of hits: 0.0
+Average number of epochs needed: 41.9
+
+New test at: 2021-04-03 00:06:24
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5611
+Number of hits: 0.05
+Average number of epochs needed: 15.55
+
+New test at: 2021-04-03 00:07:09
+Scalability Test with 6 depth stochastic mutations
+
+New test at: 2021-04-03 00:08:10
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 0.0
 Average number of epochs needed: 4.0
 
-New test at: 2021-01-20 20:20:22
-Random AST with exhaustive mutations checking
-Average lev distance for 1.4000
-Number of hits: 1.0
-Average number of epochs needed: 1.0
+New test at: 2021-04-03 00:08:15
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.8778
+Number of hits: 0.1
+Average number of epochs needed: 48.9
 
-New test at: 2021-01-20 20:20:40
-Random AST with exhaustive mutations checking
-Average lev distance for 2.1111
-Number of hits: 1.0
-Average number of epochs needed: 1.8
+New test at: 2021-04-03 00:08:35
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5222
+Number of hits: 0.3
+Average number of epochs needed: 25.3
 
-New test at: 2021-01-20 20:20:55
-Random AST with exhaustive mutations checking
-Average lev distance for 1.0000
-Number of hits: 1.0
-Average number of epochs needed: 1.2
+New test at: 2021-04-03 00:09:21
+Scalability Test with 6 depth stochastic mutations
 
-New test at: 2021-01-20 20:21:00
-Random AST with exhaustive mutations checking
-Average lev distance for 1.0000
-Number of hits: 1.0
-Average number of epochs needed: 1.0
-
-New test at: 2021-01-20 20:21:19
-Diverse variant AST with exhaustive mutations checking
-Average lev distance for 1.1556
-Number of hits: 1.0
-Average number of epochs needed: 1.8
-
-New test at: 2021-01-20 20:21:28
-Diverse variant AST with exhaustive mutations checking
-Average lev distance for 1.3333
-Number of hits: 1.0
-Average number of epochs needed: 1.8
-
-New test at: 2021-01-20 20:21:40
-Diverse variant AST with exhaustive mutations checking
-Average lev distance for 1.1000
-Number of hits: 1.0
-Average number of epochs needed: 1.3
-
-New test at: 2021-01-20 20:21:55
-Combination Trojan inserted into AST with exhaustive mutations checking
-Average lev distance for 1.0000
-Number of hits: 1.0
-Average number of epochs needed: 1.0
-
-New test at: 2021-01-20 20:22:09
-Combination Trojan inserted into AST with exhaustive mutations checking
-Average lev distance for 1.0000
-Number of hits: 1.0
-Average number of epochs needed: 1.0
-
-New test at: 2021-01-20 20:22:58
-Random AST with stochastic mutations
-Average lev distance for 1.1111
-Number of hits: 1.0
-Average number of epochs needed: 78.3
-
-New test at: 2021-01-20 20:23:13
-Random AST with stochastic mutations
-Average lev distance for 1.2000
-Number of hits: 0.9
-Average number of epochs needed: 351.0
-
-New test at: 2021-01-20 20:25:39
-Diverse variant AST with stochastic mutations
-Average lev distance for 1.0476
-Number of hits: 1.0
-Average number of epochs needed: 212.4
-
-New test at: 2021-01-20 20:25:56
-Diverse variant AST with stochastic mutations
-Average lev distance for 1.0000
-Number of hits: 1.0
-Average number of epochs needed: 173.6
-
-New test at: 2021-01-20 20:26:07
-Combination Trojan inserted into AST with stochastic mutations
-Average lev distance for 1.0556
-Number of hits: 1.0
-Average number of epochs needed: 34.9
-
-New test at: 2021-01-20 20:26:14
-Combination Trojan inserted into AST with stochastic mutations
+New test at: 2021-04-03 00:11:02
+Scalability Test with 6 depth stochastic mutations
 Average lev distance for 1.0667
-Number of hits: 1.0
-Average number of epochs needed: 17.8
+Number of hits: 0.2
+Average number of epochs needed: 28.7
 
-New test at: 2021-01-20 20:35:08
-Random AST with stochastic mutations
-Average lev distance for 1.0976
-Number of hits: 1.0
-Average number of epochs needed: 122.15
+New test at: 2021-04-03 00:12:49
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.1000
+Number of hits: 0.1
+Average number of epochs needed: 27.0
 
-New test at: 2021-01-21 11:21:59
-Scalability Test with 100 inputs stochastic mutations
-Average lev distance for 19.4444
-Number of hits: 1.0
-Average number of epochs needed: 1.0
+New test at: 2021-04-03 00:14:14
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.1841
+Number of hits: 0.4
+Average number of epochs needed: 94.4
 
-New test at: 2021-01-21 11:25:18
-Scalability Test with 100 inputs stochastic mutations
+New test at: 2021-04-03 00:14:26
+Scalability Test with 6 depth stochastic mutations
 
-New test at: 2021-01-21 11:25:43
-Scalability Test with 100 inputs stochastic mutations
+New test at: 2021-04-03 00:15:10
+Scalability Test with 6 depth stochastic mutations
 
-New test at: 2021-01-21 11:26:37
-Scalability Test with 100 inputs stochastic mutations
-
-New test at: 2021-01-21 13:14:34
-Scalability Test with 100 inputs stochastic mutations
-
-New test at: 2021-01-21 13:15:23
-Scalability Test with 100 inputs stochastic mutations
-
-New test at: 2021-01-21 13:16:47
-Scalability Test with 100 inputs stochastic mutations
-
-New test at: 2021-01-21 13:17:17
-Scalability Test with 100 inputs stochastic mutations
-
-New test at: 2021-01-21 13:17:57
-Scalability Test with 100 inputs software HereBOY
-
-New test at: 2021-01-21 13:19:05
-Scalability Test with 100 inputs software HereBOY
-
-New test at: 2021-01-21 13:19:34
-Scalability Test with 100 inputs software HereBOY
-Average lev distance for 1.0873
-Number of hits: 0.0
-Average number of epochs needed: 8000.0
-
-New test at: 2021-01-21 18:45:18
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 18:45:59
-Scalability Test with 30 inputs stochastic mutations
-Average lev distance for 1.0000
-Number of hits: 1.0
-Average number of epochs needed: 199.0
-
-New test at: 2021-01-21 19:09:14
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 19:10:16
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 19:10:35
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 19:13:59
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 19:14:39
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 19:14:52
-Scalability Test with 30 inputs stochastic mutations
-
-New test at: 2021-01-21 19:16:49
-Scalability Test with 10 inputs stochastic mutations
-Average lev distance for 2.3250
-Number of hits: 1.0
-Average number of epochs needed: 202.33333333333334
+New test at: 2021-04-03 00:15:48
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5587
+Number of hits: 0.2
+Average number of epochs needed: 106.2

@@ -28,11 +28,11 @@ class GP:
     def __init__(
         self, inputs,
         max_epochs,
-        num_ins=0
+        num_ins=6
     ):
         ''' General container for genetic program system
         '''
-        if num_ins != 0:
+        if num_ins == 0:
             self.ins = self.createInputs(num_ins)
         else:
             self.ins = inputs
