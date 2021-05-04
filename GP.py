@@ -21,7 +21,6 @@ import operations as op
 from os import system
 import random
 import mutations as  m
-#from scanner import Scanner
 
 
 class GP:
@@ -78,12 +77,14 @@ class GP:
                         # Inserts either True or False into proper input
                         ast[gate] = comb[ins_counter]
                 ins_counter += 1
-            logical_result.append(op.returnLogic(ast,self.ins)) 
+            temp = op.returnLogic(ast,self.ins)
+            if temp is None:
+                return [False,False,False,False,False,False,False,False]
+            logical_result.append(temp) 
         return logical_result
 
 
-    def createRandomAST(
-        self, 
+    def createRandomAST(self, 
         min_ast_depth=3,
         max_ast_depth=6, 
         ast=None

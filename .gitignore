@@ -1,4 +1,3 @@
-Archive/
 savedOutputs/
 Zach-thesis-master/
 .funcs.py.swp
@@ -8,6 +7,8 @@ papers/
 temp/
 funny_results/
 savedOutputs/
+outputs/
+/veriloig files
 paramsOutput.txt
 
 # Byte-compiled / optimized / DLL files

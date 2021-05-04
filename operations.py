@@ -106,7 +106,7 @@ def returnFFLen():
 
 
 def randomGate():
-    return random.choice(list(operators.keys()))      
+    return random.choice(list(binary_operators.keys()))      
 
 
 def returnGate(
@@ -166,7 +166,10 @@ def returnLogic(
     '''
     
     currentAST = tempAST.copy()
+    count = 0 
     while len(currentAST) > 1:
+        if count >= 5000:
+            return None
         currentAST = tempAST
         temp_len = len(currentAST)
         for node in range(temp_len):
@@ -187,7 +190,9 @@ def returnLogic(
                         break
                 except:
                     # error check
-                    sys.exit()
+                    #print(f"{currentAST}")
+                    currentAST += [False]
+                    #sys.exit()
 
             elif checkSoloGate(currentAST[node]):
                 child = currentAST[node+1]
@@ -213,6 +218,7 @@ def returnLogic(
                     tempAST = tempStart  + tempEnd
                     tempAST[node] = tempResult
                     break
+        count += 1
 
     return currentAST
 
