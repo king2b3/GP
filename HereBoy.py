@@ -37,16 +37,11 @@ def clear():
 class HereBoy(GP):
     ''' Child class of GP class
     '''
-    def __init__(
-        self, ast, inputs, 
-        max_epochs, struc_fit, 
-        in_num=4,
-        test_cases = None, 
-        rand =.1,
-        cir_depth=4
-    ):
+    def __init__(self, ast, inputs, max_epochs, struc_fit, 
+        in_num,test_cases = None, rand =.1, cir_depth=5):
         super().__init__(inputs,max_epochs,in_num)
         if ast == None:
+            print(f"Creating an AST {cir_depth=}")
             self.original_ast = self.createRandomAST(cir_depth-1,cir_depth)
         else:
             self.original_ast = ast.copy()
@@ -438,15 +433,16 @@ def scalabilityTest(
     nums_ins = 3,
     total_success = 0,
     max_epochs = 1000,
-    #original_ast = None, # comb logic
-    #ins = ['A','B','C','D'] #comb logic
-    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # 2-1
-    ins = ['I0','I1','Sel'] # 2-1
+    original_ast = None, # comb logic
+    ins = ['A','B','C','D'] #comb logic
+    #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # 2-1
+    #ins = ['I0','I1','Sel'] # 2-1
     #original_ast = ['or','or','and','and','not','s1','not','s2','d0','and','and','not','s1','s0','d1','or','and','and','s1','not','s0','d0','and','and','s1','s0','d3'],
     #ins = ['s0','s1','s2','d1','d2','d3']
     #original_ast = ['or','and','A','B','and','Cin','xor','A','B'], # carry out
     #ins = ['A','B','Cin'] # carry out
 ):
+    from timer import Timer
     f = open("paramsOutput.txt","a")
     now = datetime.datetime.now()
     new_str = "\nNew test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
@@ -467,66 +463,85 @@ def scalabilityTest(
     num_runs = 0
 
     import os
-
-
-    for _ in range(int(number_of_runs)):
-        
-        output_folder = 'temp/temp/'
-
-        #path = output_folder+str(time.time())
-        #os.mkdir(path)
-        variant = HereBoy(original_ast,ins,max_epochs,.3,nums_ins)
-
-        # determine testing type from args parse
-        #variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
-        #variant.current_ast = variant.original_ast.copy()
-        #variant.orig_log = variant.exhaustiveTest(variant.current_ast)
-        treePrint(variant.current_ast, "temp/original")
-        if test_mode == 1:
-            variant.current_ast = variant.createRandomAST(8,10)
-            #print("random ast created")
-        elif test_mode == 2:
-            variant.insertCombTrojan()
-            #print("trojan inserted")
-        else:
-            #print("variant used")
-            pass
-        
-        
-        epochs = 0
-        treePrint(variant.current_ast, "temp/original")
-
-        start = time.time()
-        while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=True):
+    results = []
+    t = Timer()
+    #for loop for inputs
+    for i in range(2,10):
+        t.start_timer()
+        for _ in range(int(number_of_runs)):
             
-            variant.randomExhaustive(epochs) 
+            output_folder = 'temp/temp/'
+
+            #path = output_folder+str(time.time())
+            #os.mkdir(path)
+            print(f"{i=}")
+            variant = HereBoy(original_ast,ins,max_epochs,.3,i)
+
+            # determine testing type from args parse
+            #variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
+            #variant.current_ast = variant.original_ast.copy()
+            #variant.orig_log = variant.exhaustiveTest(variant.current_ast)
+            treePrint(variant.current_ast, "temp/original")
+            if test_mode == 1:
+                variant.current_ast = variant.createRandomAST(8,10)
+                #print("random ast created")
+            elif test_mode == 2:
+                variant.insertCombTrojan()
+                #print("trojan inserted")
+            else:
+                #print("variant used")
+                pass
             
-            variant.updateFitness(epochs)
-            #print('Curret epoch {}\nCurrent AST {}'.format(epochs,variant.current_ast))
-            epochs +=1
-            #treePrint(variant.current_ast, path+'/'+str(epochs))
-        end = time.time()
+            
+            epochs = 0
+            treePrint(variant.current_ast, "temp/original")
 
-        #print(variant.exhaustiveTest(variant.current_ast))
-        #print(variant.exhaustiveTest(variant.original_ast))
+            start = time.time()
+            while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
+                
+                variant.randomExhaustive(epochs) 
+                
+                variant.updateFitness(epochs)
+                #print('Curret epoch {}\nCurrent AST {}'.format(epochs,variant.current_ast))
+                epochs +=1
+                #treePrint(variant.current_ast, path+'/'+str(epochs))
+            end = time.time()
 
-        logic1 = variant.exhaustiveTest(variant.current_ast)
-        logic2 = variant.exhaustiveTest(variant.original_ast)
-        num_runs += 1
-        if logic1 == logic2:
-            total_success += 1
-        
-        average_epochs.append(epochs)
-        lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
-        treePrint(variant.current_ast, "temp/final")
-        
-        '''
-        # creates the gif 
-        command1 = "ffmpeg -framerate 1 -f image2 -i "+path+"/%d.png "+path+"/video.avi"
-        command2 = "ffmpeg -i "+path+"/video.avi temp/temp"+str(".gif")
-        os.system(command1)
-        os.system(command2)
-        '''
+            #print(variant.exhaustiveTest(variant.current_ast))
+            #print(variant.exhaustiveTest(variant.original_ast))
+
+            logic1 = variant.exhaustiveTest(variant.current_ast)
+            logic2 = variant.exhaustiveTest(variant.original_ast)
+            num_runs += 1
+            if logic1 == logic2:
+                total_success += 1
+            
+            average_epochs.append(epochs)
+            lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+            #treePrint(variant.current_ast, "temp/final")
+            
+            '''
+            # creates the gif 
+            command1 = "ffmpeg -framerate 1 -f image2 -i "+path+"/%d.png "+path+"/video.avi"
+            command2 = "ffmpeg -i "+path+"/video.avi temp/temp"+str(".gif")
+            os.system(command1)
+            os.system(command2)
+            '''
+        t.end_timer()
+        results.append(str(t))
+
+    print(f"{num_runs=}")
+    print(f"{total_success=}")
+    print(results)
+
+    import matplotlib.pyplot as plt
+
+    plt.style.use('seaborn-whitegrid')
+
+    inputs = list(range(2,10))
+    plt.plot(inputs,results, 'o', color='black')
+    
+    plt.show()
 
     f = open("paramsOutput.txt","a")
     str1 = "Average lev distance for {:0.4f}\n".format(
@@ -534,9 +549,11 @@ def scalabilityTest(
     str2 = "Number of hits: {}\n".format(total_success/num_runs)
     str3 = "Average number of epochs needed: {}\n".format(
         sum(average_epochs)/len(average_epochs))
+    str4 = f"Time simulation was run {f}"
     f.write(str1)
     f.write(str2)
     f.write(str3)
+    f.write(str4)
     f.close()
     #print('past')
 

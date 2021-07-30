@@ -218,3 +218,237 @@ Scalability Test with 6 depth stochastic mutations
 Average lev distance for 1.5587
 Number of hits: 0.2
 Average number of epochs needed: 106.2
+
+New test at: 2021-07-30 14:04:50
+Scalability Test with 8 depth stochastic mutations
+Average lev distance for 2.0000
+Number of hits: 0.0
+Average number of epochs needed: 76.33333333333333
+
+New test at: 2021-07-30 14:05:22
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.8519
+Number of hits: 0.0
+Average number of epochs needed: 62.0
+
+New test at: 2021-07-30 14:05:37
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.6667
+Number of hits: 0.0
+Average number of epochs needed: 2.0
+
+New test at: 2021-07-30 14:06:52
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.7778
+Number of hits: 0.0
+Average number of epochs needed: 1.0
+
+New test at: 2021-07-30 14:06:56
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.3333
+Number of hits: 0.0
+Average number of epochs needed: 225.0
+
+New test at: 2021-07-30 14:07:28
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 315.0
+
+New test at: 2021-07-30 14:07:37
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.3889
+Number of hits: 0.0
+Average number of epochs needed: 13.5
+
+New test at: 2021-07-30 14:08:56
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.1111
+Number of hits: 1.0
+Average number of epochs needed: 101.0
+
+New test at: 2021-07-30 14:08:59
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.5000
+Number of hits: 1.0
+Average number of epochs needed: 311.0
+
+New test at: 2021-07-30 14:09:28
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.4444
+Number of hits: 1.0
+Average number of epochs needed: 31.5
+
+New test at: 2021-07-30 14:09:31
+Scalability Test with 6 depth stochastic mutations
+Average lev distance for 1.7222
+Number of hits: 1.0
+Average number of epochs needed: 113.5
+
+New test at: 2021-07-30 14:09:36
+Scalability Test with 8 depth stochastic mutations
+Average lev distance for 1.2222
+Number of hits: 1.0
+Average number of epochs needed: 217.0
+
+New test at: 2021-07-30 14:09:43
+Scalability Test with 8 depth stochastic mutations
+Average lev distance for 1.1222
+Number of hits: 1.0
+Average number of epochs needed: 90.5
+
+New test at: 2021-07-30 14:10:23
+Scalability Test with 20 depth stochastic mutations
+Average lev distance for 1.7222
+Number of hits: 1.0
+Average number of epochs needed: 32.5
+
+New test at: 2021-07-30 14:10:29
+Scalability Test with 200 depth stochastic mutations
+Average lev distance for 1.4444
+Number of hits: 1.0
+Average number of epochs needed: 56.0
+
+New test at: 2021-07-30 14:10:34
+Scalability Test with 2000 depth stochastic mutations
+Average lev distance for 1.1667
+Number of hits: 1.0
+Average number of epochs needed: 92.5
+
+New test at: 2021-07-30 14:10:43
+Scalability Test with 10000 depth stochastic mutations
+Average lev distance for 2.5000
+Number of hits: 1.0
+Average number of epochs needed: 245.0
+
+New test at: 2021-07-30 14:12:46
+Scalability Test with 10000 depth stochastic mutations
+Average lev distance for 1.1111
+Number of hits: 1.0
+Average number of epochs needed: 14.5
+
+New test at: 2021-07-30 14:14:15
+Scalability Test with 20 depth stochastic mutations
+Average lev distance for 2.1667
+Number of hits: 1.0
+Average number of epochs needed: 344.5
+
+New test at: 2021-07-30 14:18:35
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.1364
+Number of hits: 1.0
+Average number of epochs needed: 21.5
+
+New test at: 2021-07-30 14:18:38
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.2929
+Number of hits: 1.0
+Average number of epochs needed: 286.0
+
+New test at: 2021-07-30 14:20:35
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.1667
+Number of hits: 1.0
+Average number of epochs needed: 103.5
+
+New test at: 2021-07-30 14:22:04
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:08:20
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.9301
+Number of hits: 1.0
+Average number of epochs needed: 133.5
+
+New test at: 2021-07-30 15:12:07
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:13:00
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.4091
+Number of hits: 1.0
+Average number of epochs needed: 37.0
+
+New test at: 2021-07-30 15:13:58
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:14:42
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 78.0
+
+New test at: 2021-07-30 15:15:06
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.7000
+Number of hits: 1.0
+Average number of epochs needed: 90.5
+
+New test at: 2021-07-30 15:16:04
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:16:52
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.4371
+Number of hits: 1.0
+Average number of epochs needed: 146.0
+
+New test at: 2021-07-30 15:17:31
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.6154
+Number of hits: 1.0
+Average number of epochs needed: 76.5
+
+New test at: 2021-07-30 15:18:08
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 8.0
+
+New test at: 2021-07-30 15:18:58
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:19:20
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 48.5
+
+New test at: 2021-07-30 15:19:52
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 52.5
+Time simulation was run f=<_io.TextIOWrapper name='paramsOutput.txt' mode='a' encoding='UTF-8'>
+New test at: 2021-07-30 15:20:12
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 4.5
+Time simulation was run <_io.TextIOWrapper name='paramsOutput.txt' mode='a' encoding='UTF-8'>
+New test at: 2021-07-30 15:43:58
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:45:20
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:45:24
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 15:45:34
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.1237
+Number of hits: 0.8888888888888888
+Average number of epochs needed: 158.38888888888889
+Time simulation was run <_io.TextIOWrapper name='paramsOutput.txt' mode='a' encoding='UTF-8'>
+New test at: 2021-07-30 16:50:29
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.2626
+Number of hits: 1.0
+Average number of epochs needed: 122.75
+Time simulation was run <_io.TextIOWrapper name='paramsOutput.txt' mode='a' encoding='UTF-8'>
+New test at: 2021-07-30 16:55:33
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-30 16:59:56
+Scalability Test with 40 depth stochastic mutations
