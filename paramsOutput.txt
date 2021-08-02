@@ -452,3 +452,13 @@ Scalability Test with 40 depth stochastic mutations
 
 New test at: 2021-07-30 16:59:56
 Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-31 12:54:06
+Scalability Test with 40 depth stochastic mutations
+
+New test at: 2021-07-31 13:26:19
+Scalability Test with 40 depth stochastic mutations
+Average lev distance for 1.1291
+Number of hits: 0.875
+Average number of epochs needed: 216.5625
+Time simulation was run <_io.TextIOWrapper name='paramsOutput.txt' mode='a' encoding='UTF-8'>

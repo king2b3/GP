@@ -532,9 +532,9 @@ def scalabilityTest(
 
     print(f"{num_runs=}")
     print(f"{total_success=}")
-    print(results)
+    print(f"{results=}")
 
-    import matplotlib.pyplot as plt
+    '''import matplotlib.pyplot as plt
 
     plt.style.use('seaborn-whitegrid')
 
@@ -542,7 +542,7 @@ def scalabilityTest(
     plt.plot(inputs,results, 'o', color='black')
     
     plt.show()
-
+    '''
     f = open("paramsOutput.txt","a")
     str1 = "Average lev distance for {:0.4f}\n".format(
         sum(lev_total)/len(lev_total))
