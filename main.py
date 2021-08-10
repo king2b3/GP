@@ -1,7 +1,10 @@
-from HereBoy import HereBoy, scalabilityTest
+import HereBoy
 import argparse
 import os
 
+
+def clear():
+    _ = system("clear")
 
 def parse_arguments(
     args=None
@@ -89,12 +92,7 @@ def main(
     else:
         test_mode = 3
 
-    scalabilityTest(
-        mutation_mode,
-        test_mode,
-        runs,
-        in_num
-    )
+    HereBoy.scalabilityTest(runs)
 
 
 if __name__ == "__main__":

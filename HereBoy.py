@@ -41,8 +41,8 @@ class HereBoy(GP):
         in_num,test_cases = None, rand =.1, cir_depth=5):
         super().__init__(inputs,max_epochs,in_num)
         if ast == None:
-            print(f"Creating an AST {cir_depth=}")
-            self.original_ast = self.createRandomAST(cir_depth-1,cir_depth)
+            #print(f"Creating an AST {cir_depth=}")
+            self.original_ast = self.createRandomAST(cir_depth-1,cir_depth+1)
         else:
             self.original_ast = ast.copy()
         self.current_ast = self.original_ast.copy()
@@ -428,7 +428,7 @@ class HereBoy(GP):
         print(list(zip(variant.orig_log,logic2)))
         treePrint(variant.current_ast,'temp/Final_AST.gv')
 
-def scalabilityTest(
+def mainTest(
     mutation_mode, test_mode, number_of_runs,
     nums_ins = 3,
     total_success = 0,
@@ -465,25 +465,29 @@ def scalabilityTest(
     import os
     results = []
     t = Timer()
+    a = 3
+    b = 31
     #for loop for inputs
-    for i in range(2,10):
+    for i in range(a,b):
         t.start_timer()
         for _ in range(int(number_of_runs)):
+
+            print("Number of Inputs: " + str(i))
             
             output_folder = 'temp/temp/'
 
             #path = output_folder+str(time.time())
             #os.mkdir(path)
-            print(f"{i=}")
+            #print(f"{i=}")
             variant = HereBoy(original_ast,ins,max_epochs,.3,i)
 
             # determine testing type from args parse
             #variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
             #variant.current_ast = variant.original_ast.copy()
             #variant.orig_log = variant.exhaustiveTest(variant.current_ast)
-            treePrint(variant.current_ast, "temp/original")
+            #treePrint(variant.current_ast, "temp/original")
             if test_mode == 1:
-                variant.current_ast = variant.createRandomAST(8,10)
+                variant.current_ast = variant.createRandomAST(4,6)
                 #print("random ast created")
             elif test_mode == 2:
                 variant.insertCombTrojan()
@@ -494,7 +498,7 @@ def scalabilityTest(
             
             
             epochs = 0
-            treePrint(variant.current_ast, "temp/original")
+            #treePrint(variant.current_ast, "temp/original")
 
             start = time.time()
             while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
@@ -528,21 +532,24 @@ def scalabilityTest(
             os.system(command2)
             '''
         t.end_timer()
-        results.append(str(t))
+        results.append(float(str(t))/float(number_of_runs))
 
-    print(f"{num_runs=}")
-    print(f"{total_success=}")
-    print(f"{results=}")
+    #print(f"{num_runs=}")
+    #print(f"{total_success=}")
+    print(f"{results}")
 
-    '''import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
 
     plt.style.use('seaborn-whitegrid')
 
-    inputs = list(range(2,10))
+    inputs = list(range(a,b))
     plt.plot(inputs,results, 'o', color='black')
+    plt.title("Scalability of ES")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Time to Completion (Seconds)")
     
     plt.show()
-    '''
+    
     f = open("paramsOutput.txt","a")
     str1 = "Average lev distance for {:0.4f}\n".format(
         sum(lev_total)/len(lev_total))
@@ -553,11 +560,129 @@ def scalabilityTest(
     f.write(str1)
     f.write(str2)
     f.write(str3)
-    f.write(str4)
+    #f.write(str4)
     f.close()
     #print('past')
 
+def scalabilityTest(number_of_runs) -> None:
+    nums_ins = 3
+    total_success = 0
+    max_epochs = 1000
+    original_ast = None # comb logic
+    ins = ['A','B','C','D'] #comb logic
 
+    def clear():
+        _ = system("clear")
+
+    from timer import Timer
+    f = open("paramsOutput.txt","a")
+    now = datetime.datetime.now()
+    new_str = "\nGenerating Scalability Plots: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+    f.write(new_str)
+
+    f.write('stochastic mutations\n')
+    f.close()
+
+
+    total_success = 0
+    num_runs = 0
+
+    import os
+    t = Timer()
+    a = 3   #start input range
+    b = 7  #end input range
+
+    #used to store results. test_mode is the key
+    results = {0:[], 1:[], 2:[]}
+    lev_total = []
+    average_epochs = []
+    for test_mode in range(3):
+        '''
+        0: variant
+        1: comb trojan
+        2: random
+        '''
+        f = open("paramsOutput.txt","a")
+        temp_str = "start type: " + str(test_mode) + "\n"
+        f.write(temp_str)
+        print("########")
+        print("Test " + str(test_mode))
+        print("########")
+        for i in range(a,b):
+            t.start_timer()
+            print("Number of Inputs: " + str(i))
+            for run in range(int(number_of_runs)):
+                #clear()
+                print("test " + str(run) + " out of " + str(int(number_of_runs) - 1))
+                #init the class
+                variant = HereBoy(original_ast,ins,max_epochs,.3,i)
+
+                if test_mode == 0:
+                    variant.current_ast = variant.createRandomAST(4,6)
+                    #print("random ast created")
+                elif test_mode == 1:
+                    variant.insertCombTrojan()
+                    #print("trojan inserted")
+                else:
+                    #print("variant used")
+                    pass 
+                
+                epochs = 0
+                start = time.time()
+                while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
+                    variant.randomExhaustive(epochs) 
+                    variant.updateFitness(epochs)
+                    epochs +=1
+                end = time.time()
+
+                logic1 = variant.exhaustiveTest(variant.current_ast)
+                logic2 = variant.exhaustiveTest(variant.original_ast)
+                num_runs += 1
+                if logic1 == logic2:
+                    total_success += 1
+                
+                average_epochs.append(epochs)
+                lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+
+            t.end_timer()
+            results[test_mode].append(float(str(t))/float(number_of_runs))
+
+    #plot the final results
+    import matplotlib.pyplot as plt
+
+    plt.style.use('seaborn-whitegrid')
+
+    inputs = list(range(a,b))
+    plt.plot(inputs,results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Time to Completion (Seconds)")
+    
+    #plt.show()
+    plt.savefig("scal_1.png")
+
+    #open the file back up for debug
+    f = open("paramsOutput.txt","a")    
+    #if num_runs != total_successes:
+    #    temp_str = "CAUTION! NOT ALL SIMS PASSED:" + str(total_successes) + \
+    #        " out of " + str(num_runs)
+    #    f.write(temp_str)
+
+    str1 = "Average lev distance for {:0.4f}\n".format(
+        sum(lev_total)/len(lev_total))
+    str2 = "Number of hits: {}\n".format(total_success/num_runs)
+    str3 = "Average number of epochs needed: {}\n".format(
+        sum(average_epochs)/len(average_epochs))
+    str4 = f"Time simulation was run {f}"
+    f.write(str1)
+    f.write(str2)
+    f.write(str3)
+    #f.write(str4)
+    f.close()
+    #print('past')
 
 def main():
     pass
