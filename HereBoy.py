@@ -54,6 +54,7 @@ class HereBoy(GP):
         self.check_ast(self.current_ast)
         self.mutation_fraction = rand
         self.max_score = 1
+        self.num_muts = 0
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -281,6 +282,7 @@ class HereBoy(GP):
 
         See issue #6
         '''
+        self.num_muts += 1
         num_mut = random.randint(0,1000)
         if num_mut < 500: # 50%
             if print_bool: print('\nexhaustive mut check')
@@ -383,6 +385,9 @@ class HereBoy(GP):
         f.write(str3)
         f.close()
         #print('past')
+
+    def size(self) -> int:
+        return len(self.current_ast) - len(self.original_ast)
 
 
     @staticmethod
@@ -590,10 +595,15 @@ def scalabilityTest(number_of_runs) -> None:
     import os
     t = Timer()
     a = 3   #start input range
-    b = 41  #end input range
+    b = 31  #end input range
 
     #used to store results. test_mode is the key
-    results = {0:[], 1:[], 2:[]}
+    gen_results = {0:[], 1:[], 2:[]}
+    lev_results = {0:[], 1:[], 2:[]}
+    time_results = {0:[], 1:[], 2:[]}
+    mut_results = {0:[], 1:[], 2:[]}
+    size_results = {0:[], 1:[], 2:[]}
+    succ_results = {0:[], 1:[], 2:[]}
     lev_total = []
     average_epochs = []
     for test_mode in range(3):
@@ -609,6 +619,11 @@ def scalabilityTest(number_of_runs) -> None:
         print("Test " + str(test_mode))
         print("########")
         for i in range(a,b):
+            ave_lev = 0
+            ave_gens = 0
+            ave_muts = 0
+            ave_size = 0
+            ave_succ = 0
             t.start_timer()
             print("Number of Inputs: " + str(i))
             for run in range(int(number_of_runs)):
@@ -640,29 +655,114 @@ def scalabilityTest(number_of_runs) -> None:
                 num_runs += 1
                 if logic1 == logic2:
                     total_success += 1
+                    ave_succ += 1
                 
                 average_epochs.append(epochs)
-                lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+                temp_lev = levenshtein(variant.original_ast,variant.current_ast)
+                lev_total.append(temp_lev)
+                ave_gens += epochs
+                ave_lev += temp_lev
+                ave_muts += variant.num_muts
+                ave_size += variant.size()
 
             t.end_timer()
-            results[test_mode].append(float(str(t))/float(number_of_runs))
+            gen_results[test_mode].append(float(ave_gens)/float(number_of_runs))
+            time_results[test_mode].append(float(str(t))/float(number_of_runs))
+            lev_results[test_mode].append(float(ave_lev)/float(number_of_runs))
+            mut_results[test_mode].append(float(ave_muts)/float(number_of_runs))
+            size_results[test_mode].append(float(ave_size)/float(number_of_runs))
+            succ_results[test_mode].append(float(ave_succ)/float(number_of_runs))
 
+
+    import pickle
+
+    pickle.dump(gen_results, open( "p/gen_results.p", "wb" ) )
+    pickle.dump(time_results, open( "p/time_results.p", "wb" ) )
+    pickle.dump(lev_results, open( "p/lev_results.p", "wb" ) )
+    pickle.dump(mut_results, open( "p/mut_results.p", "wb" ) )
+    pickle.dump(size_results, open( "p/size_results.p", "wb" ) )
+    pickle.dump(succ_results, open( "p/succ_results.p", "wb" ) )
+
+    #############################################################################################
+    
     #plot the final results
     import matplotlib.pyplot as plt
+    inputs = list(range(a,b))
 
     plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,gen_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,gen_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,gen_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Generations to Completion")
+    #plt.show()
+    plt.savefig("gen_results_scal.png")
 
-    inputs = list(range(a,b))
-    plt.plot(inputs,results[0], 'o', color='black', label="Random Start")
-    plt.plot(inputs,results[1], 'o', color='blue', label="Combinational Trojan Inserted")
-    plt.plot(inputs,results[2], 'o', color='red', label="Variant Generation")
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,time_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,time_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,time_results[2], 'o', color='red', label="Variant Generation")
     plt.legend()
     plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
     plt.xlabel("Number of Inputs")
     plt.ylabel("Average Time to Completion (Seconds)")
-    
     #plt.show()
-    plt.savefig("scal_1.png")
+    plt.savefig("time_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,lev_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,lev_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,lev_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Levenshtien Distance")
+    #plt.show()
+    plt.savefig("lev_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,mut_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,mut_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,mut_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Number of Mutations Needed")
+    #plt.show()
+    plt.savefig("mut_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,size_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,size_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,size_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Size of Final Circuit (Nodes)")
+    #plt.show()
+    plt.savefig("size_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,succ_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,succ_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,succ_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Number of Successful Evolutions")
+    #plt.show()
+    plt.savefig("succ_results_scal.png")
+
+
+    #############################################################################################
+
 
     #open the file back up for debug
     f = open("paramsOutput.txt","a")    
