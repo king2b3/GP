@@ -751,3 +751,12 @@ start type: 2
 Average lev distance for 1.2828
 Number of hits: 0.8888888888888888
 Average number of epochs needed: 264.1111111111111
+
+Generating Scalability Plots: 2021-08-11 10:05:20
+stochastic mutations
+start type: 0
+start type: 1
+start type: 2
+Average lev distance for 1.2374
+Number of hits: 0.9369047619047619
+Average number of epochs needed: 184.03452380952382
