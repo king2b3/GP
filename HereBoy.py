@@ -590,7 +590,7 @@ def scalabilityTest(number_of_runs) -> None:
     import os
     t = Timer()
     a = 3   #start input range
-    b = 7  #end input range
+    b = 41  #end input range
 
     #used to store results. test_mode is the key
     results = {0:[], 1:[], 2:[]}
