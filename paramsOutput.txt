@@ -760,3 +760,45 @@ start type: 2
 Average lev distance for 1.2374
 Number of hits: 0.9369047619047619
 Average number of epochs needed: 184.03452380952382
+
+Running Brute Force Partial Test Cases 2021-09-16 17:53:17
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:53:33
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:54:12
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:55:26
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:56:31
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:57:07
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:57:55
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 17:59:47
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 18:00:22
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 18:01:18
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 18:01:52
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 18:07:10
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 18:24:46
+stochastic mutations
+
+Running Brute Force Partial Test Cases 2021-09-16 18:39:47
+stochastic mutations

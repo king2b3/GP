@@ -1,0 +1,13 @@
+start type: 0
+Test patterns allowed: (False, True, True, True, True, True, True, True)  Success rate: 0.75
+Test patterns allowed: (True, False, True, True, True, True, True, True)  Success rate: 0.75
+Test patterns allowed: (True, True, True, True, True, True, True, True)  Success rate: 1.0
+start type: 1
+Test patterns allowed: (True, True, True, True, True, True, False, True)  Success rate: 0.75
+Test patterns allowed: (True, True, True, True, True, True, True, True)  Success rate: 1.0
+start type: 2
+Test patterns allowed: (True, True, True, True, True, True, False, False)  Success rate: 0.75
+Test patterns allowed: (True, True, True, True, True, True, False, True)  Success rate: 0.75
+Test patterns allowed: (True, True, True, True, True, True, True, False)  Success rate: 0.75
+Test patterns allowed: (True, True, True, True, True, True, True, True)  Success rate: 1.0
+Original Logic: [[False], [False], [True], [False], [False], [True], [True], [True]]

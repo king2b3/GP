@@ -1,10 +1,7 @@
-module  comb_logic(
-    A      , 
-    B      , 
-    C     , 
-    D ,
-    Out      
-);
+module  comb_logic(A, B, C, D, Out);
+// gate level verilog
+// Random comb logic
+
 input A, B, C, D ;
 output Out;
 wire and_0, and_1, and_2, xor_0, and_3, or_0, nor_0, nor_1;

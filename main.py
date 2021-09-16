@@ -92,7 +92,7 @@ def main(
     else:
         test_mode = 3
 
-    HereBoy.scalabilityTest(runs)
+    HereBoy.bruteForceTest(runs)
 
 
 if __name__ == "__main__":

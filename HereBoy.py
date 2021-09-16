@@ -38,7 +38,8 @@ class HereBoy(GP):
     ''' Child class of GP class
     '''
     def __init__(self, ast, inputs, max_epochs, struc_fit, 
-        in_num,test_cases = None, rand =.1, cir_depth=5):
+        in_num,test_cases = None, rand =.1, cir_depth=5,
+        brute_force_test=(True,True,True,True,True,True,True,True)):
         super().__init__(inputs,max_epochs,in_num)
         if ast == None:
             #print(f"Creating an AST {cir_depth=}")
@@ -55,6 +56,7 @@ class HereBoy(GP):
         self.mutation_fraction = rand
         self.max_score = 1
         self.num_muts = 0
+        self.brute_force_test = brute_force_test
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -63,7 +65,6 @@ class HereBoy(GP):
             be the data handeling classes.
         '''
 
-    
     def logicalFitness(
         self, current_ast,
         test_cases = None,
@@ -95,6 +96,28 @@ class HereBoy(GP):
                 print('Current logic: {}'.format(logical_result))
         '''  
     
+    def bruteLogicalFitness(
+        self, current_ast
+    ):
+        ''' Container function which can be called in place of hardcoding
+              which testing function is used.
+            Returns % of test cases passed. 
+        '''
+        logical_result = self.exhaustiveTest(current_ast)
+        orig_log = self.orig_log.copy()
+        score = 0
+        temp_score = 0
+        # EX [True, False, None, None, False, None False, True]
+        for t in range(len(logical_result)):
+            if self.brute_force_test[t]:
+                temp_score += 1
+                if logical_result[t] == orig_log[t]:
+                    score += 1
+        if temp_score == 0:
+            return 0
+        return score/temp_score
+        
+
     def init_ffs(
         self
     ):
@@ -169,7 +192,8 @@ class HereBoy(GP):
         '''                
         if ast == None:
             ast = self.current_ast.copy()
-        logical_fitness = self.logicalFitness(ast,log_fit_bool)
+        logical_fitness = self.bruteLogicalFitness(ast)
+        #logical_fitness = self.logicalFitness(ast,log_fit_bool)
         logical_fitness = self.logFit*logical_fitness
         #structural fitness check
         structural_fitness = levenshtein(ast,self.original_ast)
@@ -568,6 +592,127 @@ def mainTest(
     #f.write(str4)
     f.close()
     #print('past')
+
+def bruteForceTest(number_of_runs) -> None:
+    nums_ins = 3
+    total_success = 0
+    max_epochs = 1000
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'] # 2-1
+    ins = ['I0','I1','Sel'] # 2-1
+
+    def clear():
+        _ = system("clear")
+
+    from timer import Timer
+    from itertools import product
+    f = open("paramsOutput.txt","a")
+    now = datetime.datetime.now()
+    new_str = "\nRunning Brute Force Partial Test Cases " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+    f.write(new_str)
+
+    f.write('stochastic mutations\n')
+    f.close()
+
+
+    total_success = 0
+    num_runs = 0
+
+    import os
+    #t = Timer()
+
+    #used to store results. test_mode is the key
+    #gen_results = {0:[], 1:[], 2:[]}
+    #lev_results = {0:[], 1:[], 2:[]}
+    #time_results = {0:[], 1:[], 2:[]}
+    #mut_results = {0:[], 1:[], 2:[]}
+    #size_results = {0:[], 1:[], 2:[]}
+    #succ_results = {0:[], 1:[], 2:[]}
+    #lev_total = []
+    #average_epochs = []
+    for test_mode in range(3):
+        '''
+        0: variant
+        1: comb trojan
+        2: random
+        '''
+        f = open("brute_paramsOutput.txt","a")
+        temp_str = "start type: " + str(test_mode) + "\n"
+        f.write(temp_str)
+        #print("########")
+        #print("Test " + str(test_mode))
+        #print("########")
+        f.close()
+        args = [[False,True] for i in range(8) ]
+        for comb in product(*args):
+	        #print(comb)
+            ave_lev = 0
+            ave_gens = 0
+            ave_muts = 0
+            ave_size = 0
+            ave_succ = 0
+            #t.start_timer()
+            #print(f"Comb logic: {comb}")
+            for run in range(int(number_of_runs)):
+                #clear()
+                #print("test " + str(run) + " out of " + str(int(number_of_runs) - 1))
+                #init the class
+                variant = HereBoy(original_ast,ins,max_epochs,.3,3,brute_force_test=comb)
+
+                if test_mode == 0:
+                    variant.current_ast = variant.createRandomAST(4,6)
+                    #print("random ast created")
+                elif test_mode == 1:
+                    variant.insertCombTrojan()
+                    #print("trojan inserted")
+                else:
+                    #print("variant used")
+                    pass 
+                
+                epochs = 0
+                start = time.time()
+                while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
+                    variant.randomExhaustive(epochs) 
+                    variant.updateFitness(epochs)
+                    epochs +=1
+                end = time.time()
+
+                logic1 = variant.exhaustiveTest(variant.current_ast)
+                logic2 = variant.exhaustiveTest(variant.original_ast)
+                num_runs += 1
+                if logic1 == logic2:
+                    total_success += 1
+                    ave_succ += 1
+                
+                '''
+                average_epochs.append(epochs)
+                temp_lev = levenshtein(variant.original_ast,variant.current_ast)
+                lev_total.append(temp_lev)
+                ave_gens += epochs
+                ave_lev += temp_lev
+                ave_muts += variant.num_muts
+                ave_size += variant.size()            
+                '''
+            if ave_succ/int(number_of_runs) > 0.5:
+                f = open("brute_paramsOutput.txt","a")
+                f.write(f"Test patterns allowed: {comb}")
+                f.write(f'  Success rate: {ave_succ/int(number_of_runs)}\n')
+                f.close()
+
+            #t.end_timer()
+            '''
+            gen_results[test_mode].append(float(ave_gens)/float(number_of_runs))
+            time_results[test_mode].append(float(str(t))/float(number_of_runs))
+            lev_results[test_mode].append(float(ave_lev)/float(number_of_runs))
+            mut_results[test_mode].append(float(ave_muts)/float(number_of_runs))
+            size_results[test_mode].append(float(ave_size)/float(number_of_runs))
+            succ_results[test_mode].append(float(ave_succ)/float(number_of_runs))
+            '''
+    #writes the testing scheme to the file
+    f = open("brute_paramsOutput.txt","a")
+    f.write(f"Original Logic: {variant.orig_log}\n")
+    f.close()
+
+
 
 def scalabilityTest(number_of_runs) -> None:
     nums_ins = 3
