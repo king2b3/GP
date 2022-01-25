@@ -21,18 +21,17 @@ import operations as op
 from os import system
 import random
 import mutations as  m
-#from scanner import Scanner
 
 
 class GP:
     def __init__(
         self, inputs,
         max_epochs,
-        num_ins=0
+        num_ins=6
     ):
         ''' General container for genetic program system
         '''
-        if num_ins != 0:
+        if num_ins == 0:
             self.ins = self.createInputs(num_ins)
         else:
             self.ins = inputs
@@ -78,12 +77,14 @@ class GP:
                         # Inserts either True or False into proper input
                         ast[gate] = comb[ins_counter]
                 ins_counter += 1
-            logical_result.append(op.returnLogic(ast,self.ins)) 
+            temp = op.returnLogic(ast,self.ins)
+            if temp is None:
+                return [False,False,False,False,False,False,False,False]
+            logical_result.append(temp) 
         return logical_result
 
 
-    def createRandomAST(
-        self, 
+    def createRandomAST(self, 
         min_ast_depth=3,
         max_ast_depth=6, 
         ast=None

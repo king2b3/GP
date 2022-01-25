@@ -8,24 +8,48 @@
 import matplotlib.pyplot as plt
 import pickle as pkl
 
-def plot_time_stats(fitness_path='outputs/fitness_time.pkl',
-                    mutation_path='outputs/mutations_time.pkl'):
-    with open(mutation_path,'rb') as f:
-        mutations_time = pkl.load(f)
+def decay_LR(t,tau,no):
+    # copy of function from networks.py for testing
+    import numpy as np
+    a = no*np.exp(-t/tau)
+    if a < .001:
+        a = .001
+    return a
 
-    with open(fitness_path,'rb') as f:
-        fitness_time = pkl.load(f)
 
+def sigma(e,tauN,sigmaP):
+    # copy of function from networks.py for testing
+
+
+    return s
+
+
+def plot_time_stats() -> None:
+    import math
     plt.figure()
+    s_fit = []
+    l_fit = []
+    t_fit = []
 
-    epochs = list(range(len(mutations_time)))
+    for t in range(1000):
+        temp = 0.7*math.exp(-t/1000)
+        if temp <= 0.3:
+            s_fit.append(0.3)
+            l_fit.append(0.7)
+        else:
+            s_fit.append(temp)
+            l_fit.append(1-temp)
+        t_fit.append(1)
 
-    plt.plot(epochs,mutations_time,'ko',label="Mutations Time")
-    plt.plot(epochs,fitness_time,'bx',label="Fitness Time")
-    plt.xlabel('Epochs')
-    plt.ylabel('Time (sec)')
-    plt.title('Time for each portion during training')
+    gens = list(range(1000))
+
+    plt.plot(gens,s_fit,'r-',label="Structural Fitness")
+    plt.plot(gens,l_fit,'b-',label="Logical Fitness")
+    plt.plot(gens,t_fit,'g-',label="Summed Fitness")
+    plt.ylim([0,1.4])
+    plt.xlabel('Generations')
+    plt.ylabel('Fitness Score')
     plt.legend()
-    plt.savefig('outputs/time_plot.jpeg')
+    plt.savefig('outputs/summed_fitness.jpeg')
 
 plot_time_stats()

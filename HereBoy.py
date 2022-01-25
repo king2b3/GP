@@ -37,17 +37,13 @@ def clear():
 class HereBoy(GP):
     ''' Child class of GP class
     '''
-    def __init__(
-        self, ast, inputs, 
-        max_epochs, struc_fit, 
-        in_num=0,
-        test_cases = None, 
-        rand =.1,
-        cir_depth=100
-    ):
+    def __init__(self, ast, inputs, max_epochs, struc_fit, 
+        in_num,test_cases = None, rand =.1, cir_depth=5,
+        brute_force_test=(True,True,True,True,True,True,True,True)):
         super().__init__(inputs,max_epochs,in_num)
         if ast == None:
-            self.original_ast = self.createRandomAST(cir_depth-1,cir_depth)
+            #print(f"Creating an AST {cir_depth=}")
+            self.original_ast = self.createRandomAST(cir_depth-1,cir_depth+1)
         else:
             self.original_ast = ast.copy()
         self.current_ast = self.original_ast.copy()
@@ -59,6 +55,8 @@ class HereBoy(GP):
         self.check_ast(self.current_ast)
         self.mutation_fraction = rand
         self.max_score = 1
+        self.num_muts = 0
+        self.brute_force_test = brute_force_test
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -67,7 +65,6 @@ class HereBoy(GP):
             be the data handeling classes.
         '''
 
-    
     def logicalFitness(
         self, current_ast,
         test_cases = None,
@@ -81,10 +78,12 @@ class HereBoy(GP):
         logical_result = self.exhaustiveTest(current_ast)
         orig_log = self.orig_log.copy()
         if test_cases != None:
-            logical_result = logical_result[:math.floor(len(logical_result)*test_case_per)]
             orig_log = self.orig_log[:math.floor(len(logical_result)*test_case_per)]
+            logical_result = logical_result[:math.floor(len(logical_result)*test_case_per)]
         score = 0
         # logical fitness check
+        #print(len(logical_result))
+        #print(len(orig_log))
         for t in range(len(logical_result)):
             if logical_result[t] == orig_log[t]:
                 score += 1
@@ -97,6 +96,28 @@ class HereBoy(GP):
                 print('Current logic: {}'.format(logical_result))
         '''  
     
+    def bruteLogicalFitness(
+        self, current_ast
+    ):
+        ''' Container function which can be called in place of hardcoding
+              which testing function is used.
+            Returns % of test cases passed. 
+        '''
+        logical_result = self.exhaustiveTest(current_ast)
+        orig_log = self.orig_log.copy()
+        score = 0
+        temp_score = 0
+        # EX [True, False, None, None, False, None False, True]
+        for t in range(len(logical_result)):
+            if self.brute_force_test[t]:
+                temp_score += 1
+                if logical_result[t] == orig_log[t]:
+                    score += 1
+        if temp_score == 0:
+            return 0
+        return score/temp_score
+        
+
     def init_ffs(
         self
     ):
@@ -154,14 +175,15 @@ class HereBoy(GP):
     ):
         ''' deconstructor 
         '''
-        pass
+        ...
 
     
     def checkFitness(
         self, epochs,
         ast = None,
         returnCheck=True,
-        print_bool=False
+        print_bool=False,
+        log_fit_bool=None
     ):
         ''' Can either return if exit conditions are met or current numerical fitness
 
@@ -170,7 +192,8 @@ class HereBoy(GP):
         '''                
         if ast == None:
             ast = self.current_ast.copy()
-        logical_fitness = self.logicalFitness(ast)
+        logical_fitness = self.bruteLogicalFitness(ast)
+        #logical_fitness = self.logicalFitness(ast,log_fit_bool)
         logical_fitness = self.logFit*logical_fitness
         #structural fitness check
         structural_fitness = levenshtein(ast,self.original_ast)
@@ -279,10 +302,11 @@ class HereBoy(GP):
         self, epochs,
         print_bool=False
     ):
-        ''' Returns a stochastically selected mutated AST
+        ''' Sets a stochastically selected mutated AST as the current AST
 
         See issue #6
         '''
+        self.num_muts += 1
         num_mut = random.randint(0,1000)
         if num_mut < 500: # 50%
             if print_bool: print('\nexhaustive mut check')
@@ -291,7 +315,7 @@ class HereBoy(GP):
             fit_check = []
             # checks for best mutated AST from exhaustive add/remove nodes and best mutated node AST
             for circuit in circuit_test:
-                fit_check.append(self.checkFitness(epochs,circuit,False))
+                fit_check.append(self.checkFitness(epochs,circuit,False,log_fit_bool=True))
             max_fit_loc = fit_check.index(max(fit_check))
             self.current_ast = circuit_test[max_fit_loc]
         elif num_mut < 800: # 30%
@@ -300,15 +324,9 @@ class HereBoy(GP):
         elif num_mut < 900: # 10%
             if print_bool: print('\nAdd a randoom node')
             self.current_ast = m.addNode(self.current_ast,self.ins)
-        #elif num_mut < 950: # 1%
         else: # 10%
             if print_bool: print('\nRemove a random node')
             self.current_ast = m.removeNode(self.current_ast,self.ins)
-        #elif num_mut < 970: # 5%
-        #    if print_bool: print('\nCrossover a random node')
-        #    current_ast = m.crossover(current_ast,ins)
-        #else: # 3%
-        #    pass
 
     
     @staticmethod
@@ -399,6 +417,7 @@ class HereBoy(GP):
             f.close()
             #print('past')
 
+    
     @staticmethod
     def params_test(
         mutation_mode, test_mode, number_of_runs,
@@ -479,6 +498,9 @@ class HereBoy(GP):
         f.close()
         #print('past')
 
+    def size(self) -> int:
+        return len(self.current_ast) - len(self.original_ast)
+
 
     @staticmethod
     def normal_dv(
@@ -523,6 +545,477 @@ class HereBoy(GP):
         print(list(zip(variant.orig_log,logic2)))
         treePrint(variant.current_ast,'temp/Final_AST.gv')
 
+def mainTest(
+    mutation_mode, test_mode, number_of_runs,
+    nums_ins = 3,
+    total_success = 0,
+    max_epochs = 1000,
+    original_ast = None, # comb logic
+    ins = ['A','B','C','D'] #comb logic
+    #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # 2-1
+    #ins = ['I0','I1','Sel'] # 2-1
+    #original_ast = ['or','or','and','and','not','s1','not','s2','d0','and','and','not','s1','s0','d1','or','and','and','s1','not','s0','d0','and','and','s1','s0','d3'],
+    #ins = ['s0','s1','s2','d1','d2','d3']
+    #original_ast = ['or','and','A','B','and','Cin','xor','A','B'], # carry out
+    #ins = ['A','B','Cin'] # carry out
+):
+    from timer import Timer
+    f = open("paramsOutput.txt","a")
+    now = datetime.datetime.now()
+    new_str = "\nNew test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+    max_depth = nums_ins*2
+    f.write(new_str)
+    f.write('Scalability Test with {} depth '.format(max_depth))
+
+    if mutation_mode == 1:
+        f.write('software HereBOY\n')
+    elif mutation_mode == 2:
+        f.write('exhaustive mutations checking\n')
+    else:
+        f.write('stochastic mutations\n')
+    f.close()
+    lev_total = []
+    average_epochs = []
+    total_success = 0
+    num_runs = 0
+
+    import os
+    results = []
+    t = Timer()
+    a = 3
+    b = 31
+    #for loop for inputs
+    for i in range(a,b):
+        t.start_timer()
+        for _ in range(int(number_of_runs)):
+
+            print("Number of Inputs: " + str(i))
+            
+            output_folder = 'temp/temp/'
+
+            #path = output_folder+str(time.time())
+            #os.mkdir(path)
+            #print(f"{i=}")
+            variant = HereBoy(original_ast,ins,max_epochs,.3,i)
+
+            # determine testing type from args parse
+            #variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
+            #variant.current_ast = variant.original_ast.copy()
+            #variant.orig_log = variant.exhaustiveTest(variant.current_ast)
+            #treePrint(variant.current_ast, "temp/original")
+            if test_mode == 1:
+                variant.current_ast = variant.createRandomAST(4,6)
+                #print("random ast created")
+            elif test_mode == 2:
+                variant.insertCombTrojan()
+                #print("trojan inserted")
+            else:
+                #print("variant used")
+                pass
+            
+            
+            epochs = 0
+            #treePrint(variant.current_ast, "temp/original")
+
+            start = time.time()
+            while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
+                
+                variant.randomExhaustive(epochs) 
+                
+                variant.updateFitness(epochs)
+                #print('Curret epoch {}\nCurrent AST {}'.format(epochs,variant.current_ast))
+                epochs +=1
+                #treePrint(variant.current_ast, path+'/'+str(epochs))
+            end = time.time()
+
+            #print(variant.exhaustiveTest(variant.current_ast))
+            #print(variant.exhaustiveTest(variant.original_ast))
+
+            logic1 = variant.exhaustiveTest(variant.current_ast)
+            logic2 = variant.exhaustiveTest(variant.original_ast)
+            num_runs += 1
+            if logic1 == logic2:
+                total_success += 1
+            
+            average_epochs.append(epochs)
+            lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+            #treePrint(variant.current_ast, "temp/final")
+            
+            '''
+            # creates the gif 
+            command1 = "ffmpeg -framerate 1 -f image2 -i "+path+"/%d.png "+path+"/video.avi"
+            command2 = "ffmpeg -i "+path+"/video.avi temp/temp"+str(".gif")
+            os.system(command1)
+            os.system(command2)
+            '''
+        t.end_timer()
+        results.append(float(str(t))/float(number_of_runs))
+
+    #print(f"{num_runs=}")
+    #print(f"{total_success=}")
+    print(f"{results}")
+
+    import matplotlib.pyplot as plt
+
+    plt.style.use('seaborn-whitegrid')
+
+    inputs = list(range(a,b))
+    plt.plot(inputs,results, 'o', color='black')
+    plt.title("Scalability of ES")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Time to Completion (Seconds)")
+    
+    plt.show()
+    
+    f = open("paramsOutput.txt","a")
+    str1 = "Average lev distance for {:0.4f}\n".format(
+        sum(lev_total)/len(lev_total))
+    str2 = "Number of hits: {}\n".format(total_success/num_runs)
+    str3 = "Average number of epochs needed: {}\n".format(
+        sum(average_epochs)/len(average_epochs))
+    str4 = f"Time simulation was run {f}"
+    f.write(str1)
+    f.write(str2)
+    f.write(str3)
+    #f.write(str4)
+    f.close()
+    #print('past')
+
+def bruteForceTest(number_of_runs) -> None:
+    nums_ins = 3
+    total_success = 0
+    max_epochs = 1000
+    original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'] # 2-1
+    ins = ['I0','I1','Sel'] # 2-1
+
+    def clear():
+        _ = system("clear")
+
+    from timer import Timer
+    from itertools import product
+    f = open("paramsOutput.txt","a")
+    now = datetime.datetime.now()
+    new_str = "\nRunning Brute Force Partial Test Cases " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+    f.write(new_str)
+
+    f.write('stochastic mutations\n')
+    f.close()
+
+
+    total_success = 0
+    num_runs = 0
+
+    import os
+    #t = Timer()
+
+    #used to store results. test_mode is the key
+    #gen_results = {0:[], 1:[], 2:[]}
+    #lev_results = {0:[], 1:[], 2:[]}
+    #time_results = {0:[], 1:[], 2:[]}
+    #mut_results = {0:[], 1:[], 2:[]}
+    #size_results = {0:[], 1:[], 2:[]}
+    #succ_results = {0:[], 1:[], 2:[]}
+    #lev_total = []
+    #average_epochs = []
+    for test_mode in range(3):
+        '''
+        0: variant
+        1: comb trojan
+        2: random
+        '''
+        f = open("brute_paramsOutput.txt","a")
+        temp_str = "start type: " + str(test_mode) + "\n"
+        f.write(temp_str)
+        #print("########")
+        #print("Test " + str(test_mode))
+        #print("########")
+        f.close()
+        args = [[False,True] for i in range(8) ]
+        for comb in product(*args):
+	        #print(comb)
+            ave_lev = 0
+            ave_gens = 0
+            ave_muts = 0
+            ave_size = 0
+            ave_succ = 0
+            #t.start_timer()
+            #print(f"Comb logic: {comb}")
+            for run in range(int(number_of_runs)):
+                #clear()
+                #print("test " + str(run) + " out of " + str(int(number_of_runs) - 1))
+                #init the class
+                variant = HereBoy(original_ast,ins,max_epochs,.3,3,brute_force_test=comb)
+
+                if test_mode == 0:
+                    variant.current_ast = variant.createRandomAST(4,6)
+                    #print("random ast created")
+                elif test_mode == 1:
+                    variant.insertCombTrojan()
+                    #print("trojan inserted")
+                else:
+                    #print("variant used")
+                    pass 
+                
+                epochs = 0
+                start = time.time()
+                while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
+                    variant.randomExhaustive(epochs) 
+                    variant.updateFitness(epochs)
+                    epochs +=1
+                end = time.time()
+
+                logic1 = variant.exhaustiveTest(variant.current_ast)
+                logic2 = variant.exhaustiveTest(variant.original_ast)
+                num_runs += 1
+                if logic1 == logic2:
+                    total_success += 1
+                    ave_succ += 1
+                
+                '''
+                average_epochs.append(epochs)
+                temp_lev = levenshtein(variant.original_ast,variant.current_ast)
+                lev_total.append(temp_lev)
+                ave_gens += epochs
+                ave_lev += temp_lev
+                ave_muts += variant.num_muts
+                ave_size += variant.size()            
+                '''
+            if ave_succ/int(number_of_runs) > 0.5:
+                f = open("brute_paramsOutput.txt","a")
+                f.write(f"Test patterns allowed: {comb}")
+                f.write(f'  Success rate: {ave_succ/int(number_of_runs)}\n')
+                f.close()
+
+            #t.end_timer()
+            '''
+            gen_results[test_mode].append(float(ave_gens)/float(number_of_runs))
+            time_results[test_mode].append(float(str(t))/float(number_of_runs))
+            lev_results[test_mode].append(float(ave_lev)/float(number_of_runs))
+            mut_results[test_mode].append(float(ave_muts)/float(number_of_runs))
+            size_results[test_mode].append(float(ave_size)/float(number_of_runs))
+            succ_results[test_mode].append(float(ave_succ)/float(number_of_runs))
+            '''
+    #writes the testing scheme to the file
+    f = open("brute_paramsOutput.txt","a")
+    f.write(f"Original Logic: {variant.orig_log}\n")
+    f.close()
+
+
+
+def scalabilityTest(number_of_runs) -> None:
+    nums_ins = 3
+    total_success = 0
+    max_epochs = 1000
+    original_ast = None # comb logic
+    ins = ['A','B','C','D'] #comb logic
+
+    def clear():
+        _ = system("clear")
+
+    from timer import Timer
+    f = open("paramsOutput.txt","a")
+    now = datetime.datetime.now()
+    new_str = "\nGenerating Scalability Plots: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+    f.write(new_str)
+
+    f.write('stochastic mutations\n')
+    f.close()
+
+
+    total_success = 0
+    num_runs = 0
+
+    import os
+    t = Timer()
+    a = 3   #start input range
+    b = 31  #end input range
+
+    #used to store results. test_mode is the key
+    gen_results = {0:[], 1:[], 2:[]}
+    lev_results = {0:[], 1:[], 2:[]}
+    time_results = {0:[], 1:[], 2:[]}
+    mut_results = {0:[], 1:[], 2:[]}
+    size_results = {0:[], 1:[], 2:[]}
+    succ_results = {0:[], 1:[], 2:[]}
+    lev_total = []
+    average_epochs = []
+    for test_mode in range(3):
+        '''
+        0: variant
+        1: comb trojan
+        2: random
+        '''
+        f = open("paramsOutput.txt","a")
+        temp_str = "start type: " + str(test_mode) + "\n"
+        f.write(temp_str)
+        print("########")
+        print("Test " + str(test_mode))
+        print("########")
+        for i in range(a,b):
+            ave_lev = 0
+            ave_gens = 0
+            ave_muts = 0
+            ave_size = 0
+            ave_succ = 0
+            t.start_timer()
+            print("Number of Inputs: " + str(i))
+            for run in range(int(number_of_runs)):
+                #clear()
+                print("test " + str(run) + " out of " + str(int(number_of_runs) - 1))
+                #init the class
+                variant = HereBoy(original_ast,ins,max_epochs,.3,i)
+
+                if test_mode == 0:
+                    variant.current_ast = variant.createRandomAST(4,6)
+                    #print("random ast created")
+                elif test_mode == 1:
+                    variant.insertCombTrojan()
+                    #print("trojan inserted")
+                else:
+                    #print("variant used")
+                    pass 
+                
+                epochs = 0
+                start = time.time()
+                while epochs < variant.max_epochs and variant.checkFitness(epochs,log_fit_bool=None):
+                    variant.randomExhaustive(epochs) 
+                    variant.updateFitness(epochs)
+                    epochs +=1
+                end = time.time()
+
+                logic1 = variant.exhaustiveTest(variant.current_ast)
+                logic2 = variant.exhaustiveTest(variant.original_ast)
+                num_runs += 1
+                if logic1 == logic2:
+                    total_success += 1
+                    ave_succ += 1
+                
+                average_epochs.append(epochs)
+                temp_lev = levenshtein(variant.original_ast,variant.current_ast)
+                lev_total.append(temp_lev)
+                ave_gens += epochs
+                ave_lev += temp_lev
+                ave_muts += variant.num_muts
+                ave_size += variant.size()
+
+            t.end_timer()
+            gen_results[test_mode].append(float(ave_gens)/float(number_of_runs))
+            time_results[test_mode].append(float(str(t))/float(number_of_runs))
+            lev_results[test_mode].append(float(ave_lev)/float(number_of_runs))
+            mut_results[test_mode].append(float(ave_muts)/float(number_of_runs))
+            size_results[test_mode].append(float(ave_size)/float(number_of_runs))
+            succ_results[test_mode].append(float(ave_succ)/float(number_of_runs))
+
+
+    import pickle
+
+    pickle.dump(gen_results, open( "p/gen_results.p", "wb" ) )
+    pickle.dump(time_results, open( "p/time_results.p", "wb" ) )
+    pickle.dump(lev_results, open( "p/lev_results.p", "wb" ) )
+    pickle.dump(mut_results, open( "p/mut_results.p", "wb" ) )
+    pickle.dump(size_results, open( "p/size_results.p", "wb" ) )
+    pickle.dump(succ_results, open( "p/succ_results.p", "wb" ) )
+
+    #############################################################################################
+    
+    #plot the final results
+    import matplotlib.pyplot as plt
+    inputs = list(range(a,b))
+
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,gen_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,gen_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,gen_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Generations to Completion")
+    #plt.show()
+    plt.savefig("gen_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,time_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,time_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,time_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Time to Completion (Seconds)")
+    #plt.show()
+    plt.savefig("time_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,lev_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,lev_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,lev_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Levenshtien Distance")
+    #plt.show()
+    plt.savefig("lev_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,mut_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,mut_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,mut_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Number of Mutations Needed")
+    #plt.show()
+    plt.savefig("mut_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,size_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,size_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,size_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Size of Final Circuit (Nodes)")
+    #plt.show()
+    plt.savefig("size_results_scal.png")
+
+    plt.figure()
+    plt.style.use('seaborn-whitegrid')
+    plt.plot(inputs,succ_results[0], 'o', color='black', label="Random Start")
+    plt.plot(inputs,succ_results[1], 'o', color='blue', label="Combinational Trojan Inserted")
+    plt.plot(inputs,succ_results[2], 'o', color='red', label="Variant Generation")
+    plt.legend()
+    plt.title("Scalability of ES Across Averaged over " + str(number_of_runs) + " Runs")
+    plt.xlabel("Number of Inputs")
+    plt.ylabel("Average Number of Successful Evolutions")
+    #plt.show()
+    plt.savefig("succ_results_scal.png")
+
+
+    #############################################################################################
+
+
+    #open the file back up for debug
+    f = open("paramsOutput.txt","a")    
+    #if num_runs != total_successes:
+    #    temp_str = "CAUTION! NOT ALL SIMS PASSED:" + str(total_successes) + \
+    #        " out of " + str(num_runs)
+    #    f.write(temp_str)
+
+    str1 = "Average lev distance for {:0.4f}\n".format(
+        sum(lev_total)/len(lev_total))
+    str2 = "Number of hits: {}\n".format(total_success/num_runs)
+    str3 = "Average number of epochs needed: {}\n".format(
+        sum(average_epochs)/len(average_epochs))
+    str4 = f"Time simulation was run {f}"
+    f.write(str1)
+    f.write(str2)
+    f.write(str3)
+    #f.write(str4)
+    f.close()
+    #print('past')
 
 def main():
     pass

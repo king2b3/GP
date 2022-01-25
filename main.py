@@ -1,7 +1,10 @@
-from HereBoy import HereBoy
+import HereBoy
 import argparse
 import os
 
+
+def clear():
+    _ = system("clear")
 
 def parse_arguments(
     args=None
@@ -75,16 +78,6 @@ def main(
     #    raise FileNotFoundError("File not found: {}".format(input_file))
     
 
-    test1 = HereBoy(
-        None,
-        #['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'], # ast
-        None,
-        #['I0','I1','Sel'], # ins
-        40000, # num epochs
-        0.3, # init struct fit
-        in_num
-    )
-
     if hboy:
         mutation_mode = 1
     elif exhaustive:
@@ -99,12 +92,7 @@ def main(
     else:
         test_mode = 3
 
-    test1.scalabilityTest(
-        mutation_mode,
-        test_mode,
-        runs,
-        in_num
-    )
+    HereBoy.bruteForceTest(runs)
 
 
 if __name__ == "__main__":

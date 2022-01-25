@@ -129,19 +129,23 @@ def crossover(
     while ast_2[gate_ast_2] not in op.operators or gate_ast_1 == gate_ast_2:
         gate_ast_2 = random.randint(1,len_ast_2-1)
 
-    #print(ast_1)
-    #print(gate_ast_1)
-    #print(ast_2)
-    #print(gate_ast_2)
     ast_1_first = ast_1[:gate_ast_1]
     ast_1_middle, ast_1_end = findRoots(ast_1, gate_ast_1,ins)
     ast_2_first = ast_2[:gate_ast_2]
     ast_2_middle, ast_2_end = findRoots(ast_2, gate_ast_2,ins)
 
+    if len(ast_1_first) == 1 or len(ast_2_first) == 1 or \
+        len(ast_1_middle) == 1 or len(ast_2_middle) == 1 or \
+        len(ast_1_end) == 1 or len(ast_2_end) == 1 or \
+        len(ast_1_first) == 0 or len(ast_2_first) == 0 or \
+        len(ast_1_middle) == 0 or len(ast_2_middle) == 0 or \
+        len(ast_1_end) == 0 or len(ast_2_end) == 0:
+        return ast_1, ast_2
+
     new_ast_1 = ast_1_first + ast_2_middle + ast_1_end
     new_ast_2 = ast_2_first + ast_1_middle + ast_2_end
 
-    return [new_ast_1, new_ast_2]
+    return new_ast_1, new_ast_2
 
     
 def check_every_add_node(
@@ -356,10 +360,10 @@ def hasChildren(
              op.checkBinaryGate(tree[gate]):
             # Node is an end leaf, it could be removed
             return True
-        elif not op.checkGate(children[0]) and \
-             op.checkSoloGate(tree[gate]):
-            # Node is an end leaf, it could be removed
-            return True            
+        #elif not op.checkGate(children[0]) and \
+        #     op.checkSoloGate(tree[gate]):
+        #    # Node is an end leaf, it could be removed
+        #    return True            
         else:
             return False
     except:
@@ -381,6 +385,7 @@ def findRoots(
     middle = []
     end = []
     new_tree = tree[gate:]
+    gate2 = len(tree)
     for node in range(len(new_tree)):
         if hasChildren(new_tree,node,ins):
             gate2 = node + 3
@@ -400,10 +405,6 @@ def main():
     #current_ast = original_ast.copy()
     #ins = ['I0','I1']   
     ast1, ast2 = crossover(original_ast,ast,ins)
-    print(ast)
-    print(ast2)
-    print(original_ast)
-    print(ast1)
 
 
 if __name__ == '__main__':
