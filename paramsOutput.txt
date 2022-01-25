@@ -195,3 +195,10 @@ Scalability Test with 10 inputs stochastic mutations
 Average lev distance for 2.3250
 Number of hits: 1.0
 Average number of epochs needed: 202.33333333333334
+
+
+New test at: 2021-03-28 21:46:53
+Scalability Test with 6 inputs stochastic mutations
+
+New test at: 2021-03-28 21:47:29
+Scalability Test with 6 inputs stochastic mutations

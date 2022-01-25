@@ -314,11 +314,11 @@ class HereBoy(GP):
     @staticmethod
     def scalabilityTest(
             mutation_mode, test_mode, number_of_runs,
-            nums_ins=0,
+            nums_ins=3,
             total_success = 0,
             max_epochs = 4000,
-            original_ast = None,
-            #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+            #original_ast = None,
+            original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
             #ins = ['I0','I1','Sel']
             ins = None
 
@@ -343,11 +343,13 @@ class HereBoy(GP):
             total_success = 0
             num_runs = 0
             for _ in range(int(number_of_runs)):
+                print('gets inside of loop')
                 
                 variant = HereBoy(original_ast,ins,max_epochs,.3,nums_ins)
                 
                 # determine testing type from args parse
-                variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
+                # variant.original_ast = variant.createRandomAST(max_depth-1,max_depth+1)
+                print('got here')
                 variant.current_ast = variant.original_ast.copy()
                 variant.orig_log = variant.exhaustiveTest(variant.current_ast)
                 
@@ -363,6 +365,7 @@ class HereBoy(GP):
 
                 start = time.time()
                 while epochs < variant.max_epochs and variant.checkFitness(epochs):
+                    print('here')
                     
                     if mutation_mode == 1:
                         variant.hereBoy(epochs)
