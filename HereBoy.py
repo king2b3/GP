@@ -39,7 +39,7 @@ class HereBoy(GP):
     '''
     def __init__(self, ast, inputs, max_epochs, struc_fit, 
         in_num,test_cases = None, rand =.1, cir_depth=5,
-        brute_force_test=(True,True,True,True,True,True,True,True)):
+        brute_force_test=(True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True)):
         super().__init__(inputs,max_epochs,in_num)
         if ast == None:
             #print(f"Creating an AST {cir_depth=}")
@@ -56,7 +56,7 @@ class HereBoy(GP):
         self.mutation_fraction = rand
         self.max_score = 1
         self.num_muts = 0
-        self.brute_force_test = brute_force_test
+        self.brute_force_test = gen_brute()
         '''
             If these inits are the same as whats needed in the other file,
             inheritance would work very nicely.
@@ -96,9 +96,7 @@ class HereBoy(GP):
                 print('Current logic: {}'.format(logical_result))
         '''  
     
-    def bruteLogicalFitness(
-        self, current_ast
-    ):
+    def bruteLogicalFitness(self, current_ast):
         ''' Container function which can be called in place of hardcoding
               which testing function is used.
             Returns % of test cases passed. 
@@ -118,9 +116,7 @@ class HereBoy(GP):
         return score/temp_score
         
 
-    def init_ffs(
-        self
-    ):
+    def init_ffs(self):
         ''' Defines the initial states of each flip flop in the original ast
         '''
         count = 0
@@ -131,9 +127,7 @@ class HereBoy(GP):
                 count += 1
 
 
-    def insertCombTrojan(
-        self
-    ):
+    def insertCombTrojan(self):
         ''' This function will insert a random combinational trojan on some node of the AST
 
             The trojan is a fault injecting combinatonal trojan, that looks for a specific
@@ -170,9 +164,7 @@ class HereBoy(GP):
         #print('trojan inserted)')
         self.current_ast = temp_start+new_node+temp_end
         
-    def __del__(
-        self
-    ):
+    def __del__(self):
         ''' deconstructor 
         '''
         ...
@@ -424,8 +416,13 @@ class HereBoy(GP):
         total_success = 0,
         max_epochs = 8000,
         #original_ast = ['or','I0','I1'],
-        original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
-        ins = ['I0','I1','Sel']
+        #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+        #ins = ['I0','I1','Sel']
+        #original_ast = ['nand','nand','N1','N3','nand','N2','nand','N3','N6'],
+        #ins = ['N1','N2','N3','N6']
+        original_ast = ['nor','and','PB1','GB1','nor','and','GB0','and','not','CN','GB1','and','GB1','and','PBO','GB0'],
+        ins = ['PB0','PB1','GB0','GB1','CN']
+
     ):
 
         f = open("paramsOutput.txt","a")
@@ -1017,8 +1014,115 @@ def scalabilityTest(number_of_runs) -> None:
     f.close()
     #print('past')
 
+
+
+def params_test(
+        mutation_mode, test_mode, number_of_runs,
+        total_success = 0,
+        max_epochs = 8000,
+        #original_ast = ['or','I0','I1'],
+        #original_ast = ['nand','nand','I0','Sel','nand','I1','nand','Sel','Sel'],
+        #ins = ['I0','I1','Sel']
+        #original_ast = ['nand','nand','N1','N3','nand','N2','nand','N3','N6'],
+        #ins = ['N1','N2','N3','N6']
+        original_ast = ['nor','and','PB1','GB1','nor','and','GB0','and','not','CN','GB1','and','GB1','and','PB0','GB0'],
+        ins = ['PB0','PB1','GB0','GB1','CN']
+
+    ):
+
+        f = open("paramsOutput.txt","a")
+        now = datetime.datetime.now()
+        new_str = "\nNew test at: " + now.strftime("%Y-%m-%d %H:%M:%S")+ "\n"
+        f.write(new_str)
+        if test_mode == 1:
+            f.write('Random AST with ')
+        elif test_mode == 2:
+            f.write('Combination Trojan inserted into AST with ')
+        else:
+            f.write('Diverse variant AST with ')
+        if mutation_mode == 1:
+            f.write('software HereBOY\n')
+        elif mutation_mode == 2:
+            f.write('exhaustive mutations checking\n')
+        else:
+            f.write('stochastic mutations\n')
+        f.close()
+        lev_total = []
+        average_epochs = []
+        total_success = 0
+        num_runs = 0
+        #rand = rand / 100
+        for _ in range(int(number_of_runs)):
+            
+            variant = HereBoy(original_ast,ins,max_epochs,.3,5)
+            
+            # determine testing type from args parse
+            if test_mode == 1:
+                variant.current_ast = variant.createRandomAST()
+            elif test_mode == 2:
+                variant.insertCombTrojan()
+            else:
+                pass
+            
+            epochs = 0
+
+            start = time.time()
+            while epochs < variant.max_epochs and variant.checkFitness(epochs):
+                
+                if mutation_mode == 1:
+                    variant.hereBoy(epochs)
+                elif mutation_mode == 2:
+                    variant.exhaustiveCheck(epochs)
+                else:
+                    variant.randomExhaustive(epochs) 
+                
+                variant.updateFitness(epochs)
+                epochs +=1
+            end = time.time()
+
+            logic2 = variant.exhaustiveTest(variant.current_ast)
+            num_runs += 1
+            if variant.orig_log == logic2:
+                total_success += 1
+            
+            average_epochs.append(epochs)
+            lev_total.append(levenshtein(variant.original_ast,variant.current_ast))
+            
+        f = open("paramsOutput.txt","a")
+        str1 = "Average lev distance for {:0.4f}\n".format(
+            sum(lev_total)/len(lev_total))
+        str2 = "Number of hits: {}\n".format(total_success/num_runs)
+        str3 = "Average number of epochs needed: {}\n".format(
+            sum(average_epochs)/len(average_epochs))
+        f.write(str1)
+        f.write(str2)
+        f.write(str3)
+        f.close()
+        #print('past')
+
+
+def gen_brute():
+    in_size = 5
+    cases = math.floor(2**in_size*.8)
+    temp = []
+    for _ in range(cases):
+        temp.append(True)
+    for _ in range(2**in_size - cases):
+        temp.append(False)
+    random.shuffle(temp)
+    temp = tuple(temp)
+    return temp
+
+def gen_best():
+    in_size = 5
+    cases = 2**in_size
+    temp = []
+    for _ in range(cases):
+        temp.append(True)
+    return temp
+
 def main():
-    pass
+    gen_brute()
 
 
 if __name__ == "__main__":

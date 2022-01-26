@@ -92,7 +92,7 @@ def main(
     else:
         test_mode = 3
 
-    HereBoy.bruteForceTest(runs)
+    HereBoy.params_test(mutation_mode, test_mode, runs)
 
 
 if __name__ == "__main__":

@@ -495,3 +495,270 @@ Scalability Test with 6 inputs stochastic mutations
 
 New test at: 2021-03-28 21:47:29
 Scalability Test with 6 inputs stochastic mutations
+
+New test at: 2022-01-26 02:18:33
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:19:37
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:21:34
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:22:17
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:22:48
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:22:56
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:24:22
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.1111
+Number of hits: 1.0
+Average number of epochs needed: 190.0
+
+New test at: 2022-01-26 02:24:34
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 1.0
+Average number of epochs needed: 203.0
+
+New test at: 2022-01-26 02:24:42
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:26:16
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.3333
+Number of hits: 1.0
+Average number of epochs needed: 187.0
+
+New test at: 2022-01-26 02:27:59
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 02:28:20
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.4000
+Number of hits: 1.0
+Average number of epochs needed: 191.8
+
+New test at: 2022-01-26 02:28:51
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 02:29:08
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 02:29:43
+Random AST with stochastic mutations
+Average lev distance for 1.8222
+Number of hits: 1.0
+Average number of epochs needed: 281.4
+
+New test at: 2022-01-26 02:44:08
+Random AST with stochastic mutations
+Average lev distance for 1.5778
+Number of hits: 1.0
+Average number of epochs needed: 358.4
+
+New test at: 2022-01-26 02:46:10
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 02:47:14
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.7111
+Number of hits: 1.0
+Average number of epochs needed: 205.2
+
+New test at: 2022-01-26 02:47:43
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.3333
+Number of hits: 1.0
+Average number of epochs needed: 36.0
+
+New test at: 2022-01-26 02:47:50
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.6222
+Number of hits: 1.0
+Average number of epochs needed: 227.2
+
+New test at: 2022-01-26 02:58:18
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:58:53
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 02:59:20
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.7556
+Number of hits: 0.4
+Average number of epochs needed: 282.4
+
+New test at: 2022-01-26 03:00:25
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.4778
+Number of hits: 0.35
+Average number of epochs needed: 138.05
+
+New test at: 2022-01-26 03:01:19
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.5556
+Number of hits: 0.15
+Average number of epochs needed: 257.65
+
+New test at: 2022-01-26 03:03:11
+Random AST with stochastic mutations
+Average lev distance for 1.6878
+Number of hits: 0.2
+Average number of epochs needed: 180.45
+
+New test at: 2022-01-26 03:06:21
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 03:06:56
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.2411
+Number of hits: 0.25
+Average number of epochs needed: 128.05
+
+New test at: 2022-01-26 03:07:35
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.3554
+Number of hits: 0.15
+Average number of epochs needed: 155.85
+
+New test at: 2022-01-26 03:08:10
+Random AST with stochastic mutations
+Average lev distance for 1.5367
+Number of hits: 0.25
+Average number of epochs needed: 119.9
+
+New test at: 2022-01-26 03:09:00
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:09:25
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:10:01
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:10:56
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:11:46
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:11:57
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:12:09
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:12:25
+Random AST with stochastic mutations
+Average lev distance for 1.1519
+Number of hits: 0.25
+Average number of epochs needed: 225.85
+
+New test at: 2022-01-26 03:15:26
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:22:02
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:25:20
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:28:08
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:31:51
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.0625
+Number of hits: 1.0
+Average number of epochs needed: 34.0
+
+New test at: 2022-01-26 03:31:57
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:32:31
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:37:03
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 03:37:49
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 03:39:05
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 230.0
+
+New test at: 2022-01-26 03:39:25
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 03:40:52
+Random AST with stochastic mutations
+
+New test at: 2022-01-26 03:41:42
+Random AST with stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 1.0
+Average number of epochs needed: 253.0
+
+New test at: 2022-01-26 03:43:24
+Random AST with stochastic mutations
+Average lev distance for 1.5625
+Number of hits: 0.0
+Average number of epochs needed: 351.0
+
+New test at: 2022-01-26 03:43:44
+Random AST with stochastic mutations
+Average lev distance for 1.0000
+Number of hits: 0.0
+Average number of epochs needed: 3.0
+
+New test at: 2022-01-26 03:43:55
+Random AST with stochastic mutations
+Average lev distance for 1.1239
+Number of hits: 0.6
+Average number of epochs needed: 270.8
+
+New test at: 2022-01-26 03:44:50
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 03:46:39
+Combination Trojan inserted into AST with stochastic mutations
+
+New test at: 2022-01-26 03:48:11
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.1250
+Number of hits: 0.0
+Average number of epochs needed: 42.0
+
+New test at: 2022-01-26 03:48:37
+Combination Trojan inserted into AST with stochastic mutations
+Average lev distance for 1.4062
+Number of hits: 0.5
+Average number of epochs needed: 49.0
+
+New test at: 2022-01-26 03:49:25
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:50:54
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:51:58
+Diverse variant AST with stochastic mutations
+Average lev distance for 1.1250
+Number of hits: 1.0
+Average number of epochs needed: 253.0
+
+New test at: 2022-01-26 03:52:20
+Diverse variant AST with stochastic mutations
+
+New test at: 2022-01-26 03:53:20
+Diverse variant AST with stochastic mutations
