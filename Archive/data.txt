@@ -1,1 +1,0 @@
-["not_(and_(and_(Y, not_(max(Y), max(Z))), or_(xor(Y, and_(X, Z)), Y)), xor(or_(or_(xor(X, Y), Z), not_(xor(X, X), Z)), xor(Y, Z)))"]

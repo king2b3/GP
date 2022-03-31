@@ -1,5 +1,0 @@
-hdlConvertor
-
-pyverlog
-
-deap

@@ -11,12 +11,27 @@ This is a custom framework that we developed in Python 3.7, which will produce a
 
 There other dependencies for the library are varying, and will be updated as needed.
 
+## Usage
+The file main.py acts as controller for the network, and can use arg parsing to control parameters.
 
-### Copyright
+## Coming Soon
+An official release is coming soon, with files available to allow for re-running of the results in the publication.
 
-
-
-### References
-<a id="1">[1]</a> 
-D., Levi "HereBoy: A fast evolutionary algorithm", *IEEE*
-*Proceedings. The Second NASA/DoD Workshop on Evolvable Hardware*, 2000, pp. 17-24.
+## Citation
+Please review the following paper, which utilizes this network
+```
+@Article{King2022,
+author={King, Bayley
+and Jha, Rashmi
+and Kebede, Temesguen
+and Kap, David},
+title={Securing 3rd-Party HDL IP: a Feasibility Study Using Evolutionary Methods},
+journal={Journal of Hardware and Systems Security},
+year={2022},
+month={Mar},
+day={31},
+issn={2509-3436},
+doi={10.1007/s41635-022-00125-9},
+url={https://doi.org/10.1007/s41635-022-00125-9}
+}
+```
