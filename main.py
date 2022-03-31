@@ -1,6 +1,6 @@
 import HereBoy
 import argparse
-import os
+from os import system
 
 
 def clear():
