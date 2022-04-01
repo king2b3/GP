@@ -21,17 +21,17 @@ An official release is coming soon, with files available to allow for re-running
 Please review the following paper, which utilizes this network
 ```
 @Article{King2022,
-author={King, Bayley
-and Jha, Rashmi
-and Kebede, Temesguen
-and Kap, David},
-title={Securing 3rd-Party HDL IP: a Feasibility Study Using Evolutionary Methods},
-journal={Journal of Hardware and Systems Security},
-year={2022},
-month={Mar},
-day={31},
-issn={2509-3436},
-doi={10.1007/s41635-022-00125-9},
-url={https://doi.org/10.1007/s41635-022-00125-9}
+    author={King, Bayley
+    and Jha, Rashmi
+    and Kebede, Temesguen
+    and Kap, David},
+    title={Securing 3rd-Party HDL IP: a Feasibility Study Using Evolutionary Methods},
+    journal={Journal of Hardware and Systems Security},
+    year={2022},
+    month={Mar},
+    day={31},
+    issn={2509-3436},
+    doi={10.1007/s41635-022-00125-9},
+    url={https://doi.org/10.1007/s41635-022-00125-9}
 }
 ```
